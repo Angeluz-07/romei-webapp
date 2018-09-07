@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+		<!-- Jquery -->
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Datatable -->
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"> 
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+  </head>
+  <body>
+
+    <!------------------------- START MY HTML ------------------>
+    <div class="container">
+		<h2>Apuntes</h2>    
+
+			<!------------------------START DATATABLE------------------------>
+			<table id="table_id" class="display">
+					<thead>
+						  <tr>
+						      <th>$</th>
+						      <th>Apunte</th>									
+						  </tr>
+					</thead>
+					<tbody>
+						  <tr>
+						      <td>20</td>
+						      <td>cola</td>								
+						  </tr>
+						  <tr>
+						      <td>5</td>
+						      <td>comida</td>
+						  </tr>
+					 <tr>
+						      <td>12</td>
+						      <td>guardia</td>
+						  </tr>
+						  <tr>
+						      <td>14</td>
+						      <td>yolanda</td>
+						  </tr>
+
+ <tr>
+						      <td>10</td>
+						      <td>yolanda mama</td>
+						  </tr>
+						  <tr>
+						      <td>18</td>
+						      <td>yolanda hija</td>
+						  </tr>
+
+ <tr>
+						      <td>10</td>
+						      <td>maribel</td>
+						  </tr>
+						  <tr>
+						      <td>34</td>
+						      <td>maribel 2</td>
+						  </tr>
+
+ <tr>
+						      <td>67</td>
+						      <td>maribel 3</td>
+						  </tr>
+						  <tr>
+						      <td>3</td>
+						      <td>jugo</td>
+						  </tr>
+
+
+					</tbody>
+			</table>
+			<!------------------------END DATATABLE------------------------>
+
+	    <table class="table table-striped table-bordered">				    
+		    					
+			<tr> 					
+		      <td ><input type="text" class="form-control" name="nombre" id="apunte_valor"></td>
+		      <td ><input type="text" class="form-control" name="servicio" id="apunte_info" ></td>
+		      <td > 
+					 <input type="submit" class="btn btn-success" id="boton_agregar"value="+"/>
+			    </td>		      
+		    </tr>	 	
+		
+		<!--
+		    <tr> 
+					<td >{{ u.servicio }} </td>
+		      <td >{{  u.ciudad}}</td>		      				
+		      <td > 				 			
+	   		 <input type="submit" class="btn btn-danger" Value="x"/>			 	
+ 				 </td>	
+
+					<td > 							 
+	   		 <input type="submit" class="btn btn-warning" Value="o"/>					
+ 				 </td>	
+
+				</tr>	
+			-->
+   
+    </div>
+    <!------------------------- END MY HTML -------------------->
+
+    <!-- Optional JavaScript -->
+		<script>
+		$(document).ready( function () {
+    	var t=$('#table_id').DataTable({
+							pagingType:'numbers',
+							dom:'lfipt',
+							ordering: false
+						 });
+			var c=1;
+			$('#boton_agregar').click(function() {
+					let a_v=$('#apunte_valor').val();
+					let a_i=$('#apunte_info').val();
+					t.row.add([
+						a_v,
+						a_i
+					]).draw(false);
+					t.page('last').draw(false);//pay perfomance on user interaction.
+					c++;
+					//refresh inputs
+					$('#apunte_valor').val('');
+					$('#apunte_info').val('');
+			});
+			
+			
+		});
+	  </script>	
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </body>
+</html>

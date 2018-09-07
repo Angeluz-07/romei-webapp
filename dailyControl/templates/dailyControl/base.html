@@ -1,0 +1,50 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+		<!-- Jquery -->		
+		<script src="{% static 'dailyControl/src/jquery-3.3.1.min.js' %}"></script> 
+	
+		<!-- Jquery - CSV -->
+		<script src="{% static 'dailyControl/src/jquery.csv.min.js' %}"></script>
+
+		<!-- JExcel-->
+		<script src="{% static 'dailyControl/src/jquery.jexcel.js' %}" ></script>
+		<link rel="stylesheet" href="{% static 'dailyControl/css/jquery.jexcel.css' %}" type="text/css" />
+
+
+		<script src="{% static 'dailyControl/src/excel-formula.min.js' %}" ></script>
+
+  		<!-- Bootstrap-->
+
+		<script src="{% static 'dailyControl/src/bootstrap.min.js' %}" ></script>
+    <link rel="stylesheet" href="{% static 'dailyControl/css/bootstrap.min.css' %}" type="text/css" />
+		
+    <!-- Datatable Decide its use for reports
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"> 
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+		-->
+  </head>
+  <body>
+
+    <!------------------------- START MY HTML ------------------>
+    <div class="container">
+				{% block content %}
+        {% endblock %}   
+    </div>
+    <!------------------------- END MY HTML -------------------->
+
+    <!-- Optional JavaScript -->
+		{% block specific-js %}
+    {% endblock %}
+		
+		<script>
+	  </script>	    
+  </body>
+</html>

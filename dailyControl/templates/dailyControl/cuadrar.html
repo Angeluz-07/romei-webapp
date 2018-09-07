@@ -1,0 +1,338 @@
+{% extends "dailyControl/base.html" %}
+
+
+{% block content %}
+		<h2>Cuadrar</h2>    
+
+		<div id="mytable"></div>
+		<div id="my"></div>
+		
+
+		<button type="button" class="btn btn-secondary" id="button_addRow">+</button>
+		<button type="button" class="btn btn-secondary" id="button_refresh">refresh</button>
+		<button type="button" class="btn btn-secondary" id="button_save">save first</button>	
+		<button type="button" class="btn btn-secondary" id="button_update">update</button>
+{% endblock %}
+
+{% block specific-js %}
+<script>			
+			
+			//get current date on yyyy-mm-dd format
+			function getCurrentDate(){
+				let date = new Date($.now());
+				let dateString = (date.getFullYear() + '-'
+				+ ('0' + (date.getMonth() + 1)).slice(-2)
+				+ '-' + ('0' + (date.getDate())).slice(-2));
+				return dateString;
+			}
+
+			//get yesterday date on yyyy-mm-dd format
+			function getYesterdayDate(){
+				let date = new Date($.now());			
+				date.setDate(date.getDate()-1);
+				let dateString = (date.getFullYear() + '-'
+				+ ('0' + (date.getMonth() + 1)).slice(-2)
+				+ '-' + ('0' + (date.getDate())).slice(-2));
+				return dateString;
+			}
+			
+
+			/*---------------------FUNCTIONS TO BUILD TABLE-----------------*/
+			/*
+				take params like:
+					let l=5;
+					let fname='ADD_';
+					let cols=['B','D'];
+				return like:
+					["=ADD_(B1,D1)", 
+					 "=ADD_(B2,D2)", 
+					 "=ADD_(B3,D3)", 
+					 "=ADD_(B4,D4)", 
+					 "=ADD_(B5,D5)"]
+			*/		
+			function makeColum_setFunction(l,fname,cols){
+				let newCol=Array(l).fill('');
+				for (let i=0;i<newCol.length;i++){
+						let cell_a=cols[0]+(i+1);
+						let cell_b=cols[1]+(i+1);
+						newCol[i]=''.concat('=',fname,'(',cell_a,',',cell_b,')');
+				}
+				return newCol;
+			}
+
+			//creates a new matrix, be aware on memory.
+			function transpose(matrix) {
+				const rows = matrix.length, cols = matrix[0].length;
+				const grid = [];
+				for (let j = 0; j < cols; j++) {
+					grid[j] = Array(rows);
+				}
+				for (let i = 0; i < rows; i++) {
+					for (let j = 0; j < cols; j++) {
+						grid[j][i] = matrix[i][j];
+					}
+				}
+				return grid;
+			}
+
+		/*-------------------FUNCTIONS TO AUTO COMPUTE VALUES ON TABLE-------------------*/
+
+		//expects values as #d# and #d# so the values of cells are string
+		//by now sets #d#		
+		function SUBSTRACT_(cell_hay,cell_queda){
+			let hay=parseDozensToNumber(cell_hay.v);			
+			let queda=parseDozensToNumber(cell_queda.v);
+			let vendido=hay-queda;
+			return parseNumberToDozens(vendido);
+		}
+
+		//expects values as #d# and #d# so the values of cells are string
+		//by now sets #d#		
+		function ADD_(cell_ingresa,cell_habia){
+			let ingresa=parseDozensToNumber(cell_ingresa.v);			
+			let habia=parseDozensToNumber(cell_habia.v);
+			let hay=ingresa+habia;
+			return parseNumberToDozens(hay);
+		}
+
+		//from cell_vendido expects #d#, string
+		//from cell_precio expects number, integer
+		function COMPUTE_SOLD(cell_vendido,cell_precio){
+			let vendido=parseDozensToNumber(cell_vendido.v);
+			let money=vendido*cell_precio.v;		
+			return money;
+		}
+
+
+		/*------------------FUNCTIONS TO PARSE VALUES FROM AND TO TABLE-------------------*/
+
+			//takes STRING like 2d3 ,return INT of the total computed value
+			//can works with 2d12, 2d23 ,0d0, and negative integers
+			//negative values might result on unexpected values
+			//must handle 2d ->no units and 2 -> no dozens
+			//expect d in the string input
+			//expect values to be integers
+			function parseDozensToNumber(dozens){
+					let l=dozens.split("d");
+					let dozenPart=parseInt(l[0],10)*12;
+					let unitsPart=parseInt(l[1],10);    
+					return (dozenPart+unitsPart);
+			}
+
+			//takes INT n like an integer number, return STRING like 2d3
+			//improve output on lower than 1d, cause it returns like 0d3
+			function parseNumberToDozens(n){  
+					let dozenPart=Math.trunc(n/12);
+					let unitsPart=n%12;
+					let dozens=dozenPart+'d'+unitsPart;
+					return dozens;
+			}	
+
+		/*-----------------------Convert from data to table and viceverse--------------------------*/
+
+		//depends on id of table and global var date_
+		function getDatafromTable_u(){			
+			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
+
+			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
+			let col_mercaderia=$('#mytable').jexcel('getColumnData',2);
+			let col_queda=$('#mytable').jexcel('getColumnData',4);
+			let col_precio=$('#mytable').jexcel('getColumnData',7);
+
+			//console.log(typeof col_ingresa);
+			//let data={"date_":date_,"ss":ss};
+			let data={
+						"col_ingresa":col_ingresa,
+						"col_mercaderia":col_mercaderia,
+						"col_queda":col_queda,
+						"col_precio":col_precio,
+			};						
+			console.log(JSON.stringify(data));			
+			//console.log($.csv.fromArrays(ss)); //in case you need csv
+			return data;
+		}
+
+		//depends on id of table and global var date_
+		function getDatafromTable(){			
+			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
+
+			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
+			let col_mercaderia=$('#mytable').jexcel('getColumnData',2);
+			let col_queda=$('#mytable').jexcel('getColumnData',4);
+			let col_precio=$('#mytable').jexcel('getColumnData',7);
+
+			//console.log(typeof col_ingresa);
+			//let data={"date_":date_,"ss":ss};
+			let data={ 
+						"date_":date_,
+						"col_ingresa":col_ingresa,
+						"col_mercaderia":col_mercaderia,
+						"col_queda":col_queda,
+						"col_precio":col_precio,
+			};						
+			console.log(JSON.stringify(data));			
+			//console.log($.csv.fromArrays(ss)); //in case you need csv
+			return data;
+		}
+
+		//depends on data format returned by apirest
+		function getTableFromData(data){
+					//console.log(JSON.stringify(data.col_ingresa));
+
+					//cooking the response					
+				
+					//get columns from apirest
+					let col_mercaderia=data.col_mercaderia;
+					//col_queda from previous day now will be col_habia of current day, is logic's business
+					let col_habia=data.col_queda;
+					let col_precio=data.col_precio;
+				
+					//pick up length. All columns are supposed to have the same length.
+					let l=col_mercaderia.length;			
+					
+					//cooking the rest of columns					
+					let col_ingresa=Array(l).fill('');//empty
+					let col_hay=makeColum_setFunction(l,'ADD_',['A','B']);//set ADD_
+					let col_queda=Array(l).fill('');//empty
+					let col_vendido=makeColum_setFunction(l,'SUBSTRACT_',['D','E']);//set SUBSTRACT_
+					let col_money=makeColum_setFunction(l,'COMPUTE_SOLD',['F','H']);//set COMPUTE_SOLD
+
+					//we use the following order of columns in a  matrix, to after transpose it.					
+					/*
+						['A:Ingresa',
+						 'B:Habia',
+						 'C:Mercaderia',
+						 'D:Hay',
+						 'E:Queda',
+						 'F:Vendido',
+						 'G:$-Money',
+						 'H:Precio']
+						*/							
+				  let m=[
+							col_ingresa,
+							col_habia,
+							col_mercaderia,
+							col_hay,
+							col_queda,
+							col_vendido,
+							col_money,
+							col_precio
+					];
+					
+					let freshTable=transpose(m);
+					return freshTable;
+		}
+
+		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
+
+		console.log(getCurrentDate());	
+		console.log(getYesterdayDate());
+
+			//handle error on ingresa 0 and substract with 0
+			data_cuadre=[
+				['','100d3','Pantalon','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+				['','100D3','Pantalon Mujer','','','','',''],
+				['','100D3','Pantaloneta','','','','',''],
+				['','100D3','Short','','','','',''],
+				['','100D3','Cartera','','','','',''],
+			];
+		
+		
+		//cooking the data
+		//let date_="2018-09-05";//decide if get by apirest or generated on client|server				
+		let date_=getCurrentDate();
+		//you should set the previous day
+		var url='http://127.0.0.1:5000/apuntes/'+getYesterdayDate();
+		$.ajax({
+				url: url,
+				type: "GET",
+				contentType: "application/json",
+				beforeSend:function(request){
+					request.setRequestHeader('Accept','json');
+				},			
+				success: handle_data_from_apirest,
+				error: function(xhr,status,e){
+					console.log("GET status : " + status);
+					console.log("GET error : " + e);
+				}
+		});	
+
+		$('#mytable').jexcel({ 
+				colHeaders:['Ingresa','Habia','Mercaderia','Hay','Queda','Vendido','$','Precio'],
+				//minDimensions:[2,10],				
+				colWidths: [ 80, 80,150,80,80,80,80,80 ],
+			  //tableOverflow:true,				
+    		//tableHeight:'300px',
+				//data:data_cuadre,
+		});
+		
+		$('#button_refresh').click(function(){
+			//you should set the previous day
+			let url='http://127.0.0.1:5000/apuntes/'+getYesterdayDate();
+			$.ajax({
+				url: url,
+				type: "GET",
+				contentType: "application/json",
+				beforeSend:function(request){
+					request.setRequestHeader('Accept','json');
+				},			
+				success: handle_data_from_apirest,
+				error: function(xhr,status,e){
+					console.log("GET status : " + status);
+					console.log("GET error : " + e);
+				}
+			});	
+		});
+
+
+		function handle_data_from_apirest(data){					
+					let freshTable=getTableFromData(data);
+					$('#mytable').jexcel('setData',freshTable);		
+		}				
+
+		//decide if post or just event
+		$('#button_save').on('click', function () {			
+			let url="http://127.0.0.1:5000/apuntes/";
+			let data=getDatafromTable();
+			$.ajax({
+				url: url,
+				type: "POST",			
+				contentType: "application/json",
+				data: JSON.stringify(data),
+				success: function(data,status,xhr){				
+					console.log(status);			
+				},
+				error: function(xhr,status,e){
+					console.log(status);
+				}
+			});
+		});
+
+		//decide if post or just event
+		$('#button_update').on('click', function () {			
+			let url="http://127.0.0.1:5000/apuntes/"+getCurrentDate();
+			let data=getDatafromTable_u();
+			$.ajax({
+				url: url,
+				type: "POST",			
+				contentType: "application/json",
+				beforeSend:function(request){
+					request.setRequestHeader('X-HTTP-Method-Override','PATCH');
+				},
+				data: JSON.stringify(data),
+				success: function(data,status,xhr){				
+					console.log(status);			
+				},
+				error: function(xhr,status,e){
+					console.log(status);
+				}
+			});
+		});	
+	
+		//remind make post on change
+		$('#button_addRow').click(function(){					
+					$('#mytable').jexcel('insertRow');
+		});
+		
+	</script>	
+{% endblock %}
