@@ -10,8 +10,7 @@
 
 		<button type="button" class="btn btn-secondary" id="button_addRow">+</button>
 		<button type="button" class="btn btn-secondary" id="button_refresh">refresh</button>
-		<button type="button" class="btn btn-secondary" id="button_save">save first</button>	
-		<button type="button" class="btn btn-secondary" id="button_update">update</button>
+		<button type="button" class="btn btn-secondary" id="button_save">save</button>
 {% endblock %}
 
 {% block specific-js %}
@@ -104,7 +103,7 @@
 		}
 
 
-		/*------------------FUNCTIONS TO PARSE VALUES FROM AND TO TABLE-------------------*/
+		/*------------------FUNCTIONS TO PARSE VALUES FROM, AND TO TABLE-------------------*/
 
 			//takes STRING like 2d3 ,return INT of the total computed value
 			//can works with 2d12, 2d23 ,0d0, and negative integers
@@ -128,31 +127,10 @@
 					return dozens;
 			}	
 
-		/*-----------------------Convert from data to table and viceverse--------------------------*/
+		/*-----------------------Convert, from data to table, and viceversa--------------------------*/
+		
 
-		//depends on id of table and global var date_
-		function getDatafromTable_u(){			
-			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
-
-			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
-			let col_mercaderia=$('#mytable').jexcel('getColumnData',2);
-			let col_queda=$('#mytable').jexcel('getColumnData',4);
-			let col_precio=$('#mytable').jexcel('getColumnData',7);
-
-			//console.log(typeof col_ingresa);
-			//let data={"date_":date_,"ss":ss};
-			let data={
-						"col_ingresa":col_ingresa,
-						"col_mercaderia":col_mercaderia,
-						"col_queda":col_queda,
-						"col_precio":col_precio,
-			};						
-			console.log(JSON.stringify(data));			
-			//console.log($.csv.fromArrays(ss)); //in case you need csv
-			return data;
-		}
-
-		//depends on id of table and global var date_
+		//depends on id of table
 		function getDatafromTable(){			
 			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
 
@@ -162,20 +140,19 @@
 			let col_precio=$('#mytable').jexcel('getColumnData',7);
 
 			//console.log(typeof col_ingresa);
-			//let data={"date_":date_,"ss":ss};
-			let data={ 
-						"date_":date_,
+			let data={
 						"col_ingresa":col_ingresa,
 						"col_mercaderia":col_mercaderia,
 						"col_queda":col_queda,
 						"col_precio":col_precio,
 			};						
-			console.log(JSON.stringify(data));			
+			//console.log(JSON.stringify(data)); // to see how is data
 			//console.log($.csv.fromArrays(ss)); //in case you need csv
 			return data;
 		}
 
 		//depends on data format returned by apirest
+		//handle error on ingresa 0 and substract with 0 in table
 		function getTableFromData(data){
 					//console.log(JSON.stringify(data.col_ingresa));
 
@@ -223,116 +200,87 @@
 					return freshTable;
 		}
 
-		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
+		/*------------------------------WRAPPING AJAX CALLS---------------------------*/
 
-		console.log(getCurrentDate());	
-		console.log(getYesterdayDate());
-
-			//handle error on ingresa 0 and substract with 0
-			data_cuadre=[
-				['','100d3','Pantalon','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
-				['','100D3','Pantalon Mujer','','','','',''],
-				['','100D3','Pantaloneta','','','','',''],
-				['','100D3','Short','','','','',''],
-				['','100D3','Cartera','','','','',''],
-			];
+		//retrieves ITEM RESOURCE from apirest
+		//takes the url of the api and the resource identifier
+		//return json data
+		//must handle error	
+		//on no resource returns undefined
+		function getDataFromApi(url,res_id){				
+				$.ajax({
+						url: url+res_id,
+						type: "GET",
+						dataType: "json",
+						success: function(data){					
+							return data;
+						},
+					});	
+		}
 		
-		
-		//cooking the data
-		//let date_="2018-09-05";//decide if get by apirest or generated on client|server				
-		let date_=getCurrentDate();
-		//you should set the previous day
-		var url='http://127.0.0.1:5000/apuntes/'+getYesterdayDate();
-		$.ajax({
-				url: url,
-				type: "GET",
+		//updates ITEM RESOURCE on apirest
+		//takes the url of the api and the resource identifier	
+		//takes json with data to be updated
+		//return nothing
+		//must handle error
+		function updateDataOnApi(url,res_id,data){
+			$.ajax({
+				url: url+res_id,
+				type: "POST",			
 				contentType: "application/json",
-				beforeSend:function(request){
-					request.setRequestHeader('Accept','json');
-				},			
-				success: handle_data_from_apirest,
-				error: function(xhr,status,e){
-					console.log("GET status : " + status);
-					console.log("GET error : " + e);
-				}
-		});	
+				headers:{'X-HTTP-Method-Override':'PATCH'},
+				data: JSON.stringify(data),
+			});
+		}
+		
+		//to an automatic first empty post after page has fully loaded.	
+		function initialPostOnApi(url,data){
+			$.ajax({
+				url: url,
+				type: "POST",			
+				contentType: "application/json",
+				data: JSON.stringify(data),				
+			});	
+		}
+
+		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
 
 		$('#mytable').jexcel({ 
 				colHeaders:['Ingresa','Habia','Mercaderia','Hay','Queda','Vendido','$','Precio'],
-				//minDimensions:[2,10],				
+				minDimensions:[8,8],				
 				colWidths: [ 80, 80,150,80,80,80,80,80 ],
 			  //tableOverflow:true,				
     		//tableHeight:'300px',
-				//data:data_cuadre,
 		});
-		
-		$('#button_refresh').click(function(){
-			//you should set the previous day
-			let url='http://127.0.0.1:5000/apuntes/'+getYesterdayDate();
-			$.ajax({
-				url: url,
-				type: "GET",
-				contentType: "application/json",
-				beforeSend:function(request){
-					request.setRequestHeader('Accept','json');
-				},			
-				success: handle_data_from_apirest,
-				error: function(xhr,status,e){
-					console.log("GET status : " + status);
-					console.log("GET error : " + e);
-				}
-			});	
-		});
-
-
-		function handle_data_from_apirest(data){					
-					let freshTable=getTableFromData(data);
-					$('#mytable').jexcel('setData',freshTable);		
-		}				
-
-		//decide if post or just event
-		$('#button_save').on('click', function () {			
-			let url="http://127.0.0.1:5000/apuntes/";
-			let data=getDatafromTable();
-			$.ajax({
-				url: url,
-				type: "POST",			
-				contentType: "application/json",
-				data: JSON.stringify(data),
-				success: function(data,status,xhr){				
-					console.log(status);			
-				},
-				error: function(xhr,status,e){
-					console.log(status);
-				}
-			});
-		});
-
-		//decide if post or just event
-		$('#button_update').on('click', function () {			
-			let url="http://127.0.0.1:5000/apuntes/"+getCurrentDate();
-			let data=getDatafromTable_u();
-			$.ajax({
-				url: url,
-				type: "POST",			
-				contentType: "application/json",
-				beforeSend:function(request){
-					request.setRequestHeader('X-HTTP-Method-Override','PATCH');
-				},
-				data: JSON.stringify(data),
-				success: function(data,status,xhr){				
-					console.log(status);			
-				},
-				error: function(xhr,status,e){
-					console.log(status);
-				}
-			});
-		});	
-	
-		//remind make post on change
+										
 		$('#button_addRow').click(function(){					
 					$('#mytable').jexcel('insertRow');
 		});
-		
+			
+		let today=getCurrentDate();	
+		let yesterday=getYesterdayDate();
+		var url='http://127.0.0.1:5000/apuntes/';	
+				
+		$('#button_refresh').click(function(){				
+			let data = getDataFromApi(url,yesterday);//set the previous day			
+			let freshTable = getTableFromData(data);//handle error, due to no item resource
+			$('#mytable').jexcel('setData',freshTable);			
+		});		
+
+		//$('#button_refresh').trigger("click");
+
+		//works good when resource already exist
+		//throws 404 (NOT FOUND) if not exist
+		var isFirstPost=true;
+		$('#button_save').on('click', function () {
+			let data=getDatafromTable();
+			if(isFirstPost){
+				initialPostOnApi(url,data);
+				isFirstPost=false;
+			}else{
+				data.date_=today;			
+				updateDataOnApi(url,today,data);//set res_id as today variable
+			}
+		});						
 	</script>	
 {% endblock %}
