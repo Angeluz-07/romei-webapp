@@ -1,0 +1,47 @@
+{% extends "dailyControl/base.html" %}
+
+<!--Load crispy form tag-->
+{% load crispy_forms_tags %}
+
+{% block content %}
+		<h2>Nueva mercaderia</h2>    
+		
+		<h3>Mercaderia actual</h3>
+		<div id="mytable"></div>
+
+	<form action="{% url 'nueva_mercaderia' %}" method="POST">
+		<h3>Agregar producto</h3>
+		{% csrf_token %}	
+		{{ form|crispy }}		
+  	<button type="submit" class="btn btn-secondary">Guardar</button>
+	</form>
+{% endblock %}
+
+
+{% block specific-js %}
+<script>
+
+/*
+//remind add earnings
+$('#mytable').jexcel({ 
+				colHeaders:['Mercaderia','Cantidad','Precio'],
+				//minDimensions:[1,7],				
+				colWidths: [ 150,80,80],
+				//selectionCopy:false,
+				contextMenu:function(){},
+				rowDrag:false,
+				columnSorting:false,
+				allowInsertRow:false,
+				allowManualInsertRow:false,	
+				allowDeleteRow:false,
+				allowInsertColumn:false,
+				allowManualInsertColumn:false,
+				allowDeleteColumn:false,
+				editable:false
+				//data:getDefaultData(),
+			  //tableOverflow:true,				
+    		//tableHeight:'300px',
+		});
+*/
+</script>
+{% endblock %}

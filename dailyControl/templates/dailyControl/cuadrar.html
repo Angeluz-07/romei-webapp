@@ -3,19 +3,29 @@
 
 {% block content %}
 		<h2>Cuadrar</h2>    
+		
+		<p>Date: <input type="text" id="datepicker"></p>
 
 		<div id="mytable"></div>
-		<div id="my"></div>
+		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>
 		
-
-		<button type="button" class="btn btn-secondary" id="button_addRow">+</button>
-		<button type="button" class="btn btn-secondary" id="button_refresh">refresh</button>
-		<button type="button" class="btn btn-secondary" id="button_save">save</button>
+		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>			
+	
+		<!--button type="button" class="btn btn-secondary" id="button_update">Sobrescribir</button-->		
+		<button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button>		
 {% endblock %}
 
 {% block specific-js %}
-<script>			
-			
+<script>		
+	
+			//parse javascript date object and parse it as string yyyy-mm-dd
+			function parseDate(date){
+				let dateString = (date.getFullYear() + '-'
+				+ ('0' + (date.getMonth() + 1)).slice(-2)
+				+ '-' + ('0' + (date.getDate())).slice(-2));
+				return dateString;
+			}	
+							
 			//get current date on yyyy-mm-dd format
 			function getCurrentDate(){
 				let date = new Date($.now());
@@ -23,18 +33,7 @@
 				+ ('0' + (date.getMonth() + 1)).slice(-2)
 				+ '-' + ('0' + (date.getDate())).slice(-2));
 				return dateString;
-			}
-
-			//get yesterday date on yyyy-mm-dd format
-			function getYesterdayDate(){
-				let date = new Date($.now());			
-				date.setDate(date.getDate()-1);
-				let dateString = (date.getFullYear() + '-'
-				+ ('0' + (date.getMonth() + 1)).slice(-2)
-				+ '-' + ('0' + (date.getDate())).slice(-2));
-				return dateString;
-			}
-			
+			}			
 
 			/*---------------------FUNCTIONS TO BUILD TABLE-----------------*/
 			/*
@@ -76,62 +75,185 @@
 
 		/*-------------------FUNCTIONS TO AUTO COMPUTE VALUES ON TABLE-------------------*/
 
-		//expects values as #d# and #d# so the values of cells are string
-		//by now sets #d#		
+		//check typeOfInput function for info about accepted values		
+		//the table render empties as 0's, when are retrieved with cell.v
+		//there's need to parse numeric values as strings due to split done in typeOfInput function
+		//improve the parsing of number into strings.
 		function SUBSTRACT_(cell_hay,cell_queda){
-			let hay=parseDozensToNumber(cell_hay.v);			
-			let queda=parseDozensToNumber(cell_queda.v);
-			let vendido=hay-queda;
-			return parseNumberToDozens(vendido);
+				let k1=typeOfInput(cell_hay.v+'');			
+				let k2=typeOfInput(cell_queda.v+'');
+				if(-1==k1||-1==k2){
+					return "error";
+				}
+				let hay=parseDozensToNumber(cell_hay.v+'',k1);
+				let queda=parseDozensToNumber(cell_queda.v+'',k2);				
+				let vendido=hay-queda;				
+				//console.log("k1"+k1+","+"k2"+","+k2);
+				if (4==k1 || 4==k2){				
+					return vendido;
+				}else{									
+					return parseNumberToDozens(vendido);
+				}
+															
 		}
 
-		//expects values as #d# and #d# so the values of cells are string
-		//by now sets #d#		
-		function ADD_(cell_ingresa,cell_habia){
-			let ingresa=parseDozensToNumber(cell_ingresa.v);			
-			let habia=parseDozensToNumber(cell_habia.v);
+		//check typeOfInput function for info about accepted values		
+		//the table render empties as 0's, when are retrieved with cell.v
+		//there's need to parse numeric values as strings due to split done in typeOfInput function
+		//improve the parsing of number into strings.
+		function ADD_(cell_ingresa,cell_habia){		
+			let k1=typeOfInput(cell_ingresa.v+'');			
+			let k2=typeOfInput(cell_habia.v+'');
+			if(-1==k1||-1==k2){
+				return "error";
+			}
+			let ingresa=parseDozensToNumber(cell_ingresa.v+'',k1);			
+			let habia=parseDozensToNumber(cell_habia.v+'',k2);		
 			let hay=ingresa+habia;
-			return parseNumberToDozens(hay);
+			
+			//console.log("k1="+k1+" , "+"k2="+k2);
+			//console.log(hay);
+			if (4==k1 || 4==k2){				
+				return hay;
+			}else{				
+				return parseNumberToDozens(hay);
+			}
+			
 		}
 
 		//from cell_vendido expects #d#, string
-		//from cell_precio expects number, integer
+		//from cell_precio expects number, integer	
 		function COMPUTE_SOLD(cell_vendido,cell_precio){
-			let vendido=parseDozensToNumber(cell_vendido.v);
-			let money=vendido*cell_precio.v;		
+			let k1=typeOfInput(cell_vendido.v+'');	
+			if(-1==k1){
+				return "error";
+			}
+			let vendido=parseDozensToNumber(cell_vendido.v+'',k1);
+			let money=vendido*cell_precio.v;
 			return money;
 		}
+		
+		//for now global var, it works to save vendido total
+		var ventaTotalTeorico;
+		function sum_v(v){
+				let sum=v.reduce((a,b)=>Number(a)+Number(b),0);
+				ventaTotalTeorico=sum;
+				//console.log(isNaN(ventaTotalTeorico) ? "error" : ventaTotalTeorico);
+				return isNaN(ventaTotalTeorico) ? "error" : ventaTotalTeorico;
+		}	
 
 
-		/*------------------FUNCTIONS TO PARSE VALUES FROM, AND TO TABLE-------------------*/
+		/*------------------FUNCTIONS TO PARSE VALUES FROM, AND TO TABLE-------------------*/		
+		
+			/*
+				take string input and return an integer wich represents its type.
+				1 -> 'adb' ; a>0 && b>0 && b<12
+				2 -> 'ad' ; a >0
+				3 -> b>=0 && b<12
+				4 -> b>=0
+				-1 -> whichever other input
+				note: can be improved by specific regex
+			*/
+			function typeOfInput(input){
+				let patt1=/^\d+d\d+$/;//#d#
+				let patt2=/^\d+d$/;//#d
+				let patt3=/^\d+$/;//#     
+				
+				let l=input.split("d");
+				// #d# -> adb ; #d -> ad ; # -> b
+				let a,b;
 
-			//takes STRING like 2d3 ,return INT of the total computed value
-			//can works with 2d12, 2d23 ,0d0, and negative integers
-			//negative values might result on unexpected values
-			//must handle 2d ->no units and 2 -> no dozens
-			//expect d in the string input
-			//expect values to be integers
-			function parseDozensToNumber(dozens){
-					let l=dozens.split("d");
-					let dozenPart=parseInt(l[0],10)*12;
-					let unitsPart=parseInt(l[1],10);    
-					return (dozenPart+unitsPart);
+				//#d# -> adb
+				if(patt1.test(input)){      
+				  a=parseInt(l[0],10);
+				  b=parseInt(l[1],10);
+				  if (a>0 && b>0 && b<12){
+					return 1;
+				  }else{        
+					return -1;//console.log("error on units");
+				  }           
+				//#d -> ad
+				}else if(patt2.test(input)){   
+				  a=parseInt(l[0],10);
+				  if (a>0){
+					return 2;
+				  }else{
+					return -1;//console.log("error on units"); 
+				  }
+				//# -> b			
+				}else if(patt3.test(input)){ 
+				  b=parseInt(l[0],10);
+				  if (b>=0 && b<12 ){
+					return 3;
+				  }else if(b>=0){
+					return 4;
+				  }else{        
+					return -1; //console.log("error on units");
+				  }
+				}else{
+				  return -1; //console.log("error");
+				}
 			}
+			
+			/*				
+				Takes STRING like 2d3,2d or 2 . Return INT of the total computed value
+				Proper k must be provided to treat dozens input properly.
+				To get k, use typeOfInput function described above.
+			*/
+			function parseDozensToNumber(dozens,k){
+			  let dozenPart,unitsPart;
+			  // #d# -> adb ; #d -> ad ; # -> b
+			  let a,b; 
+			  let l=dozens.split("d");
+			  switch(k){
+				//#d# -> adb    
+				case 1:
+				  a=parseInt(l[0],10);
+				  b=parseInt(l[1],10);
+				  dozenPart=a*12;
+				  unitsPart=b;      
+				  return (dozenPart+unitsPart);
+				//#d -> ad
+				case 2:
+				  a=parseInt(l[0],10);
+				  dozenPart=a*12;
+				  unitsPart=0;      
+				  return (dozenPart+unitsPart);
+				//# -> 0<=b<12 -> case 3
+				//# -> 0<=b -> case 4
+				case 3:case 4:
+				  b=parseInt(l[0],10);
+				  dozenPart=0;
+				  unitsPart=b;      
+				  return (dozenPart+unitsPart); 				  
+				default:
+				  return "error_";//to internal maintenance
+			  } 
+			}			
+			
 
 			//takes INT n like an integer number, return STRING like 2d3
 			//improve output on lower than 1d, cause it returns like 0d3
-			function parseNumberToDozens(n){  
-					let dozenPart=Math.trunc(n/12);
-					let unitsPart=n%12;
-					let dozens=dozenPart+'d'+unitsPart;
-					return dozens;
+			function parseNumberToDozens(n){
+				if(n<12&&n>=0){
+					return n+'';
+				}
+				//if passes, at least has 1 dozen
+				let dozenPart=Math.trunc(n/12);
+				let unitsPart=n%12;
+				if(0==unitsPart){
+					return dozenPart+'d';
+				}else{
+					return dozenPart+'d'+unitsPart;
+				}
 			}	
+			
 
 		/*-----------------------Convert, from data to table, and viceversa--------------------------*/
 		
 
 		//depends on id of table
-		function getDatafromTable(){			
+		function getDatafromTable(){				
 			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
 
 			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
@@ -168,13 +290,13 @@
 					let l=col_mercaderia.length;			
 					
 					//cooking the rest of columns					
-					let col_ingresa=Array(l).fill('');//empty
+					let col_ingresa=Array(l).fill('0d0');//empty
 					let col_hay=makeColum_setFunction(l,'ADD_',['A','B']);//set ADD_
 					let col_queda=Array(l).fill('');//empty
 					let col_vendido=makeColum_setFunction(l,'SUBSTRACT_',['D','E']);//set SUBSTRACT_
 					let col_money=makeColum_setFunction(l,'COMPUTE_SOLD',['F','H']);//set COMPUTE_SOLD
 
-					//we use the following order of columns in a  matrix, to after transpose it.					
+					//we use the following order of columns in a  matrix, to latter transpose it.					
 					/*
 						['A:Ingresa',
 						 'B:Habia',
@@ -201,86 +323,190 @@
 		}
 
 		/*------------------------------WRAPPING AJAX CALLS---------------------------*/
-
-		//retrieves ITEM RESOURCE from apirest
-		//takes the url of the api and the resource identifier
-		//return json data
-		//must handle error	
-		//on no resource returns undefined
-		function getDataFromApi(url,res_id){				
-				$.ajax({
-						url: url+res_id,
-						type: "GET",
-						dataType: "json",
-						success: function(data){					
-							return data;
-						},
-					});	
+		
+		function getData(url){			
+			let request= $.ajax({
+											url: url,
+											type: "GET",
+											dataType: "json",					
+										});
+			return request;
+		}
+						
+		function postData(url,data,headers){
+			let request=$.ajax({
+										url: url,
+										type: "POST",			
+										contentType: "application/json",
+										headers:headers,
+										data: JSON.stringify(data),				
+									});
+			return request;
+		}
+	
+		/*-----------------------------------DEFAULT DATA----------------------------------*/
+		function getDefaultData(){
+			let default_data=[
+					['2d','3d','Pantalon  mujer','=ADD_(A1,B1)','1d','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+					['2d','3d','Extra','=ADD_(A2,B2)','1d','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','13'],
+					['2d','3d','Boxer','=ADD_(A3,B3)','1d','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','1.666666667'],
+					['2d','3d','2x5','=ADD_(A4,B4)','1d','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','2.5'],
+					['2d','3d','x1','=ADD_(A5,B5)','1d','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','1'],				
+					['2d','3d','Short','=ADD_(A6,B6)','1d','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','5'],
+					['2d','3d','Pantalon hombre','=ADD_(A7,B7)','1d','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','10'],
+					['2d','3d','Vermuda','=ADD_(A8,B8)','1d','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','10'],				
+					['2d','3d','merca9','=ADD_(A9,B9)','1d','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];			
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
 		}
 		
-		//updates ITEM RESOURCE on apirest
-		//takes the url of the api and the resource identifier	
-		//takes json with data to be updated
-		//return nothing
-		//must handle error
-		function updateDataOnApi(url,res_id,data){
-			$.ajax({
-				url: url+res_id,
-				type: "POST",			
-				contentType: "application/json",
-				headers:{'X-HTTP-Method-Override':'PATCH'},
-				data: JSON.stringify(data),
-			});
+	function getDefaultData3(){
+			let default_data=[
+					['','','Pantalon  mujer','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+					['','','Extra','=ADD_(A2,B2)','','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','13'],
+					['','','Boxer','=ADD_(A3,B3)','','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','1.666666667'],
+					['','','2x5','=ADD_(A4,B4)','','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','2.5'],
+					['','','x1','=ADD_(A5,B5)','','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','1'],				
+					['','','Short','=ADD_(A6,B6)','','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','5'],
+					['','','Pantalon hombre','=ADD_(A7,B7)','','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','10'],					
+					['','','Vermuda','=ADD_(A8,B8)','','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','10'],				
+					['','','merca9','=ADD_(A9,B9)','','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];			
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
 		}
-		
-		//to an automatic first empty post after page has fully loaded.	
-		function initialPostOnApi(url,data){
-			$.ajax({
-				url: url,
-				type: "POST",			
-				contentType: "application/json",
-				data: JSON.stringify(data),				
-			});	
+		function getDefaultData2(){
+			let default_data=[
+					['0','0','merca1','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','0'],
+					['0','0','merca2','=ADD_(A2,B2)','','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','0'],
+					['0','0','merca3','=ADD_(A3,B3)','','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','0'],
+					['0','0','merca4','=ADD_(A4,B4)','','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','0'],
+					['0','0','merca5','=ADD_(A5,B5)','','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','0'],				
+					['0','0','merca6','=ADD_(A6,B6)','','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','0'],
+					['0','0','merca7','=ADD_(A7,B7)','','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','0'],					
+					['0','0','merca8','=ADD_(A8,B8)','','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','0'],				
+					['0','0','merca9','=ADD_(A9,B9)','','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
 		}
-
 		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
+			  		
 
+		//manualInsert is done by hitting ENTER
+		//selectionCopy is copy cells' contents in columns
+		//improve headers.
 		$('#mytable').jexcel({ 
-				colHeaders:['Ingresa','Habia','Mercaderia','Hay','Queda','Vendido','$','Precio'],
-				minDimensions:[8,8],				
+				colHeaders:['Ingresa','-','Mercaderia','-','Queda','Vendido','$','Precio'],
+				minDimensions:[8,7],				
 				colWidths: [ 80, 80,150,80,80,80,80,80 ],
+				//selectionCopy:false,
+				contextMenu:function(){},
+				rowDrag:false,
+				columnSorting:false,
+				allowInsertRow:false,
+				allowManualInsertRow:false,	
+				allowDeleteRow:false,
+				allowInsertColumn:false,
+				allowManualInsertColumn:false,
+				allowDeleteColumn:false,			
+				data:getDefaultData(),
 			  //tableOverflow:true,				
     		//tableHeight:'300px',
-		});
-										
-		$('#button_addRow').click(function(){					
-					$('#mytable').jexcel('insertRow');
-		});
+		});											
 			
-		let today=getCurrentDate();	
-		let yesterday=getYesterdayDate();
-		var url='http://127.0.0.1:5000/apuntes/';	
-				
-		$('#button_refresh').click(function(){				
-			let data = getDataFromApi(url,yesterday);//set the previous day			
-			let freshTable = getTableFromData(data);//handle error, due to no item resource
-			$('#mytable').jexcel('setData',freshTable);			
+		var today=getCurrentDate();
+		var url='http://127.0.0.1:5000/cuadres/';
+		
+		//remind refresh datepicker
+		$('#button_refresh').click(function(){		
+			let url_=url+'';			
+			let data_;
+			let freshTable;
+			getData(url_).done(function(data){
+				//as we're filtering we must get first the array of _items		
+				data_=data._items;
+				//if not empty, we can get the first of that array which is the desired item resource
+				if(data_.length>0){
+					freshTable = getTableFromData(data_[0]);
+				}else{
+					//no previous data				
+					freshTable = getDefaultData();
+					//console.log(freshTable);
+				}
+			}).fail(function(error){
+				//net error
+				freshTable=getDefaultData();
+			}).always(function(){						
+				$('#mytable').jexcel('setData',freshTable);
+			});
+			
 		});		
 
-		//$('#button_refresh').trigger("click");
+		$('#button_refresh').trigger("click");
 
-		//works good when resource already exist
-		//throws 404 (NOT FOUND) if not exist
-		var isFirstPost=true;
 		$('#button_save').on('click', function () {
-			let data=getDatafromTable();
-			if(isFirstPost){
-				initialPostOnApi(url,data);
-				isFirstPost=false;
-			}else{
-				data.date_=today;			
-				updateDataOnApi(url,today,data);//set res_id as today variable
-			}
-		});						
-	</script>	
+			
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			console.log("-:"+today);
+			let data_=getDatafromTable();
+			data_.date_=today;
+			headers_post={};
+			console.log(JSON.stringify(data_).length);
+			postData(url,data_,headers_post).done(function(){
+				console.log("success post");
+			}).fail(function(error){
+				if("UNPROCESSABLE ENTITY"==error.statusText){
+					//error, already exists									
+				}else {
+					//net error;					
+				}								
+			});						
+		});	
+		
+		$('#button_update').on('click', function () {
+			let data_=getDatafromTable();
+			headers_update={'X-HTTP-Method-Override':'PATCH'};
+		
+			postData(url+today,data_,headers_update).done(function(){
+				console.log("success update");
+			}).fail(function(error){		
+					//net error;								
+			});						
+		});	
+
+		//set columns with functions as readonly
+		$('#mytable').jexcel('updateSettings',{ 
+				cells: function(cell,col,row){					
+					let l=8+1;//l must be quantity of prendas
+					if(col==2||col==3||col==5||col==6||col==7||row==l){
+						$(cell).css('background-color','#F1F5F8');					
+						$(cell).css('color','black');					
+						$(cell).addClass('readonly');		
+					}				
+				}				
+		});	
+		
+		$('#button_computeVentaTotalTeorico').click(function(){			
+			console.log(ventaTotalTeorico);
+		});		
+	
+		  $( "#datepicker" ).datepicker({
+				dateFormat:'yy-mm-dd',
+		    changeMonth: true,
+		    changeYear: true,
+				//minDate:-1,
+				maxDate:0,
+		  });
+			$( "#datepicker" ).datepicker("setDate","0");
+	
+			$( "#datepicker" ).datepicker("getDate");
+		$( function() {
+		
+		} );						
+</script>	
 {% endblock %}
