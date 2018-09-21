@@ -4,17 +4,18 @@
 {% block content %}
 		<h2>Cuadrar</h2>    
 		
-		<p>Date: <input type="text" id="datepicker"></p>
+		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>					
+		<p id="lastDay_cuadre"></p>
+
 
 		<div id="mytable"></div>
 		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>
 		
 		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>			
 	
-		<!--button type="button" class="btn btn-secondary" id="button_update">Sobrescribir</button-->		
-		<button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button>		
+		<button type="button" class="btn btn-secondary" id="button_update">Sobrescribir</button>		
+		<!--button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button-->
 		
-		<button type="button" class="btn btn-secondary" id="button_test">test</button>	
 {% endblock %}
 
 {% block specific-js %}
@@ -248,81 +249,7 @@
 				}else{
 					return dozenPart+'d'+unitsPart;
 				}
-			}	
-			
-
-		/*-----------------------Convert, from data to table, and viceversa--------------------------*/
-		
-
-		//depends on id of table
-		function getDatafromTable(){				
-			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
-
-			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
-			let col_mercaderia=$('#mytable').jexcel('getColumnData',2);
-			let col_queda=$('#mytable').jexcel('getColumnData',4);
-			let col_precio=$('#mytable').jexcel('getColumnData',7);
-
-			//console.log(typeof col_ingresa);
-			let data={
-						"col_ingresa":col_ingresa,
-						"col_mercaderia":col_mercaderia,
-						"col_queda":col_queda,
-						"col_precio":col_precio,
-			};						
-			//console.log(JSON.stringify(data)); // to see how is data
-			//console.log($.csv.fromArrays(ss)); //in case you need csv
-			return data;
-		}
-
-		//depends on data format returned by apirest
-		//handle error on ingresa 0 and substract with 0 in table
-		function getTableFromData(data){
-					//console.log(JSON.stringify(data.col_ingresa));
-
-					//cooking the response					
-				
-					//get columns from apirest
-					let col_mercaderia=data.col_mercaderia;
-					//col_queda from previous day now will be col_habia of current day, is logic's business
-					let col_habia=data.col_queda;
-					let col_precio=data.col_precio;
-				
-					//pick up length. All columns are supposed to have the same length.
-					let l=col_mercaderia.length;			
-					
-					//cooking the rest of columns					
-					let col_ingresa=Array(l).fill('0d0');//empty
-					let col_hay=makeColum_setFunction(l,'ADD_',['A','B']);//set ADD_
-					let col_queda=Array(l).fill('');//empty
-					let col_vendido=makeColum_setFunction(l,'SUBSTRACT_',['D','E']);//set SUBSTRACT_
-					let col_money=makeColum_setFunction(l,'COMPUTE_SOLD',['F','H']);//set COMPUTE_SOLD
-
-					//we use the following order of columns in a  matrix, to latter transpose it.					
-					/*
-						['A:Ingresa',
-						 'B:Habia',
-						 'C:Mercaderia',
-						 'D:Hay',
-						 'E:Queda',
-						 'F:Vendido',
-						 'G:$-Money',
-						 'H:Precio']
-						*/							
-				  let m=[
-							col_ingresa,
-							col_habia,
-							col_mercaderia,
-							col_hay,
-							col_queda,
-							col_vendido,
-							col_money,
-							col_precio
-					];
-					
-					let freshTable=transpose(m);
-					return freshTable;
-		}
+			}						
 
 		/*------------------------------WRAPPING AJAX CALLS---------------------------*/
 		
@@ -397,14 +324,23 @@
 			return default_data;
 		}
 		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
-			  		
+			  	
+		$( "#datepicker" ).datepicker({
+				dateFormat:'yy-mm-dd',
+		    changeMonth: true,
+		    changeYear: true,
+				//minDate:-1,
+				maxDate:0,
+		  });
+			$( "#datepicker" ).datepicker("setDate","0");		
+
 
 		//manualInsert is done by hitting ENTER
 		//selectionCopy is copy cells' contents in columns
 		//improve headers.
 		$('#mytable').jexcel({ 
 				colHeaders:['Ingresa','-','Mercaderia','-','Queda','Vendido','$','Precio'],
-				minDimensions:[8,7],				
+				//minDimensions:[8,7],				
 				colWidths: [ 80, 80,150,80,80,80,80,80 ],
 				//selectionCopy:false,
 				contextMenu:function(){},
@@ -423,10 +359,12 @@
 			
 		var today=getCurrentDate();
 		var url='http://127.0.0.1:5000/cuadres/';
-		
+		var lastDay;
+
 		//remind refresh datepicker
 		$('#button_refresh').click(function(){		
-			let url_=url+'';			
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let url_=url+'?where={"date_":{"$lt":"'+today+'"}}&sort=[("date_",-1)]&max_results=1';			
 			let data_;
 			let freshTable;
 			getData(url_).done(function(data){
@@ -434,14 +372,24 @@
 				data_=data._items;
 				//if not empty, we can get the first of that array which is the desired item resource
 				if(data_.length>0){
-					freshTable = getTableFromData(data_[0]);
-				}else{
+					//freshTable = getTableFromData(data_[0]);
+					freshTable=data_[0].ss_cuadre;
+					console.log(freshTable);
+					lastDay=data_[0].date_;
+					$('#lastDay_cuadre').text("El ultimo dia que se cuadró,anterior al día seleccionado fue : "+lastDay);
+				}			
+				else{
 					//no previous data				
-					freshTable = getDefaultData();
+					alert("No hay datos guardados para realizar el cuadre de este día. Se cargarán valores por defecto.");
+					freshTable = getDefaultData();					
+					$('#lastDay_cuadre').text("");
 					//console.log(freshTable);
 				}
 			}).fail(function(error){
-				//net error
+				//net error				
+								
+				$('#lastDay_cuadre').text("");
+				alert("Ocurrió un error de red, mientras se cargaban los datos.");
 				freshTable=getDefaultData();
 			}).always(function(){						
 				$('#mytable').jexcel('setData',freshTable);
@@ -455,40 +403,38 @@
 		/*
 			As long as there's no entry for specific date. Post will work.
 		*/	
-		$('#button_save').on('click', function () {
-			
+		$('#button_save').on('click', function () {			
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
-			console.log("-:"+today);
-			//let data_=getDatafromTable();
 			let data_={};
 			let data = $('#mytable').jexcel('getData');
-			console.log(JSON.stringify(data).length *8 );
+			data.pop();//remove last row.
+			//console.log(data);
 			data_.ss_cuadre=data;
 			data_.date_=today;
-			headers_post={};
-			console.log(JSON.stringify(data_).length *8);			
+
+			headers_post={};		
 			postData(url,data_,headers_post).done(function(){
-				alert("Los datos del cuadre se guardaron con éxito.");
-				console.log("success post");
+				alert("Los datos del cuadre se guardaron con éxito.");//success post
 			}).fail(function(error){
 				if("UNPROCESSABLE ENTITY"==error.statusText){
-					console.log('error, already exists');
-					alert("Error:El cuadre de este dia ya se realizó.");
+					alert("Error:El cuadre de este dia ya se realizó.");//error, already exists
 				}else {
-					alert("Ocurrió un error de red, mientras se guardaban los datos.");
-					console.log('net error');					
+					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error				
 				}								
 			});						
 		});	
 		
 		$('#button_update').on('click', function () {
-			let data_=getDatafromTable();
-			headers_update={'X-HTTP-Method-Override':'PATCH'};
-		
-			postData(url+today,data_,headers_update).done(function(){
-				console.log("success update");
-			}).fail(function(error){		
-					//net error;								
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let data_={};
+			let data = $('#mytable').jexcel('getData');
+			data_.ss_cuadre=data;
+
+			headers_update={'X-HTTP-Method-Override':'PATCH'};			
+			postData(url+today,data_,headers_update).done(function(){				
+				alert("Los datos del cuadre se sobreescribieron con éxito.");//remind error of edit in cascade			
+			}).fail(function(error){			
+					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error
 			});						
 		});	
 
@@ -502,27 +448,7 @@
 						$(cell).addClass('readonly');		
 					}				
 				}				
-		});	
-		
-			$('#button_computeVentaTotalTeorico').click(function(){			
-				console.log(ventaTotalTeorico);
-			});		
-
-		$('#button_test').click(function(){			
-				let data = $('#mytable').jexcel('getData');
-				console.log(JSON.stringify(data).length *8 );
-			});
-	
-		  $( "#datepicker" ).datepicker({
-				dateFormat:'yy-mm-dd',
-		    changeMonth: true,
-		    changeYear: true,
-				//minDate:-1,
-				maxDate:0,
-		  });
-			$( "#datepicker" ).datepicker("setDate","0");
-	
-			$( "#datepicker" ).datepicker("getDate");					
+		});							  	
 </script>	
 {% endblock %}
 

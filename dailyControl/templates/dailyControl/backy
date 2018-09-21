@@ -1,5 +1,120 @@
+#------------------------cleaning cuadrar.html---------------------------------
+
+			$('#button_computeVentaTotalTeorico').click(function(){			
+				console.log(ventaTotalTeorico);
+			});
+/*-----------------------Convert, from data to table, and viceversa--------------------------*/
+//depends on id of table
+		function getDatafromTable(){				
+			//let ss = $('#mytable').jexcel('getData');	//spreadsheet
+
+			let col_ingresa=$('#mytable').jexcel('getColumnData',0);
+			let col_mercaderia=$('#mytable').jexcel('getColumnData',2);
+			let col_queda=$('#mytable').jexcel('getColumnData',4);
+			let col_precio=$('#mytable').jexcel('getColumnData',7);
+
+			//console.log(typeof col_ingresa);
+			let data={
+						"col_ingresa":col_ingresa,
+						"col_mercaderia":col_mercaderia,
+						"col_queda":col_queda,
+						"col_precio":col_precio,
+			};						
+			//console.log(JSON.stringify(data)); // to see how is data
+			//console.log($.csv.fromArrays(ss)); //in case you need csv
+			return data;
+		}
+
+		//depends on data format returned by apirest
+		//handle error on ingresa 0 and substract with 0 in table
+		function getTableFromData(data){
+					//console.log(JSON.stringify(data.col_ingresa));
+
+					//cooking the response					
+				
+					//get columns from apirest
+					let col_mercaderia=data.col_mercaderia;
+					//col_queda from previous day now will be col_habia of current day, is logic's business
+					let col_habia=data.col_queda;
+					let col_precio=data.col_precio;
+				
+					//pick up length. All columns are supposed to have the same length.
+					let l=col_mercaderia.length;			
+					
+					//cooking the rest of columns					
+					let col_ingresa=Array(l).fill('0d0');//empty
+					let col_hay=makeColum_setFunction(l,'ADD_',['A','B']);//set ADD_
+					let col_queda=Array(l).fill('');//empty
+					let col_vendido=makeColum_setFunction(l,'SUBSTRACT_',['D','E']);//set SUBSTRACT_
+					let col_money=makeColum_setFunction(l,'COMPUTE_SOLD',['F','H']);//set COMPUTE_SOLD
+
+					//we use the following order of columns in a  matrix, to latter transpose it.					
+					/*
+						['A:Ingresa',
+						 'B:Habia',
+						 'C:Mercaderia',
+						 'D:Hay',
+						 'E:Queda',
+						 'F:Vendido',
+						 'G:$-Money',
+						 'H:Precio']
+						*/							
+				  let m=[
+							col_ingresa,
+							col_habia,
+							col_mercaderia,
+							col_hay,
+							col_queda,
+							col_vendido,
+							col_money,
+							col_precio
+					];
+					
+					let freshTable=transpose(m);
+					return freshTable;
+		}
 
 #------------------------back load merca from db---------------------------------
+<!--Load crispy form tag-->
+{% load crispy_forms_tags %}
+
+{% block content %}
+		<!--h2>Nueva mercaderia</h2-->    	
+
+			{% if product_list %}
+			<h3>Mercaderia actual</h3>
+			<!-- START TABLE PRODUCTLIST -->
+			<table class="table table-bordered">
+			<thead>
+				<tr>
+				  <th></th> <th>Nombre</th> <th>Cantidad</th> <th>Precio</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for p in product_list %}
+					<tr>
+				  <th>{{ p.id }}</th> <td>{{ p.name }}</td> <td>{{ p.quantity }}</td>  <td>{{ p.unit_price }}</td>
+					</tr>	
+
+				{% endfor %}							
+			</tbody>
+			</table>	
+			<!-- END TABLE PRODUCTLIST -->
+
+			{% else %}
+			<p>No existen productos en la base de datos.</p>
+			{% endif%}
+
+	<!-- START FORM NEWPRODUCT-->
+	<form action="{% url 'nueva_mercaderia' %}" method="POST">
+		<h3>Agregar producto</h3>
+		{% csrf_token %}	
+		{{ form|crispy }}		
+  	<button type="submit" class="btn btn-secondary">Guardar</button>
+	</form>
+	<!-- END FORM NEWPRODUCT -->
+{% endblock %}
 
 /*-------------------FUNCTIONS TO AUTO COMPUTE VALUES ON TABLE-------------------*/
 
