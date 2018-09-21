@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+#crispy_forms is to use bootstrap in django forms
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

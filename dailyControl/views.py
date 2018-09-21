@@ -12,9 +12,12 @@ def index(request):
     context={}  
     return render(request, 'dailyControl/index.html',context)
 
-def cuadrar(request):  
-    context={}  
-    return render(request, 'dailyControl/cuadrar.html',context)
+def cuadrar(request):
+		product_list=Product.objects.all()
+		context={
+			'product_list':product_list,
+		}
+		return render(request, 'dailyControl/cuadrar.html',context)
 
 def apuntar(request):  
     context={}  

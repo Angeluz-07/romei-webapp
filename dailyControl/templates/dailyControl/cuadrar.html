@@ -1,4 +1,4 @@
-{% extends "dailyControl/base.html" %}
+{%  extends "dailyControl/base.html" %}
 
 
 {% block content %}
@@ -13,6 +13,8 @@
 	
 		<!--button type="button" class="btn btn-secondary" id="button_update">Sobrescribir</button-->		
 		<button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button>		
+		
+		<button type="button" class="btn btn-secondary" id="button_test">test</button>	
 {% endblock %}
 
 {% block specific-js %}
@@ -449,21 +451,32 @@
 
 		$('#button_refresh').trigger("click");
 
+		//by now rendering is encapsulated. i.e. assumed the part of building the table is covered.
+		/*
+			As long as there's no entry for specific date. Post will work.
+		*/	
 		$('#button_save').on('click', function () {
 			
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
 			console.log("-:"+today);
-			let data_=getDatafromTable();
+			//let data_=getDatafromTable();
+			let data_={};
+			let data = $('#mytable').jexcel('getData');
+			console.log(JSON.stringify(data).length *8 );
+			data_.ss_cuadre=data;
 			data_.date_=today;
 			headers_post={};
-			console.log(JSON.stringify(data_).length);
+			console.log(JSON.stringify(data_).length *8);			
 			postData(url,data_,headers_post).done(function(){
+				alert("Los datos del cuadre se guardaron con éxito.");
 				console.log("success post");
 			}).fail(function(error){
 				if("UNPROCESSABLE ENTITY"==error.statusText){
-					//error, already exists									
+					console.log('error, already exists');
+					alert("Error:El cuadre de este dia ya se realizó.");
 				}else {
-					//net error;					
+					alert("Ocurrió un error de red, mientras se guardaban los datos.");
+					console.log('net error');					
 				}								
 			});						
 		});	
@@ -491,9 +504,14 @@
 				}				
 		});	
 		
-		$('#button_computeVentaTotalTeorico').click(function(){			
-			console.log(ventaTotalTeorico);
-		});		
+			$('#button_computeVentaTotalTeorico').click(function(){			
+				console.log(ventaTotalTeorico);
+			});		
+
+		$('#button_test').click(function(){			
+				let data = $('#mytable').jexcel('getData');
+				console.log(JSON.stringify(data).length *8 );
+			});
 	
 		  $( "#datepicker" ).datepicker({
 				dateFormat:'yy-mm-dd',
@@ -504,9 +522,7 @@
 		  });
 			$( "#datepicker" ).datepicker("setDate","0");
 	
-			$( "#datepicker" ).datepicker("getDate");
-		$( function() {
-		
-		} );						
+			$( "#datepicker" ).datepicker("getDate");					
 </script>	
 {% endblock %}
+
