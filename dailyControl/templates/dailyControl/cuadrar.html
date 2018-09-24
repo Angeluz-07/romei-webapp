@@ -5,20 +5,20 @@
 		<br>
 		<!-- h2>Cuadrar</h2 -->    
 		
-		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>					
+		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>	
+		<button type="button" class="btn btn-secondary" id="button_load">Cargar</button>				
 		<p id="lastDay_cuadre"></p>
 
 
-		<div id="mytable"></div>
-		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>		
-		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>				
+		<div id="mytable"></div>	
+		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>			
+		<button type="button" class="btn btn-warning" id="button_update">Sobreescribir</button>	
 		<!--button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button-->
 		
 {% endblock %}
 
 {% block specific-js %}
-<script>		
-	
+<script>						
 			//parse javascript date object and parse it as string yyyy-mm-dd
 			function parseDate(date){
 				let dateString = (date.getFullYear() + '-'
@@ -50,6 +50,14 @@
 				return newCol;
 			}
 
+			//receives length of spreadsheet
+			//depends on that length and function sum_v
+			function genLastRow(l){
+				let f='=sum_v(G1:G'.concat(l,')');
+				let arr=['','','','','','Total:',f,''];
+				return arr;		
+			}
+			
 			//return the transposed 2d array from the array received as input.
 			//creates a new matrix, be aware on memory.
 			function transpose(matrix) {
@@ -265,6 +273,7 @@
 	
 		/*-----------------------------------DEFAULT DATA----------------------------------*/
 
+		//handle here, about add or quit products
 		function getDefaultData(){					
 					let l=8; //the length of mercaderia					
 																			
@@ -302,24 +311,25 @@
 					let freshTable=transpose(m);
 					return freshTable;
 		}		
+		
+		
+		/*-------------------------------UTILITIES TO CUADRAR VIEW---------------------------*/
+				
 
-		//receives length of spreadsheet
-		//depends on that length and function sum_v
-		function genLastRow(l){
-			let f='=sum_v(G1:G'.concat(l,')');
-			let arr=['','','','','','Total:',f,''];
-			return arr;		
+		function urlLastCuadre(date){
+			return '?where={"date_":{"$lt":"'+date+'"}}&sort=[("date_",-1)]&max_results=1';
 		}
 
-		//change
-		function changeColumns(freshTable,apirestTable) {				
+		//set the column Habia taken from apirestTable
+		function setColumnHabia(freshTable,apirestTable) {				
 			for (let i = 0 ; i < freshTable.length ; i++){
 				freshTable[i][1]=apirestTable[i][4];
 			}
 		}
 
 		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
-			  	
+			 
+		
 		//in cuadrar.html just can edit until -30 days previously
 		$( "#datepicker" ).datepicker({
 				dateFormat:'yy-mm-dd',
@@ -335,7 +345,7 @@
 		//selectionCopy is copy cells' contents in columns
 		//improve headers.
 		$('#mytable').jexcel({ 
-				colHeaders:['Ingresa','-','Mercaderia','-','Queda','Vendido','$','Precio'],
+				colHeaders:['Ingresa','Había','Mercadería','-','Queda','Vendido','$','Precio'],
 				minDimensions:[8,8],				
 				colWidths: [ 80, 80,150,80,80,80,80,80],
 				contextMenu:function(){},
@@ -351,70 +361,85 @@
 			
 
 		var url='http://127.0.0.1:5000/cuadres/';
-		var lastDay;
 
-		//remind refresh datepicker
-		$('#button_refresh').click(function(){		
+		$('#button_load').click(function(){		
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));//parse date from daytepicker
-			let url_=url+'?where={"date_":{"$lt":"'+today+'"}}&sort=[("date_",-1)]&max_results=1';//cook url,entry lastday
+			let url_=url+urlLastCuadre(today);
 			let data_;
 			let freshTable,apirestTable;
+			let lastDay;
 			getData(url_).done(function(data){					
 				data_=data._items;//as we're filtering we must get first the array of _items	
 				//if not empty, we can get the first of that array which is the desired item resource
 				if(data_.length>0){
 					freshTable=getDefaultData();//get default table
 					apirestTable=data_[0].ss_cuadre;//get apirest table
-					changeColumns(freshTable,apirestTable);//place quantity that left in last cuadre
+					setColumnHabia(freshTable,apirestTable);//place quantity of columhabia that left in last cuadre
 					freshTable.push(genLastRow(freshTable.length));//push row with sum_v function	
+
 					lastDay=data_[0].date_;//get previous date of date found
-					$('#lastDay_cuadre').text("El ultimo dia que se cuadró,anterior al día seleccionado fue : "+lastDay);
+				$('#lastDay_cuadre').text("Los datos en amarillo corresponden a la mercadería que quedó el día : "+lastDay);
+					alert("Los datos del cuadre del día seleccionado se cargaron éxito.");
 				}			
 				else{
 					//no previous data of selected date
-					alert("No hay datos guardados para realizar el cuadre de este día. Se cargarán valores por defecto.");
+					alert("No hay datos guardados anteriores al día seleccionado.\nSe cargarán valores por defecto.");
 					freshTable = getDefaultData();
 					freshTable.push(genLastRow(freshTable.length));
+
 					$('#lastDay_cuadre').text("");
-					//console.log(freshTable);
 				}
-			}).fail(function(error){
-				//net error								
-				alert("Error : apirest error ");
+			}).fail(function(error){				
+				alert("Error:\n\t\tno apirest.");	//net error		
 				freshTable=getDefaultData();
-				freshTable.push(genLastRow(freshTable.length));				
+				freshTable.push(genLastRow(freshTable.length));
+	
 				$('#lastDay_cuadre').text("");
 			}).always(function(){						
 				$('#mytable').jexcel('setData',freshTable);
 			});
 		});		
-		$('#button_refresh').trigger("click");
+		$('#button_load').trigger("click");
 
-		/*
-			As long as there's no entry for specific date. Post will work.
-		*/	
+		
+		
 		$('#button_save').on('click', function () {			
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
 			let data_={};
-			let data = $('#mytable').jexcel('getData');
-			data.pop();//remove last row. row of total
-			//console.log(data);//debug
+			let data = $('#mytable').jexcel('getData');//get data from table
+			data.pop();//remove last row. row with sum_v function	
 			data_.ss_cuadre=data;//set spreadsheet
 			data_.date_=today;//sate date from datepicker
 
-			headers_post={};		
+			let headers_post={};		
 			postData(url,data_,headers_post).done(function(){
-				alert("Los datos del cuadre se guardaron con éxito.");//success post
+				alert("Los datos del cuadre se guardaron con éxito.");
 			}).fail(function(error){
 				if("UNPROCESSABLE ENTITY"==error.statusText){
-					alert("Error : El cuadre de este dia ya se realizó.");//error, already exists
+					alert("Error:\n\t\tEl cuadre de este dia ya se realizó.");
 				}else {
-					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error				
+					alert("Error:\n\t\tno apirest.");	//net error		
 				}								
 			});						
-		});			
+		});
+	
+		//set this to admins only
+		$('#button_update').on('click', function () {
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let data_={};
+			let data = $('#mytable').jexcel('getData');//get data from table
+			data.pop();//remove last row. row with sum_v function
+			data_.ss_cuadre=data;//set spreadsheet
 
-		//set columns with functions as readonly
+			headers_update={'X-HTTP-Method-Override':'PATCH'};			
+			postData(url+today,data_,headers_update).done(function(){
+				alert("Los datos del cuadre se sobreescribieron con éxito.");//remind error of edit in cascade			
+			}).fail(function(error){			
+				alert("Error:\n\t\tno apirest.");	//net error
+			});						
+		});	
+
+		//set css and readonly property in specific columns
 		$('#mytable').jexcel('updateSettings',{ 
 				cells: function(cell,col,row){					
 					if(col==1){

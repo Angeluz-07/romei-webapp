@@ -5,7 +5,7 @@
 		<h2>Ver cuadres</h2>    
 		<p>Esta seccion es puramente de consulta. Aquí se pueden consultar los cuadres realizados.</p>
 		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>		
-		<button type="button" class="btn btn-secondary" id="button_refresh">Cargar</button>
+		<button type="button" class="btn btn-secondary" id="button_load">Cargar</button>
 		<div id="mytable"></div>	
 {% endblock %}
 
@@ -304,8 +304,8 @@
 			return arr;		
 		}
 
-		//change
-		function changeColumns(freshTable,apirestTable) {				
+		//set the column Habia taken from apirestTable
+		function setColumnHabia(freshTable,apirestTable) {				
 			for (let i = 0 ; i < freshTable.length ; i++){
 				freshTable[i][1]=apirestTable[i][4];
 			}
@@ -326,7 +326,7 @@
 		//selectionCopy is copy cells' contents in columns
 		//improve headers.
 		$('#mytable').jexcel({ 
-				colHeaders:['Ingresa','-','Mercaderia','-','Queda','Vendido','$','Precio'],
+				colHeaders:['Ingresa','Había','Mercadería','-','Queda','Vendido','$','Precio'],
 				minDimensions:[8,8],				
 				colWidths: [ 80, 80,150,80,80,80,80,80],
 				contextMenu:function(){},
@@ -340,19 +340,18 @@
 				allowDeleteColumn:false,
 				editable:false
 		});														
+
 		var url='http://127.0.0.1:5000/cuadres/';
 		
-
-		//remind refresh datepicker
 		//here I don't consider previous date. Just date that cuadre belongs to.
-		$('#button_refresh').click(function(){		
+		$('#button_load').click(function(){		
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));//parse date from datepicker		
 			let url_=url+today;
 			let freshTable;
 			getData(url_).done(function(data){				
 					freshTable=data.ss_cuadre;//load whole spreadsheet
 					freshTable.push(genLastRow(freshTable.length));//push row with sum_v function
-					alert("Error:\n\t\tEl cuadre del día seleccionado se cargo éxito.");
+					alert("El cuadre del día seleccionado se cargo éxito.");
 			}).fail(function(error){
 				if("NOT FOUND"==error.statusText){
 					alert("Error:\n\t\tNo existe cuadre del día seleccionado.");

@@ -11,37 +11,19 @@ from django.urls import reverse
 def index(request):  
     context={}  
     return render(request, 'dailyControl/index.html',context)
-#fix this
+
+
 def cuadrar(request):
-		product_list=Product.objects.all()
-		context={
-			'product_list':product_list,
-		}
+		context={}
 		return render(request, 'dailyControl/cuadrar.html',context)
 
 def ver_cuadres(request):
 		context={}
 		return render(request, 'dailyControl/ver_cuadres.html',context)
 
-def editar_cuadres(request):
-		context={}
-		return render(request, 'dailyControl/editar_cuadres.html',context)
 
 def apuntar(request):  
     context={}  
     return render(request, 'dailyControl/apuntar.html',context)
 
-def nueva_mercaderia(request):
-		if request.method=='POST':
-			form=ProductForm(request.POST)
-			if form.is_valid():
-				form.save()
-				return redirect('nueva_mercaderia')			
-		else:
-			form=ProductForm()
-		product_list=Product.objects.all()
-		context={
-			'form':form,
-			'product_list':product_list
-		}
-		return render(request, 'dailyControl/nueva_mercaderia.html',context)
+

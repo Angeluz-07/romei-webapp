@@ -44,6 +44,23 @@
 					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error
 			});						
 		});	
+
+
+/*-----------------------view for add merca--------------------------*/
+def nueva_mercaderia(request):
+		if request.method=='POST':
+			form=ProductForm(request.POST)
+			if form.is_valid():
+				form.save()
+				return redirect('nueva_mercaderia')			
+		else:
+			form=ProductForm()
+		product_list=Product.objects.all()
+		context={
+			'form':form,
+			'product_list':product_list
+		}
+		return render(request, 'dailyControl/nueva_mercaderia.html',context)
 /*-----------------------Convert, from data to table, and viceversa--------------------------*/
 //depends on id of table
 		function getDatafromTable(){				
