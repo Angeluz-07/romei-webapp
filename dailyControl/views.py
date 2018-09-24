@@ -1,11 +1,5 @@
 from django.shortcuts import render,redirect
 
-from .models import Product
-from .forms import ProductForm
-
-#may delete this
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 
 # Create your views here.
 def index(request):  
@@ -20,7 +14,6 @@ def cuadrar(request):
 def ver_cuadres(request):
 		context={}
 		return render(request, 'dailyControl/ver_cuadres.html',context)
-
 
 def apuntar(request):  
     context={}  

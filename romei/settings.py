@@ -124,3 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Login redirect view
+LOGIN_REDIRECT_URL = 'cuadrar'
+LOGOUT_REDIRECT_URL = ''

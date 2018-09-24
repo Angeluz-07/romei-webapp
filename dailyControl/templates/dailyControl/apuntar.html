@@ -2,7 +2,7 @@
 
 
 {% block content %}
-		<h2>Apuntar</h2>    
+		<h2>Apuntar-DEVELOPING</h2>    
 
 		<div id="mytable"></div>
 		
@@ -25,12 +25,6 @@
 		//remind make post on change
 		$('#button_addRow').click(function(){					
 					$('#mytable').jexcel('insertRow');
-		});
-		$('#button_save').on('click', function () {
-			let data = $('#mytable').jexcel('getData');
-			console.log(JSON.stringify(data));
-			//$('#txt').val(JSON.stringify(data));
-			console.log($.csv.fromArrays(data));	  
 		});		
 	  </script>	
 {% endblock %}
