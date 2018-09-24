@@ -1,8 +1,49 @@
 #------------------------cleaning cuadrar.html---------------------------------
+		//get current date on yyyy-mm-dd format
+			function getCurrentDate(){
+				let date = new Date($.now());
+				let dateString = (date.getFullYear() + '-'
+				+ ('0' + (date.getMonth() + 1)).slice(-2)
+				+ '-' + ('0' + (date.getDate())).slice(-2));
+				return dateString;
+			}			
+
+		function getDefaultData2(){
+			let default_data=[
+					['','','Pantalon  mujer','=ADD_(A1,B1)','1d','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+					['','','Extra','=ADD_(A2,B2)','1d','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','13'],
+					['','','Boxer','=ADD_(A3,B3)','1d','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','1.666666667'],
+					['','','2x5','=ADD_(A4,B4)','1d','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','2.5'],
+					['','','x1','=ADD_(A5,B5)','1d','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','1'],				
+					['','','Short','=ADD_(A6,B6)','1d','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','5'],
+					['','','Pantalon hombre','=ADD_(A7,B7)','1d','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','10'],
+					['','','Vermuda','=ADD_(A8,B8)','1d','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','10'],						
+					['','','','','','Total:','=sum_v(G1:G8)',''],
+				];			
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
+		}
+
 
 			$('#button_computeVentaTotalTeorico').click(function(){			
 				console.log(ventaTotalTeorico);
 			});
+
+
+		//quit this and put it in another view
+		$('#button_update').on('click', function () {
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let data_={};
+			let data = $('#mytable').jexcel('getData');
+			data_.ss_cuadre=data;
+
+			headers_update={'X-HTTP-Method-Override':'PATCH'};			
+			postData(url+today,data_,headers_update).done(function(){				
+				alert("Los datos del cuadre se sobreescribieron con éxito.");//remind error of edit in cascade			
+			}).fail(function(error){			
+					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error
+			});						
+		});	
 /*-----------------------Convert, from data to table, and viceversa--------------------------*/
 //depends on id of table
 		function getDatafromTable(){				

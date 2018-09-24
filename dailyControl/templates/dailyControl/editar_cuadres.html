@@ -2,18 +2,21 @@
 
 
 {% block content %}
-		<br>
-		<!-- h2>Cuadrar</h2 -->    
+		<h2>Ver cuadres</h2>    
 		
-		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>					
+		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>	
 		<p id="lastDay_cuadre"></p>
+		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>
 
 
 		<div id="mytable"></div>
-		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>		
-		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>				
-		<!--button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button-->
 		
+		<!--
+		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>			
+	
+		<button type="button" class="btn btn-secondary" id="button_update">Sobrescribir</button>		
+		<button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button>
+		-->
 {% endblock %}
 
 {% block specific-js %}
@@ -25,7 +28,16 @@
 				+ ('0' + (date.getMonth() + 1)).slice(-2)
 				+ '-' + ('0' + (date.getDate())).slice(-2));
 				return dateString;
-			}
+			}	
+							
+			//get current date on yyyy-mm-dd format
+			function getCurrentDate(){
+				let date = new Date($.now());
+				let dateString = (date.getFullYear() + '-'
+				+ ('0' + (date.getMonth() + 1)).slice(-2)
+				+ '-' + ('0' + (date.getDate())).slice(-2));
+				return dateString;
+			}			
 
 			/*---------------------FUNCTIONS TO BUILD TABLE-----------------*/
 			/*
@@ -50,7 +62,6 @@
 				return newCol;
 			}
 
-			//return the transposed 2d array from the array received as input.
 			//creates a new matrix, be aware on memory.
 			function transpose(matrix) {
 				const rows = matrix.length, cols = matrix[0].length;
@@ -264,68 +275,62 @@
 		}
 	
 		/*-----------------------------------DEFAULT DATA----------------------------------*/
-
-		function getDefaultData(){					
-					let l=8; //the length of mercaderia					
-																			
-					let col_ingresa=Array(l).fill('');//empty
-					let col_habia=Array(l).fill('');//empty
-					let col_mercaderia=['Pant. Mujer','Extra','Boxer','2x5','x1','Short','Pant. hombre','Vermuda'];
-					let col_hay=makeColum_setFunction(l,'ADD_',['A','B']);//set ADD_
-					let col_queda=Array(l).fill('');//empty
-					let col_vendido=makeColum_setFunction(l,'SUBSTRACT_',['D','E']);//set SUBSTRACT_
-					let col_money=makeColum_setFunction(l,'COMPUTE_SOLD',['F','H']);//set COMPUTE_SOLD					
-					let col_precio=['10','13','1.666666667','2.5','1','5','10','10'];
-
-					//we use the following order of columns in a  matrix, to latter transpose it.					
-					/*
-						['A:Ingresa',
-						 'B:Habia',
-						 'C:Mercaderia',
-						 'D:Hay',
-						 'E:Queda',
-						 'F:Vendido',
-						 'G:$-Money',
-						 'H:Precio']
-						*/							
-				  let m=[
-							col_ingresa,
-							col_habia,
-							col_mercaderia,
-							col_hay,
-							col_queda,
-							col_vendido,
-							col_money,
-							col_precio
-					];
-					
-					let freshTable=transpose(m);
-					return freshTable;
-		}		
-
-		//receives length of spreadsheet
-		//depends on that length and function sum_v
-		function genLastRow(l){
-			let f='=sum_v(G1:G'.concat(l,')');
-			let arr=['','','','','','Total:',f,''];
-			return arr;		
+		function getDefaultData(){
+			let default_data=[
+					['2d','3d','Pantalon  mujer','=ADD_(A1,B1)','1d','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+					['2d','3d','Extra','=ADD_(A2,B2)','1d','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','13'],
+					['2d','3d','Boxer','=ADD_(A3,B3)','1d','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','1.666666667'],
+					['2d','3d','2x5','=ADD_(A4,B4)','1d','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','2.5'],
+					['2d','3d','x1','=ADD_(A5,B5)','1d','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','1'],				
+					['2d','3d','Short','=ADD_(A6,B6)','1d','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','5'],
+					['2d','3d','Pantalon hombre','=ADD_(A7,B7)','1d','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','10'],
+					['2d','3d','Vermuda','=ADD_(A8,B8)','1d','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','10'],				
+					['2d','3d','merca9','=ADD_(A9,B9)','1d','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];			
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
 		}
-
-		//change
-		function changeColumns(freshTable,apirestTable) {				
-			for (let i = 0 ; i < freshTable.length ; i++){
-				freshTable[i][1]=apirestTable[i][4];
-			}
+		
+	function getDefaultData3(){
+			let default_data=[
+					['','','Pantalon  mujer','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','10'],
+					['','','Extra','=ADD_(A2,B2)','','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','13'],
+					['','','Boxer','=ADD_(A3,B3)','','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','1.666666667'],
+					['','','2x5','=ADD_(A4,B4)','','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','2.5'],
+					['','','x1','=ADD_(A5,B5)','','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','1'],				
+					['','','Short','=ADD_(A6,B6)','','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','5'],
+					['','','Pantalon hombre','=ADD_(A7,B7)','','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','10'],					
+					['','','Vermuda','=ADD_(A8,B8)','','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','10'],				
+					['','','merca9','=ADD_(A9,B9)','','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];			
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
 		}
-
+		function getDefaultData2(){
+			let default_data=[
+					['0','0','merca1','=ADD_(A1,B1)','','=SUBSTRACT_(D1,E1)','=COMPUTE_SOLD(F1,H1)','0'],
+					['0','0','merca2','=ADD_(A2,B2)','','=SUBSTRACT_(D2,E2)','=COMPUTE_SOLD(F2,H2)','0'],
+					['0','0','merca3','=ADD_(A3,B3)','','=SUBSTRACT_(D3,E3)','=COMPUTE_SOLD(F3,H3)','0'],
+					['0','0','merca4','=ADD_(A4,B4)','','=SUBSTRACT_(D4,E4)','=COMPUTE_SOLD(F4,H4)','0'],
+					['0','0','merca5','=ADD_(A5,B5)','','=SUBSTRACT_(D5,E5)','=COMPUTE_SOLD(F5,H5)','0'],				
+					['0','0','merca6','=ADD_(A6,B6)','','=SUBSTRACT_(D6,E6)','=COMPUTE_SOLD(F6,H6)','0'],
+					['0','0','merca7','=ADD_(A7,B7)','','=SUBSTRACT_(D7,E7)','=COMPUTE_SOLD(F7,H7)','0'],					
+					['0','0','merca8','=ADD_(A8,B8)','','=SUBSTRACT_(D8,E8)','=COMPUTE_SOLD(F8,H8)','0'],				
+					['0','0','merca9','=ADD_(A9,B9)','','=SUBSTRACT_(D9,E9)','=COMPUTE_SOLD(F9,H9)','0'],							
+					['','','','','','Total:','=sum_v(G1:G9)',''],
+				];
+			//	['','','','','','Total','=sum_v(G1:G7)'],
+			return default_data;
+		}
 		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
 			  	
-		//in cuadrar.html just can edit until -30 days previously
 		$( "#datepicker" ).datepicker({
 				dateFormat:'yy-mm-dd',
 		    changeMonth: true,
 		    changeYear: true,
-				minDate:-30,
+				//minDate:-1,
 				maxDate:0,
 		  });
 			$( "#datepicker" ).datepicker("setDate","0");		
@@ -336,8 +341,9 @@
 		//improve headers.
 		$('#mytable').jexcel({ 
 				colHeaders:['Ingresa','-','Mercaderia','-','Queda','Vendido','$','Precio'],
-				minDimensions:[8,8],				
-				colWidths: [ 80, 80,150,80,80,80,80,80],
+				//minDimensions:[8,7],				
+				colWidths: [ 80, 80,150,80,80,80,80,80 ],
+				//selectionCopy:false,
 				contextMenu:function(){},
 				rowDrag:false,
 				columnSorting:false,
@@ -346,50 +352,55 @@
 				allowDeleteRow:false,
 				allowInsertColumn:false,
 				allowManualInsertColumn:false,
-				allowDeleteColumn:false,
+				allowDeleteColumn:false,			
+				data:getDefaultData(),
+			  //tableOverflow:true,				
+    		//tableHeight:'300px',
 		});											
 			
-
+		var today=getCurrentDate();
 		var url='http://127.0.0.1:5000/cuadres/';
 		var lastDay;
 
 		//remind refresh datepicker
 		$('#button_refresh').click(function(){		
-			let today=parseDate($( "#datepicker" ).datepicker("getDate"));//parse date from daytepicker
-			let url_=url+'?where={"date_":{"$lt":"'+today+'"}}&sort=[("date_",-1)]&max_results=1';//cook url,entry lastday
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let url_=url+'?where={"date_":{"$lt":"'+today+'"}}&sort=[("date_",-1)]&max_results=1';			
 			let data_;
-			let freshTable,apirestTable;
-			getData(url_).done(function(data){					
-				data_=data._items;//as we're filtering we must get first the array of _items	
+			let freshTable;
+			getData(url_).done(function(data){
+				//as we're filtering we must get first the array of _items		
+				data_=data._items;
 				//if not empty, we can get the first of that array which is the desired item resource
 				if(data_.length>0){
-					freshTable=getDefaultData();//get default table
-					apirestTable=data_[0].ss_cuadre;//get apirest table
-					changeColumns(freshTable,apirestTable);//place quantity that left in last cuadre
-					freshTable.push(genLastRow(freshTable.length));//push row with sum_v function	
-					lastDay=data_[0].date_;//get previous date of date found
+					//freshTable = getTableFromData(data_[0]);
+					freshTable=data_[0].ss_cuadre;
+					console.log(freshTable);
+					lastDay=data_[0].date_;
 					$('#lastDay_cuadre').text("El ultimo dia que se cuadró,anterior al día seleccionado fue : "+lastDay);
 				}			
 				else{
-					//no previous data of selected date
+					//no previous data				
 					alert("No hay datos guardados para realizar el cuadre de este día. Se cargarán valores por defecto.");
-					freshTable = getDefaultData();
-					freshTable.push(genLastRow(freshTable.length));
+					freshTable = getDefaultData();					
 					$('#lastDay_cuadre').text("");
 					//console.log(freshTable);
 				}
 			}).fail(function(error){
-				//net error								
-				alert("Error : apirest error ");
-				freshTable=getDefaultData();
-				freshTable.push(genLastRow(freshTable.length));				
+				//net error				
+								
 				$('#lastDay_cuadre').text("");
+				alert("Ocurrió un error de red, mientras se cargaban los datos.");
+				freshTable=getDefaultData();
 			}).always(function(){						
 				$('#mytable').jexcel('setData',freshTable);
 			});
+			
 		});		
+
 		$('#button_refresh').trigger("click");
 
+		//by now rendering is encapsulated. i.e. assumed the part of building the table is covered.
 		/*
 			As long as there's no entry for specific date. Post will work.
 		*/	
@@ -397,35 +408,44 @@
 			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
 			let data_={};
 			let data = $('#mytable').jexcel('getData');
-			data.pop();//remove last row. row of total
-			//console.log(data);//debug
-			data_.ss_cuadre=data;//set spreadsheet
-			data_.date_=today;//sate date from datepicker
+			data.pop();//remove last row.
+			//console.log(data);
+			data_.ss_cuadre=data;
+			data_.date_=today;
 
 			headers_post={};		
 			postData(url,data_,headers_post).done(function(){
 				alert("Los datos del cuadre se guardaron con éxito.");//success post
 			}).fail(function(error){
 				if("UNPROCESSABLE ENTITY"==error.statusText){
-					alert("Error : El cuadre de este dia ya se realizó.");//error, already exists
+					alert("Error:El cuadre de este dia ya se realizó.");//error, already exists
 				}else {
 					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error				
 				}								
 			});						
-		});			
+		});	
+		
+		$('#button_update').on('click', function () {
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
+			let data_={};
+			let data = $('#mytable').jexcel('getData');
+			data_.ss_cuadre=data;
+
+			headers_update={'X-HTTP-Method-Override':'PATCH'};			
+			postData(url+today,data_,headers_update).done(function(){				
+				alert("Los datos del cuadre se sobreescribieron con éxito.");//remind error of edit in cascade			
+			}).fail(function(error){			
+					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error
+			});						
+		});	
 
 		//set columns with functions as readonly
 		$('#mytable').jexcel('updateSettings',{ 
 				cells: function(cell,col,row){					
-					if(col==1){
-						$(cell).css('background-color','#fffec8');
-					}
-					let l=8;//l must be quantity of prendas				
-					if(col==2||col==3||col==5||col==6||col==7||row==l){
-						$(cell).css('background-color','#F1F5F8');					
+					$(cell).css('background-color','#F1F5F8');					
 						$(cell).css('color','black');					
-						$(cell).addClass('readonly');		
-					}					
+						$(cell).addClass('readonly');	
+									
 				}				
 		});							  	
 </script>	

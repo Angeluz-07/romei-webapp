@@ -11,13 +11,21 @@ from django.urls import reverse
 def index(request):  
     context={}  
     return render(request, 'dailyControl/index.html',context)
-
+#fix this
 def cuadrar(request):
 		product_list=Product.objects.all()
 		context={
 			'product_list':product_list,
 		}
 		return render(request, 'dailyControl/cuadrar.html',context)
+
+def ver_cuadres(request):
+		context={}
+		return render(request, 'dailyControl/ver_cuadres.html',context)
+
+def editar_cuadres(request):
+		context={}
+		return render(request, 'dailyControl/editar_cuadres.html',context)
 
 def apuntar(request):  
     context={}  

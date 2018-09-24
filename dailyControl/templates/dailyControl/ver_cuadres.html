@@ -2,18 +2,11 @@
 
 
 {% block content %}
-		<br>
-		<!-- h2>Cuadrar</h2 -->    
-		
-		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>					
-		<p id="lastDay_cuadre"></p>
-
-
-		<div id="mytable"></div>
-		<button type="button" class="btn btn-secondary" id="button_refresh">Refrescar</button>		
-		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>				
-		<!--button type="button" class="btn btn-secondary" id="button_computeVentaTotalTeorico">Calcular ventas</button-->
-		
+		<h2>Ver cuadres</h2>    
+		<p>Esta seccion es puramente de consulta. Aquí se pueden consultar los cuadres realizados.</p>
+		<p>Cuadre del dia: <input type="text" id="datepicker" autocomplete="off"></p>		
+		<button type="button" class="btn btn-secondary" id="button_refresh">Cargar</button>
+		<div id="mytable"></div>	
 {% endblock %}
 
 {% block specific-js %}
@@ -25,8 +18,8 @@
 				+ ('0' + (date.getMonth() + 1)).slice(-2)
 				+ '-' + ('0' + (date.getDate())).slice(-2));
 				return dateString;
-			}
-
+			}	
+									
 			/*---------------------FUNCTIONS TO BUILD TABLE-----------------*/
 			/*
 				take params like:
@@ -320,12 +313,10 @@
 
 		/*-------------------------------INITIAL LOAD AND HANDLERS---------------------------*/
 			  	
-		//in cuadrar.html just can edit until -30 days previously
 		$( "#datepicker" ).datepicker({
 				dateFormat:'yy-mm-dd',
 		    changeMonth: true,
 		    changeYear: true,
-				minDate:-30,
 				maxDate:0,
 		  });
 			$( "#datepicker" ).datepicker("setDate","0");		
@@ -347,74 +338,34 @@
 				allowInsertColumn:false,
 				allowManualInsertColumn:false,
 				allowDeleteColumn:false,
-		});											
-			
-
+				editable:false
+		});														
 		var url='http://127.0.0.1:5000/cuadres/';
-		var lastDay;
+		
 
 		//remind refresh datepicker
+		//here I don't consider previous date. Just date that cuadre belongs to.
 		$('#button_refresh').click(function(){		
-			let today=parseDate($( "#datepicker" ).datepicker("getDate"));//parse date from daytepicker
-			let url_=url+'?where={"date_":{"$lt":"'+today+'"}}&sort=[("date_",-1)]&max_results=1';//cook url,entry lastday
-			let data_;
-			let freshTable,apirestTable;
-			getData(url_).done(function(data){					
-				data_=data._items;//as we're filtering we must get first the array of _items	
-				//if not empty, we can get the first of that array which is the desired item resource
-				if(data_.length>0){
-					freshTable=getDefaultData();//get default table
-					apirestTable=data_[0].ss_cuadre;//get apirest table
-					changeColumns(freshTable,apirestTable);//place quantity that left in last cuadre
-					freshTable.push(genLastRow(freshTable.length));//push row with sum_v function	
-					lastDay=data_[0].date_;//get previous date of date found
-					$('#lastDay_cuadre').text("El ultimo dia que se cuadró,anterior al día seleccionado fue : "+lastDay);
-				}			
-				else{
-					//no previous data of selected date
-					alert("No hay datos guardados para realizar el cuadre de este día. Se cargarán valores por defecto.");
-					freshTable = getDefaultData();
-					freshTable.push(genLastRow(freshTable.length));
-					$('#lastDay_cuadre').text("");
-					//console.log(freshTable);
-				}
+			let today=parseDate($( "#datepicker" ).datepicker("getDate"));//parse date from datepicker		
+			let url_=url+today;
+			let freshTable;
+			getData(url_).done(function(data){				
+					freshTable=data.ss_cuadre;//load whole spreadsheet
+					freshTable.push(genLastRow(freshTable.length));//push row with sum_v function
+					alert("Error:\n\t\tEl cuadre del día seleccionado se cargo éxito.");
 			}).fail(function(error){
-				//net error								
-				alert("Error : apirest error ");
-				freshTable=getDefaultData();
-				freshTable.push(genLastRow(freshTable.length));				
-				$('#lastDay_cuadre').text("");
+				if("NOT FOUND"==error.statusText){
+					alert("Error:\n\t\tNo existe cuadre del día seleccionado.");
+				}else {
+					alert("Error:\n\t\tno apirest.");	//net error				
+				}
+				freshTable=Array(8).fill(Array(8).fill(''));//empty the table
 			}).always(function(){						
 				$('#mytable').jexcel('setData',freshTable);
 			});
 		});		
-		$('#button_refresh').trigger("click");
-
-		/*
-			As long as there's no entry for specific date. Post will work.
-		*/	
-		$('#button_save').on('click', function () {			
-			let today=parseDate($( "#datepicker" ).datepicker("getDate"));
-			let data_={};
-			let data = $('#mytable').jexcel('getData');
-			data.pop();//remove last row. row of total
-			//console.log(data);//debug
-			data_.ss_cuadre=data;//set spreadsheet
-			data_.date_=today;//sate date from datepicker
-
-			headers_post={};		
-			postData(url,data_,headers_post).done(function(){
-				alert("Los datos del cuadre se guardaron con éxito.");//success post
-			}).fail(function(error){
-				if("UNPROCESSABLE ENTITY"==error.statusText){
-					alert("Error : El cuadre de este dia ya se realizó.");//error, already exists
-				}else {
-					alert("Ocurrió un error de red, mientras se guardaban los datos.");	//net error				
-				}								
-			});						
-		});			
-
-		//set columns with functions as readonly
+		
+		//set css and readonly property in specific columns
 		$('#mytable').jexcel('updateSettings',{ 
 				cells: function(cell,col,row){					
 					if(col==1){
