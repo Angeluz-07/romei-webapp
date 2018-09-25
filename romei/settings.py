@@ -31,15 +31,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 #crispy_forms is to use bootstrap in django forms
-INSTALLED_APPS = [
+INSTALLED_APPS = [		
+		'crispy_forms',
+		'dailyControl',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-		'crispy_forms',
-		'dailyControl'
 ]
 
 #for django-crispy-forms
@@ -74,7 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'romei.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -127,4 +126,4 @@ STATIC_URL = '/static/'
 
 # Login redirect view
 LOGIN_REDIRECT_URL = 'cuadrar'
-LOGOUT_REDIRECT_URL = ''
+LOGOUT_REDIRECT_URL = 'login'
