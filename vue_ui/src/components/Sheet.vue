@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>                
-                <SheetRow v-for="product in products"  :key="product.id" :product="product"  v-on:updateCashSales="updateCashSales"/>
+                <SheetRow  v-on:updateCashSales="updateCashSales"/>
                 <tr>
                 <td scope="col"></td>
                 <td scope="col"></td>
