@@ -4,28 +4,19 @@
         <td>{{ this.formatStock(this.product.stock) }}</td>
         <td>{{ this.product.name }}</td>
         <td>{{ this.formatStock(initialStock) }}</td>
-        <td><input v-model="finalStockInput" type="text" class="form-control"></td>
+        <td><input v-model="finalStockInput" v-on:input="updateCashSale"  type="text" class="form-control"></td>
         <td>{{ this.formatStock(stockSold) }}</td>
         <td>{{ this.product.price }}</td>
         <td>{{ this.cashSale }}</td>
-        <!--td>
-        <td><input v-model="finalStockRaw" v-on:input="updateSaleInfo" type="text" class="form-control"></td>
-        -->
     </tr>
 </template>
 
 <script>
 export default {
     name: 'SheetRow',
-    props: [],
+    props: ['product'],
     data() {
         return {
-            product : {
-                id : 1,
-                name: 'product1',
-                stock : 40,
-                price : 2.5,
-            },
             stockAdditionInput: "",
             finalStockInput : "",
         }
@@ -51,15 +42,12 @@ export default {
         this.setDefaultFinalStock();
     },
     methods: {
-        /*
-        updateSaleInfo() {
-            this.updateSoldQuantity();
-            this.updateCashSale();
-            this.$emit("updateCashSales", {
-                'cashSale': this.cashSale ,
-                'productId' : this.product.id
+        updateCashSale() {
+            this.$store.commit('updateCashSale', {
+                productId : this.product.id,
+                cashSale : this.cashSale
             });
-        },*/
+        },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
         },
