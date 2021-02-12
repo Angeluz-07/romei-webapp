@@ -1,20 +1,23 @@
 <template>
     <tr>
         <td><input v-model="stockAdditionInput" type="text" class="form-control"></td>
-        <td>{{ this.formatStock(this.product.stock) }}</td>
-        <td>{{ this.product.name }}</td>
+        <td>{{ this.formatStock(this.salesRegister.product_stock) }}</td>
+        <td>{{ this.salesRegister.product_name }}</td>
         <td>{{ this.formatStock(initialStock) }}</td>
         <td><input v-model="finalStockInput" v-on:input="updateCashSale"  type="text" class="form-control"></td>
         <td>{{ this.formatStock(stockSold) }}</td>
-        <td>{{ this.product.price }}</td>
+        <td>{{ this.salesRegister.product_price }}</td>
         <td>{{ this.cashSale }}</td>
     </tr>
 </template>
 
 <script>
+
+//const BASE_URL = 'http://localhost:4000/api';
+
 export default {
     name: 'SheetRow',
-    props: ['product'],
+    props: ['salesRegister'],
     data() {
         return {
             stockAdditionInput: "",
@@ -26,7 +29,7 @@ export default {
             return this.PARSE_DOZEN_TO_NUMBER(this.stockAdditionInput)
         },
         initialStock : function () {
-            return this.product.stock + this.stockAddition;
+            return this.salesRegister.product_stock + this.stockAddition;
         },
         finalStock : function () {
             return this.PARSE_DOZEN_TO_NUMBER(this.finalStockInput)
@@ -35,24 +38,25 @@ export default {
             return Math.abs(this.finalStock - this.initialStock);
         },
         cashSale : function(){
-            return this.stockSold * this.product.price;
+            return this.stockSold * this.salesRegister.product_price;
         },
     },
     mounted(){
-        this.setDefaultFinalStock();
+        this.setDefaultValues();
     },
     methods: {
         updateCashSale() {
             this.$store.commit('updateCashSale', {
-                productId : this.product.id,
+                salesRegisterId : this.salesRegister.id,
                 cashSale : this.cashSale
             });
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
         },
-        setDefaultFinalStock(){
-            this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.initialStock);
+        setDefaultValues(){
+            this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.final_stock);
+            this.stockAdditionInput =this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.stock_addition);
         },
         PARSE_DOZEN_TO_NUMBER(dozens){
             let dozenPart,unitsPart;

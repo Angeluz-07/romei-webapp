@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>                
-                <SheetRow  v-for="product in products" :key="product.id" :product="product" />
+                <SheetRow  v-for="salesRegister in salesRegisters" :key="salesRegister.id" :salesRegister="salesRegister" />
                 <tr>
                 <td scope="col"></td>
                 <td scope="col"></td>
@@ -39,22 +39,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
 const cashSalesStore = new Vuex.Store({
   state: {
     cashSales: null,
   },
   mutations: {
-    setCashSales (state, products) {
-      state.cashSales = products.map((x) => ({
-          'productId': x.id,
-          'cashSale': 0
+    setCashSales (state, salesRegisters) {
+      state.cashSales = salesRegisters.map((x) => ({
+          'salesRegisterId': x.id,
+          'cashSale': x.cash_sale
         })
       );
     },
     updateCashSale (state, payload) {
-      const result = state.cashSales.find(x => x.productId === payload.productId);
+      const result = state.cashSales.find(x => x.salesRegisterId === payload.salesRegisterId);
       result.cashSale = payload.cashSale;
     }
   },
@@ -73,7 +73,7 @@ export default {
   store: cashSalesStore,
   data() {
     return {
-      products : null,
+      salesRegisters : null,
     }
   },
   computed: {
@@ -82,19 +82,19 @@ export default {
     }
   },
   mounted() {
-    this.loadProducts();
+    this.loadSalesRegisters();
   },
   methods: {
-    loadProducts(){
-      const URL = `${BASE_URL}/products`;
+    loadSalesRegisters(){
+      const URL = `${BASE_URL}/sales-registers?register_date=2021-02-12&start=true`;
       fetch(URL)
       .then(response => response.json())
-      .then(responseJson => this.products = responseJson.data)
-      .then(() => this.$store.commit('setCashSales', this.products))
+      .then(salesRegisters => this.salesRegisters = salesRegisters)
+      .then(() => this.$store.commit('setCashSales', this.salesRegisters))
       .then(() => console.log(this.$store.state.cashSales))
     },
     saveData(){
-      console.log(this.products);
+      console.log(this.salesRegisters);
     }
   },
   components: {
