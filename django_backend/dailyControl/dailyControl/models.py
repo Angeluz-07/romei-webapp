@@ -15,6 +15,22 @@ class SalesRegister(models.Model):
     product_stock = models.IntegerField()
     register_date = models.DateField()
 
+    @property
+    def initial_stock(self):
+        return self.product_stock + self.stock_addition
+
+    @property
+    def product_name(self):
+        return self.product.name
+
+    @property
+    def stock_sold(self):
+        return self.initial_stock - self.final_stock
+
+    @property
+    def cash_sale(self):
+        return self.stock_sold * self.product_price
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['product_id', 'register_date'], name='unique register for product in date')
