@@ -4,7 +4,7 @@ from . import views
 from rest_framework import routers
 from .views import *
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'products', ProductViewSet)
 router.register(r'sales-registers', SalesRegisterViewSet)
 

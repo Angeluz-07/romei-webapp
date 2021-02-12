@@ -1,9 +1,16 @@
 from django.shortcuts import render,redirect
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
+from rest_framework.response import Response
 from .models import *
 from .serializers import *
 from django.db import IntegrityError    # Import IntegrityError
 from rest_framework.exceptions import APIException  #Import APIException
+
+
+def date_from_str(date:str, date_format:str="%Y-%m-%d"):
+    from datetime import datetime
+    return datetime.strptime(date, date_format)
 
 # Create your views here.
 def index(request):  
@@ -38,3 +45,37 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except IntegrityError as exc:
             raise APIException(detail=exc)
+
+    def list(self, request):
+        queryset = SalesRegister.objects.all()
+        register_date = self.request.query_params.get('register_date', None)
+        start = self.request.query_params.get('start', None)
+        if bool(start) and register_date:
+            register_date = date_from_str(register_date)
+            for product in Product.objects.all():
+                try:
+                    SalesRegister.objects.get(
+                        product=product,
+                        register_date=register_date,
+                    )
+                except ObjectDoesNotExist:
+                    last_sr = SalesRegister \
+                    .objects \
+                    .filter(register_date__lt=register_date, product_id=product.id) \
+                    .first()
+
+                    product_stock = last_sr.final_stock if last_sr else 0
+
+                    SalesRegister.objects.create(
+                        product = product,
+                        stock_addition = 0,
+                        final_stock = product_stock,
+                        product_price = product.price,
+                        product_stock = product_stock,
+                        register_date = register_date
+                    )
+
+            queryset = SalesRegister.objects.filter(register_date=register_date)
+
+        serializer = SalesRegisterSerializer(queryset, many=True)
+        return Response(serializer.data)
