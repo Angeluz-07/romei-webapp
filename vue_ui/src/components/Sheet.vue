@@ -70,6 +70,7 @@ const cashSalesStore = new Vuex.Store({
 
 export default {
   name: 'Sheet',
+  props: ['registerDate'],
   store: cashSalesStore,
   data() {
     return {
@@ -86,7 +87,7 @@ export default {
   },
   methods: {
     loadSalesRegisters(){
-      const URL = `${BASE_URL}/sales-registers?register_date=2021-02-12&start=true`;
+      const URL = `${BASE_URL}/sales-registers?register_date=${this.registerDate}&start=true`;
       fetch(URL)
       .then(response => response.json())
       .then(salesRegisters => this.salesRegisters = salesRegisters)
@@ -99,6 +100,11 @@ export default {
   },
   components: {
     SheetRow
+  },
+  watch: {
+    registerDate() {
+      this.loadSalesRegisters();
+    }
   }
 }
 </script>

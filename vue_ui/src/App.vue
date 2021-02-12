@@ -7,7 +7,7 @@
     <input type="date" class="form-control" v-model="registerDate">
     <!--Sheet  v-for="store in stores" :key="store.id" :products="store.allProducts.products"/-->
 
-    <Sheet  />
+    <Sheet :registerDate="this.registerDate" />
   </div>
 </template>
 
@@ -59,7 +59,7 @@ export default {
       var yyyy = today.getFullYear();
 
       return `${yyyy}-${mm}-${dd}`
-    }
+    },
   },
   components: {
     Sheet
