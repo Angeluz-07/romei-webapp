@@ -1,10 +1,11 @@
 <template>
     <tr>
-        <td><input v-model="stockAdditionInput" type="text" class="form-control"></td>
+        <td><div v-if="loading" class="spinner-border text-secondary" role="status"></div></td>
+        <td><input v-model="stockAdditionInput" v-on:input="updateSalesRegister();" type="text" class="form-control"></td>
         <td>{{ this.formatStock(this.salesRegister.product_stock) }}</td>
         <td>{{ this.salesRegister.product_name }}</td>
         <td>{{ this.formatStock(initialStock) }}</td>
-        <td><input v-model="finalStockInput" v-on:input="updateCashSale"  type="text" class="form-control"></td>
+        <td><input v-model="finalStockInput" v-on:input="updateCashSale();updateSalesRegister();" type="text" class="form-control"></td>
         <td>{{ this.formatStock(stockSold) }}</td>
         <td>{{ this.salesRegister.product_price }}</td>
         <td>{{ this.cashSale }}</td>
@@ -13,7 +14,7 @@
 
 <script>
 
-//const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
 export default {
     name: 'SheetRow',
@@ -22,6 +23,7 @@ export default {
         return {
             stockAdditionInput: "",
             finalStockInput : "",
+            loading: false,
         }
     },
     computed:{
@@ -50,6 +52,22 @@ export default {
                 salesRegisterId : this.salesRegister.id,
                 cashSale : this.cashSale
             });
+        },
+        updateSalesRegister() {
+            let _data = {
+                final_stock: this.finalStock,
+                stock_addition : this.stockAddition
+            }
+            this.loading = true;
+            fetch(`${BASE_URL}/sales-registers/${this.salesRegister.id}`, {
+                method: "PATCH",
+                body: JSON.stringify(_data),
+                headers: {"Content-type": "application/json; charset=UTF-8"}
+            })
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(err => console.log(err))
+            .finally(() => this.loading = false);
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
