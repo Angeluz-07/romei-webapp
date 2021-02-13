@@ -10,7 +10,7 @@
     </select>
     <!--Sheet  v-for="store in stores" :key="store.id" :products="store.allProducts.products"/-->
 
-    <Sheet :registerDate="this.registerDate" :storeId="this.storeId"/>
+    <SalesSheet :registerDate="this.registerDate" :storeId="this.storeId"/>
   </div>
 </template>
 
@@ -20,7 +20,7 @@
 //import Vue from 'vue'
 //import BootstrapVue  from 'bootstrap-vue'
 
-import Sheet  from './components/Sheet.vue'
+import SalesSheet  from './components/SalesSheet.vue'
 import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -60,7 +60,7 @@ export default {
     },
   },
   components: {
-    Sheet
+    SalesSheet
   },
 }
 </script>

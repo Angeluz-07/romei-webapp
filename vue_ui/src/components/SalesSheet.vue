@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>                
-                <SheetRow  v-for="salesRegister in salesRegisters" :key="salesRegister.id" :salesRegister="salesRegister" />
+                <SalesSheetRow  v-for="salesRegister in salesRegisters" :key="salesRegister.id" :salesRegister="salesRegister" />
                 <tr>
                 <td scope="col"></td>
                 <td scope="col"></td>
@@ -34,7 +34,7 @@
 
 <script>
 
-import SheetRow from './SheetRow.vue'
+import SalesSheetRow from './SalesSheetRow.vue'
 import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
@@ -69,7 +69,7 @@ const cashSalesStore = new Vuex.Store({
 })
 
 export default {
-  name: 'Sheet',
+  name: 'alesSheet',
   props: ['registerDate','storeId'],
   store: cashSalesStore,
   data() {
@@ -101,7 +101,7 @@ export default {
     }
   },
   components: {
-    SheetRow
+    SalesSheetRow
   },
   watch: {
     registerDate() {

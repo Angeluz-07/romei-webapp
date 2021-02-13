@@ -17,7 +17,7 @@
 const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
 export default {
-    name: 'SheetRow',
+    name: 'SalesSheetRow',
     props: ['salesRegister'],
     data() {
         return {
