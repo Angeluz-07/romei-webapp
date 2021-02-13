@@ -30,6 +30,10 @@ def apuntar(request):
     context={}  
     return render(request, 'dailyControl/apuntar.html',context)
 
+class StoreViewSet(viewsets.ModelViewSet):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -49,10 +53,11 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
     def list(self, request):
         queryset = SalesRegister.objects.all()
         register_date = self.request.query_params.get('register_date', None)
+        store_id = self.request.query_params.get('store_id', None)
         start = self.request.query_params.get('start', None)
-        if bool(start) and register_date:
+        if bool(start) and register_date and store_id:
             register_date = date_from_str(register_date)
-            for product in Product.objects.all():
+            for product in Product.objects.filter(store__id=store_id):
                 try:
                     SalesRegister.objects.get(
                         product=product,
@@ -75,7 +80,7 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
                         register_date = register_date
                     )
 
-            queryset = SalesRegister.objects.filter(register_date=register_date)
+            queryset = SalesRegister.objects.filter(register_date=register_date,product__store__id=store_id)
 
         serializer = SalesRegisterSerializer(queryset, many=True)
         return Response(serializer.data)

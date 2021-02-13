@@ -2,7 +2,12 @@ from django.db import models
 
 # Create your models here.
 
+class Store(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+
 class Product(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.PROTECT)
     stock = models.IntegerField()
     price = models.FloatField()
     name = models.CharField(max_length=100)

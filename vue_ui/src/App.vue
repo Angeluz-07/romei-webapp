@@ -5,9 +5,12 @@
     <a class="navbar-brand" href="#">Previos</a>
   </nav>
     <input type="date" class="form-control" v-model="registerDate">
+    <select v-model="storeId">
+      <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}</option>
+    </select>
     <!--Sheet  v-for="store in stores" :key="store.id" :products="store.allProducts.products"/-->
 
-    <Sheet :registerDate="this.registerDate" />
+    <Sheet :registerDate="this.registerDate" :storeId="this.storeId"/>
   </div>
 </template>
 
@@ -24,6 +27,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 //const axios = require('axios');
 //Vue.use(BootstrapVue)
 //const BASE_URL = 'http://localhost:5000/graphql';
+const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
 
 export default {
@@ -32,24 +36,11 @@ export default {
     return {
       stores : [],
       registerDate : this.today(),
+      storeId: null
     }
   },
   mounted () {
-    /*axios
-      .post(BASE_URL,{
-        //query : QUERY,
-        query : QUERY2("2020-09-30")
-      })
-      .then((response) => {
-        // handle success
-        console.log(response);
-        console.log(QUERY2(this.registerDate))
-        this.stores = response.data.data.allStores.stores;
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })*/
+    this.loadStores();
   },
   methods: {
     today(){
@@ -59,6 +50,13 @@ export default {
       var yyyy = today.getFullYear();
 
       return `${yyyy}-${mm}-${dd}`
+    },
+    loadStores(){
+      const URL = `${BASE_URL}/stores`;
+      fetch(URL)
+      .then(response => response.json())
+      .then(stores => this.stores = stores)
+      .then(() => console.log(this.stores))
     },
   },
   components: {
