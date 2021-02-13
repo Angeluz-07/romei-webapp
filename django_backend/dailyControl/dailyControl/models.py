@@ -14,10 +14,10 @@ class Product(models.Model):
 
 class PaymentsRegister(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
-    description = models.TextField()
-    value = models.IntegerField()
+    description = models.TextField(blank=True)
+    value = models.FloatField()
     register_date = models.DateField()
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,blank=True)
 
 class SalesRegister(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)

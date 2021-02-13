@@ -26,7 +26,7 @@
                 </tr>
               
                 <tr>
-                <td scope="col"></td>
+                <td scope="col">{{ this.paymentsValues }}</td>
                 <td scope="col"></td>
                 <td scope="col"></td>
                 <td scope="col"></td> 
@@ -39,11 +39,43 @@
 <script>
 
 import PaymentsSheetRow from './PaymentsSheetRow.vue'
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
 
 const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
+const paymentsValuesStore = new Vuex.Store({
+  state: {
+    paymentsValues: null,
+  },
+  mutations: {
+    setPaymentsValues (state, paymentsRegisters) {
+      state.paymentsValues = paymentsRegisters.map((x) => ({
+          'paymentsRegisterId': x.id,
+          'value': x.value
+        })
+      );
+    },
+    updatePaymentsValues (state, payload) {
+      const result = state.paymentsValues.find(x => x.paymentsRegisterId === payload.paymentsRegisterId);
+      result.value = payload.value;
+    }
+  },
+  getters: {
+    paymentsValuesSum: state => {
+      return state.paymentsValues ?
+      state.paymentsValues
+      .map(x => x.value)
+      .reduce((a,b)=>a+b, 0) : 0 ;
+    }
+  }
+})
+
+
 export default {
   name: 'PaymentsSheet',
+  store: paymentsValuesStore,
   props: ['registerDate','storeId'],
   data() {
     return {
@@ -55,6 +87,9 @@ export default {
     }
   },
   computed: {
+    paymentsValues : function (){
+      return this.$store.getters.paymentsValuesSum;
+    }
   },
   mounted() {
     if(this.storeId!==null){
@@ -68,8 +103,8 @@ export default {
       .then(response => response.json())
       .then(paymentsRegisters => this.paymentsRegisters = paymentsRegisters)
       .then(()=> console.log(this.paymentsRegisters))
-      //.then(() => this.$store.commit('setCashSales', this.salesRegisters))
-      //.then(() => console.log(this.$store.state.cashSales))
+      .then(() => this.$store.commit('setPaymentsValues', this.paymentsRegisters))
+      .then(() => console.log(this.$store.state.paymentsValues))
     },
     addPaymentsRegister(){
       this.paymentsRegisters.push({
@@ -97,6 +132,7 @@ export default {
       })
       .then(response => response.json())
       .then(json => console.log(json))
+      .then(() => this.loadPaymentsRegisters())
       .catch(err => console.log(err))
       .finally(() => this.loading = false);
     },
@@ -114,8 +150,7 @@ export default {
           method: "DELETE",
           headers: {"Content-type": "application/json; charset=UTF-8"}
       })
-      .then(response => response.json())
-      .then(json => console.log(json))
+      .then(() => this.loadPaymentsRegisters())
       .catch(err => console.log(err))
       .finally(() => this.loading = false);
     }

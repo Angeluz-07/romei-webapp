@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework import status
 from .models import *
 from .serializers import *
 from django.db import IntegrityError    # Import IntegrityError
@@ -50,6 +52,18 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
             queryset = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
         serializer = PaymentsRegisterSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['GET'])
+    def total(self, request):
+        # Not used by now
+        register_date = self.request.query_params.get('register_date', None)
+        store_id = self.request.query_params.get('store_id', None)
+        if register_date and store_id:
+            payments = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
+            total = sum([payment.value for payment in payments])
+            return Response({'value':total})
+        else:
+            return Response({'error':'register_date or store_id query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesRegisterViewSet(viewsets.ModelViewSet):
     queryset = SalesRegister.objects.all()

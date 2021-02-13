@@ -1,8 +1,8 @@
 <template>
     <tr>
-        <td><input v-model="value" v-on:input="updatePaymentsRegister" type="text" class="form-control"></td>
-        <td><input v-model="name" v-on:input="updatePaymentsRegister" type="text" class="form-control"></td>
-        <td><input v-model="description"  v-on:input="updatePaymentsRegister" type="text" class="form-control"></td>
+        <td><input v-model="value" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="name" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="description"  v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
         <td>
         <div v-if="loading" class="spinner-border text-secondary" role="status"></div>
         <button type="button" class="btn btn-danger" @click="$emit('removePaymentsRegister', paymentsRegister.id)">x</button>
@@ -36,9 +36,17 @@ export default {
             this.name = this.paymentsRegister.name;
             this.description = this.paymentsRegister.description;
         },
+        updatePaymentsValues() {
+            let _value = this.value ? Number(this.value) : 0 ;
+            this.$store.commit('updatePaymentsValues', {
+                paymentsRegisterId : this.paymentsRegister.id,
+                value : _value
+            });
+        },
         updatePaymentsRegister() {
+            let _value = this.value ? Number(this.value) : 0 ;
             let _data = {
-                value : this.value,
+                value : _value,
                 name : this.name,
                 description : this.description
             }
