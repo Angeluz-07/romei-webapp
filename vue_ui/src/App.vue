@@ -11,6 +11,7 @@
     <!--Sheet  v-for="store in stores" :key="store.id" :products="store.allProducts.products"/-->
 
     <SalesSheet :registerDate="this.registerDate" :storeId="this.storeId"/>
+    <PaymentsSheet :registerDate="this.registerDate" :storeId="this.storeId" />
   </div>
 </template>
 
@@ -21,6 +22,7 @@
 //import BootstrapVue  from 'bootstrap-vue'
 
 import SalesSheet  from './components/SalesSheet.vue'
+import PaymentsSheet from './components/PaymentsSheet.vue' 
 import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -60,7 +62,8 @@ export default {
     },
   },
   components: {
-    SalesSheet
+    SalesSheet,
+    PaymentsSheet
   },
 }
 </script>

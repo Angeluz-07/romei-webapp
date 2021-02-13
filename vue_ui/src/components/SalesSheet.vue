@@ -28,7 +28,7 @@
                 </tr>
             </tbody>
         </table>
-        <button type="button" class="btn btn-secondary" @click="saveData">Guardar</button>
+        <!--button type="button" class="btn btn-secondary" @click="saveData">Guardar</button-->
     </div>
 </template>
 
@@ -69,7 +69,7 @@ const cashSalesStore = new Vuex.Store({
 })
 
 export default {
-  name: 'alesSheet',
+  name: 'SalesSheet',
   props: ['registerDate','storeId'],
   store: cashSalesStore,
   data() {
