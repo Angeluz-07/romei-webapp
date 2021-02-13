@@ -8,6 +8,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'products', ProductViewSet)
 router.register(r'sales-registers', SalesRegisterViewSet)
 router.register(r'stores', StoreViewSet)
+router.register(r'payments-registers', PaymentsRegisterViewSet)
 
 urlpatterns = [
     path('', auth_views.LoginView.as_view(), name='login'),

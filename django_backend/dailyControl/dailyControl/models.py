@@ -12,6 +12,13 @@ class Product(models.Model):
     price = models.FloatField()
     name = models.CharField(max_length=100)
 
+class PaymentsRegister(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.PROTECT)
+    description = models.TextField()
+    value = models.IntegerField()
+    register_date = models.DateField()
+    name = models.CharField(max_length=100)
+
 class SalesRegister(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     stock_addition = models.IntegerField()
@@ -38,5 +45,5 @@ class SalesRegister(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['product_id', 'register_date'], name='unique register for product in date')
+            models.UniqueConstraint(fields=['product', 'register_date'], name='unique register for product in date')
         ]

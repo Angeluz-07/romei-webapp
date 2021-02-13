@@ -38,6 +38,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+class PaymentsRegisterViewSet(viewsets.ModelViewSet):
+    queryset = PaymentsRegister.objects.all()
+    serializer_class = PaymentsRegisterSerializer
+
+    def list(self, request):
+        queryset = PaymentsRegister.objects.all()
+        register_date = self.request.query_params.get('register_date', None)
+        store_id = self.request.query_params.get('store_id', None)
+        if register_date and store_id:
+            queryset = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
+        serializer = PaymentsRegisterSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class SalesRegisterViewSet(viewsets.ModelViewSet):
     queryset = SalesRegister.objects.all()
