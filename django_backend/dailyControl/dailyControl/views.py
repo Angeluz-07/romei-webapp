@@ -55,7 +55,6 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['GET'])
     def total(self, request):
-        # Not used by now
         register_date = self.request.query_params.get('register_date', None)
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
@@ -75,6 +74,17 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except IntegrityError as exc:
             raise APIException(detail=exc)
+
+    @action(detail=False, methods=['GET'])
+    def total(self, request):
+        register_date = self.request.query_params.get('register_date', None)
+        store_id = self.request.query_params.get('store_id', None)
+        if register_date and store_id:
+            sales_registers = SalesRegister.objects.filter(register_date=register_date,product__store__id=store_id)
+            total = sum([sales_register.cash_sale for sales_register in sales_registers])
+            return Response({'value':total})
+        else:
+            return Response({'error':'register_date or store_id query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
         queryset = SalesRegister.objects.all()

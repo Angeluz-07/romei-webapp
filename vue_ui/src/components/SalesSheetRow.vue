@@ -5,7 +5,7 @@
         <td style="width:10%">{{ this.formatStock(this.salesRegister.product_stock) }}</td>
         <td style="width:20%">{{ this.salesRegister.product_name }}</td>
         <td style="width:10%">{{ this.formatStock(initialStock) }}</td>
-        <td style="width:10%"><input v-model="finalStockInput" v-on:input="updateCashSale();waitForInputWrapper(2);" type="text" class="form-control"></td>
+        <td style="width:10%"><input v-model="finalStockInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
         <td style="width:10%">{{ this.formatStock(stockSold) }}</td>
         <td style="width:10%">{{ this.salesRegister.product_price }}</td>
         <td style="width:10%">{{ this.cashSale }}</td>
@@ -48,12 +48,12 @@ export default {
         this.setDefaultValues();
     },
     methods: {
-        updateCashSale() {
+        /*updateCashSale() {
             this.$store.commit('updateCashSale', {
                 salesRegisterId : this.salesRegister.id,
                 cashSale : this.cashSale
             });
-        },
+        },*/
         updateSalesRegister() {
             let _data = {
                 final_stock: this.finalStock,
@@ -66,6 +66,7 @@ export default {
                 headers: {"Content-type": "application/json; charset=UTF-8"}
             })
             .then(response => response.json())
+            .then(() => this.$emit('reloadTotal'))
             .then(json => console.log(json))
             .catch(err => console.log(err))
             .finally(() => this.loading = false);
