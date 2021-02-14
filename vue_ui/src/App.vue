@@ -33,19 +33,10 @@
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
-
-//import Vue from 'vue'
-//import BootstrapVue  from 'bootstrap-vue'
-
 import SalesSheet  from './components/SalesSheet.vue'
 import PaymentsSheet from './components/PaymentsSheet.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
-//import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-//const axios = require('axios');
-//Vue.use(BootstrapVue)
-//const BASE_URL = 'http://localhost:5000/graphql';
 const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
 
