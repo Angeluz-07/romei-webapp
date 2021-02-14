@@ -1,15 +1,15 @@
 <template>
     <div>
-        <p>Payments XXXXXXXXX</p>
         <table class="table table-bordered table-hover">
-            <thead>
+            <!--thead>
                 <tr>
                 <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                <th scope="col">Valor</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripcion</th>
                 <th scope="col"></th>
                 </tr>
-            </thead>
+            </thead-->
             <tbody>
                 <PaymentsSheetRow 
                   v-for="paymentsRegister in paymentsRegisters"  
@@ -19,13 +19,15 @@
                 />
       
                 <tr>
-                <td><input v-model="value"  type="text" class="form-control"></td>
-                <td><input v-model="name" type="text" class="form-control"></td>
+                <td style="width:5%"></td>
+                <td style="width:15%"><input v-model="value"  type="text" class="form-control"></td>
+                <td style="width:25%" ><input v-model="name" type="text" class="form-control"></td>
                 <td><input v-model="description"  type="text" class="form-control"></td>
                 <td><button type="button" class="btn btn-secondary"  @click="addPaymentsRegister">+</button></td>
                 </tr>
               
                 <tr>
+                <td></td>
                 <td scope="col">{{ this.paymentsValues }}</td>
                 <td scope="col"></td>
                 <td scope="col"></td>

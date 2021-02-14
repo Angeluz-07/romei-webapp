@@ -1,10 +1,10 @@
 <template>
     <tr>
+        <td><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
         <td><input v-model="value" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
         <td><input v-model="name" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
         <td><input v-model="description"  v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
         <td>
-        <div v-if="loading" class="spinner-border text-secondary" role="status"></div>
         <button type="button" class="btn btn-danger" @click="$emit('removePaymentsRegister', paymentsRegister.id)">x</button>
         </td>
     </tr>
