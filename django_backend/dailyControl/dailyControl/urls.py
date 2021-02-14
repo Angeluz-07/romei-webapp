@@ -15,7 +15,5 @@ urlpatterns = [
 	path('login',auth_views.LoginView.as_view(), name='login'),
 	path('logout',auth_views.LogoutView.as_view(), name='logout'),
 	path('cuadrar', views.cuadrar, name='cuadrar'),
-	path('ver_cuadres', views.ver_cuadres, name='ver_cuadres'),
-	path('apuntar', views.apuntar, name='apuntar'),
 	path('api/',include(router.urls)),
 ]

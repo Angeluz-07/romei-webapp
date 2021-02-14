@@ -2,33 +2,39 @@
 
 {% load static %}
 
-{% block content %}
-		
-	{% if user.is_authenticated %}					
-			<br>  
-		<div class="row">
-			<div class="">
-				<p class="col-form-label">Cuadre del dia : </p>
-			</div>
-			<div class="">
-				<input type="text" id="datepicker" autocomplete="off"  class="form-control" maxlength="10">
-			</div>
-			<div class="">
-				<button type="button" class="btn btn-secondary" id="button_load">Cargar</button>
-			</div>
+{% block nav %}
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Romei</a>
+		<button 
+			class="navbar-toggler" 
+			type="button" 
+			data-toggle="collapse" 
+			data-target="#navbarSupportedContent" 
+			aria-controls="navbarSupportedContent" 
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'cuadrar' %}">Cuadrar</a>
+      			</li>
+				<!--li class="nav-item">
+					<a class="nav-link" href="#">Usuario : {{ user.get_username }}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'login' %}"> Iniciar sesión.</a>
+				</li-->
+			</ul>
 		</div>
-			
-		<p id="lastDay_cuadre"></p>
-
-		<div id="mytable"></div>	
-		<button type="button" class="btn btn-secondary" id="button_save">Guardar</button>			
-		<button type="button" class="btn btn-warning" id="button_update">Sobreescribir</button>	
-	{% else%}
-			<p>Debe iniciar sesión para usar el sitio.</p>				
-			<a href="{% url 'login' %}"> Iniciar sesión.</a> 					
-	{% endif%}
-		
+	</nav>
 {% endblock %}
 
-{% block specific-js %}
+{% block content %}
+	Place new content Here.
 {% endblock %}
+

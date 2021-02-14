@@ -13,64 +13,16 @@
     <link rel="stylesheet" href="{% static 'dailyControl/css/bootstrap.min.css' %}" type="text/css" />
   </head>
   <body>
-			
-    <!------------------------- START NAVBAR ------------------>
-		<!-- remind clean it -->
-		<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-  <a class="navbar-brand" href="#">Romei</a>
+	{% block nav %}
+	{% endblock %}
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-			
-			
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				{% if user.is_authenticated %}
-				<ul class="navbar-nav mr-auto">				  					
-				  <li class="nav-item dropdown">
-				    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				      Cuadre
-				    </a>
-				    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				      <a class="dropdown-item" href="{% url 'cuadrar' %}"">Cuadrar</a>
-				      <a class="dropdown-item" href="{% url 'ver_cuadres' %}">Ver cuadres</a>
-				    </div>
-				  </li>				 
-				</ul>		
-				<ul class="navbar-nav ml-auto">				  									
-					<li class="nav-item">
-				    <a class="nav-link" href="#">Usuario : {{ user.get_username }}</a>
-				  </li>
-				 	<li class="nav-item">
-				    <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
-				  </li>
-				</ul>
-				{% else %}
-				<ul class="navbar-nav ml-auto">				  									
-					<li class="nav-item">	
-						<a href="{% url 'login' %}"> Iniciar sesión.</a> 
-				  </li>	
-				</ul>
-				{% endif%}	 						
-			</div>
-		</nav>
-		
-    <!------------------------- END NAVBAR ---------------------->
-
-
-    <!------------------------- START MY HTML ------------------>
-		<div class="container">
-			{% block content %}
-			{% endblock %} 	
+	<div class="container">
+		{% block content %}
+		{% endblock %} 	
     </div>
 
-    <!------------------------- END MY HTML -------------------->
-
-    <!-- Optional JavaScript -->
-		{% block specific-js %}
-    {% endblock %}		
-		<script>
-	  </script>	    
+	{% block specific_scripts %}
+    {% endblock %}
   </body>
 </html>
