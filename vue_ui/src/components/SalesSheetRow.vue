@@ -1,11 +1,11 @@
 <template>
     <tr>
         <td style="width:5%"><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
-        <td style="width:10%"><input v-model="stockAdditionInput" v-on:input="updateSalesRegister();" type="text" class="form-control"></td>
+        <td style="width:10%"><input v-model="stockAdditionInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
         <td style="width:10%">{{ this.formatStock(this.salesRegister.product_stock) }}</td>
         <td style="width:20%">{{ this.salesRegister.product_name }}</td>
         <td style="width:10%">{{ this.formatStock(initialStock) }}</td>
-        <td style="width:10%"><input v-model="finalStockInput" v-on:input="updateCashSale();updateSalesRegister();" type="text" class="form-control"></td>
+        <td style="width:10%"><input v-model="finalStockInput" v-on:input="updateCashSale();waitForInputWrapper(2);" type="text" class="form-control"></td>
         <td style="width:10%">{{ this.formatStock(stockSold) }}</td>
         <td style="width:10%">{{ this.salesRegister.product_price }}</td>
         <td style="width:10%">{{ this.cashSale }}</td>
@@ -24,6 +24,7 @@ export default {
             stockAdditionInput: "",
             finalStockInput : "",
             loading: false,
+            waitForTyping: false,
         }
     },
     computed:{
@@ -75,6 +76,15 @@ export default {
         setDefaultValues(){
             this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.final_stock);
             this.stockAdditionInput =this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.stock_addition);
+        },
+        waitForInputWrapper(seconds){
+            if (!this.waitForTyping) {
+                setTimeout(() => {
+                    this.updateSalesRegister();
+                    this.waitForTyping= false;
+                }, seconds*1000);
+            }
+            this.waitForTyping = true;
         },
         PARSE_DOZEN_TO_NUMBER(dozens){
             let dozenPart,unitsPart;

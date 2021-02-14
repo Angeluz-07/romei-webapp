@@ -1,9 +1,9 @@
 <template>
     <tr>
         <td><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
-        <td><input v-model="value" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
-        <td><input v-model="name" v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
-        <td><input v-model="description"  v-on:input="updatePaymentsRegister();updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="value" v-on:input="waitForInputWrapper(1);updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="name" v-on:input="waitForInputWrapper(2);updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="description"  v-on:input="waitForInputWrapper(3);updatePaymentsValues()" type="text" class="form-control"></td>
         <td>
         <button type="button" class="btn btn-danger" @click="$emit('removePaymentsRegister', paymentsRegister.id)">x</button>
         </td>
@@ -19,6 +19,7 @@ export default {
     props: ['paymentsRegister'],
     data() {
         return {
+            waitForTyping:false,
             loading : false,
             value : "",
             name: "",
@@ -61,6 +62,15 @@ export default {
             .catch(err => console.log(err))
             .finally(() => this.loading = false);
         },
+        waitForInputWrapper(seconds){
+            if (!this.waitForTyping) {
+                setTimeout(() => {
+                    this.updatePaymentsRegister();
+                    this.waitForTyping= false;
+                }, seconds*1000);
+            }
+            this.waitForTyping = true;
+        }
     }
 }
 </script>
