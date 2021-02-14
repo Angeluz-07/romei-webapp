@@ -1,9 +1,9 @@
 <template>
     <tr>
         <td><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
-        <td><input v-model="value" v-on:input="waitForInputWrapper(1);updatePaymentsValues()" type="text" class="form-control"></td>
-        <td><input v-model="name" v-on:input="waitForInputWrapper(2);updatePaymentsValues()" type="text" class="form-control"></td>
-        <td><input v-model="description"  v-on:input="waitForInputWrapper(3);updatePaymentsValues()" type="text" class="form-control"></td>
+        <td><input v-model="value" v-on:input="waitForInputWrapper(1)" type="text" class="form-control"></td>
+        <td><input v-model="name" v-on:input="waitForInputWrapper(2)" type="text" class="form-control"></td>
+        <td><input v-model="description"  v-on:input="waitForInputWrapper(3)" type="text" class="form-control"></td>
         <td>
         <button type="button" class="btn btn-danger" @click="$emit('removePaymentsRegister', paymentsRegister.id)">x</button>
         </td>
@@ -37,13 +37,6 @@ export default {
             this.name = this.paymentsRegister.name;
             this.description = this.paymentsRegister.description;
         },
-        updatePaymentsValues() {
-            let _value = this.value ? Number(this.value) : 0 ;
-            this.$store.commit('updatePaymentsValues', {
-                paymentsRegisterId : this.paymentsRegister.id,
-                value : _value
-            });
-        },
         updatePaymentsRegister() {
             let _value = this.value ? Number(this.value) : 0 ;
             let _data = {
@@ -59,6 +52,7 @@ export default {
             })
             .then(response => response.json())
             .then(json => console.log(json))
+            .then(()=> this.$emit('reloadTotal'))
             .catch(err => console.log(err))
             .finally(() => this.loading = false);
         },

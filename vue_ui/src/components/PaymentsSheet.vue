@@ -16,6 +16,7 @@
                   :key="paymentsRegister.id" 
                   :paymentsRegister="paymentsRegister" 
                   v-on:removePaymentsRegister="removePaymentsRegister"
+                  v-on:reloadTotal="loadTotal"
                 />
       
                 <tr>
@@ -28,7 +29,7 @@
               
                 <tr>
                 <td></td>
-                <td scope="col">{{ this.paymentsValues }}</td>
+                <td scope="col">{{ this.paymentsRegistersValuesTotal }}</td>
                 <td scope="col"></td>
                 <td scope="col"></td>
                 <td scope="col"></td> 
@@ -41,61 +42,28 @@
 <script>
 
 import PaymentsSheetRow from './PaymentsSheetRow.vue'
-import Vue from 'vue'
-import Vuex from 'vuex'
-Vue.use(Vuex)
 
 const BASE_URL = 'http://localhost:8000/dailyControl/api';
 
-const paymentsValuesStore = new Vuex.Store({
-  state: {
-    paymentsValues: null,
-  },
-  mutations: {
-    setPaymentsValues (state, paymentsRegisters) {
-      state.paymentsValues = paymentsRegisters.map((x) => ({
-          'paymentsRegisterId': x.id,
-          'value': x.value
-        })
-      );
-    },
-    updatePaymentsValues (state, payload) {
-      const result = state.paymentsValues.find(x => x.paymentsRegisterId === payload.paymentsRegisterId);
-      result.value = payload.value;
-    }
-  },
-  getters: {
-    paymentsValuesSum: state => {
-      return state.paymentsValues ?
-      state.paymentsValues
-      .map(x => x.value)
-      .reduce((a,b)=>a+b, 0) : 0 ;
-    }
-  }
-})
-
-
 export default {
   name: 'PaymentsSheet',
-  store: paymentsValuesStore,
   props: ['registerDate','storeId'],
   data() {
     return {
       loading: false,
       paymentsRegisters : [],
+      paymentsRegistersValuesTotal : null,
       value: 0,
       name : "",
       description : "",
     }
   },
   computed: {
-    paymentsValues : function (){
-      return this.$store.getters.paymentsValuesSum;
-    }
   },
   mounted() {
     if(this.storeId!==null){
       this.loadPaymentsRegisters();
+      this.loadTotal();
     }
   },
   methods: {
@@ -105,8 +73,13 @@ export default {
       .then(response => response.json())
       .then(paymentsRegisters => this.paymentsRegisters = paymentsRegisters)
       .then(()=> console.log(this.paymentsRegisters))
-      .then(() => this.$store.commit('setPaymentsValues', this.paymentsRegisters))
-      .then(() => console.log(this.$store.state.paymentsValues))
+    },
+    loadTotal(){
+      const URL = `${BASE_URL}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
+      fetch(URL)
+      .then(response => response.json())
+      .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
+      .then(()=> console.log(this.paymentsRegistersValuesTotal))
     },
     addPaymentsRegister(){
       this.paymentsRegisters.push({
@@ -135,6 +108,7 @@ export default {
       .then(response => response.json())
       .then(json => console.log(json))
       .then(() => this.loadPaymentsRegisters())
+      .then(() => this.loadTotal())
       .catch(err => console.log(err))
       .finally(() => this.loading = false);
     },
@@ -153,6 +127,7 @@ export default {
           headers: {"Content-type": "application/json; charset=UTF-8"}
       })
       .then(() => this.loadPaymentsRegisters())
+      .then(() => this.loadTotal())
       .catch(err => console.log(err))
       .finally(() => this.loading = false);
     }
@@ -163,9 +138,11 @@ export default {
   watch: {
     registerDate() {
       this.loadPaymentsRegisters();
+      this.loadTotal();
     },
     storeId() {
       this.loadPaymentsRegisters();
+      this.loadTotal();
     }
   }
 }
