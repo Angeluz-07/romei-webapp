@@ -37,8 +37,7 @@ import SalesSheet  from './components/SalesSheet.vue'
 import PaymentsSheet from './components/PaymentsSheet.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
-const BASE_URL = 'http://localhost:8000/dailyControl/api';
-
+const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
 
 export default {
   name: 'App',
@@ -62,7 +61,7 @@ export default {
       return `${yyyy}-${mm}-${dd}`
     },
     loadStores(){
-      const URL = `${BASE_URL}/stores`;
+      const URL = `${ROMEI_API_URL}/stores`;
       fetch(URL)
       .then(response => response.json())
       .then(stores => this.stores = stores)

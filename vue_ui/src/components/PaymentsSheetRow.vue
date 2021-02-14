@@ -12,7 +12,7 @@
 
 <script>
 
-const BASE_URL = 'http://localhost:8000/dailyControl/api';
+const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
 
 export default {
     name: 'PaymentsSheetRow',
@@ -45,7 +45,7 @@ export default {
                 description : this.description
             }
             this.loading = true;
-            fetch(`${BASE_URL}/payments-registers/${this.paymentsRegister.id}`, {
+            fetch(`${ROMEI_API_URL}/payments-registers/${this.paymentsRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}

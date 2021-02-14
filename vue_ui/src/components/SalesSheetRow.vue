@@ -14,7 +14,7 @@
 
 <script>
 
-const BASE_URL = 'http://localhost:8000/dailyControl/api';
+const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
 
 export default {
     name: 'SalesSheetRow',
@@ -48,19 +48,13 @@ export default {
         this.setDefaultValues();
     },
     methods: {
-        /*updateCashSale() {
-            this.$store.commit('updateCashSale', {
-                salesRegisterId : this.salesRegister.id,
-                cashSale : this.cashSale
-            });
-        },*/
         updateSalesRegister() {
             let _data = {
                 final_stock: this.finalStock,
                 stock_addition : this.stockAddition
             }
             this.loading = true;
-            fetch(`${BASE_URL}/sales-registers/${this.salesRegister.id}`, {
+            fetch(`${ROMEI_API_URL}/sales-registers/${this.salesRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}

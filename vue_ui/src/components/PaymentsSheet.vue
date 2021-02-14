@@ -43,7 +43,7 @@
 
 import PaymentsSheetRow from './PaymentsSheetRow.vue'
 
-const BASE_URL = 'http://localhost:8000/dailyControl/api';
+const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
 
 export default {
   name: 'PaymentsSheet',
@@ -68,14 +68,14 @@ export default {
   },
   methods: {
     loadPaymentsRegisters(){
-      const URL = `${BASE_URL}/payments-registers?register_date=${this.registerDate}&store_id=${this.storeId}`;
+      const URL = `${ROMEI_API_URL}/payments-registers?register_date=${this.registerDate}&store_id=${this.storeId}`;
       fetch(URL)
       .then(response => response.json())
       .then(paymentsRegisters => this.paymentsRegisters = paymentsRegisters)
       .then(()=> console.log(this.paymentsRegisters))
     },
     loadTotal(){
-      const URL = `${BASE_URL}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
+      const URL = `${ROMEI_API_URL}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
       fetch(URL)
       .then(response => response.json())
       .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
@@ -100,7 +100,7 @@ export default {
         register_date: this.registerDate
       }
       this.loading = true;
-      fetch(`${BASE_URL}/payments-registers`, {
+      fetch(`${ROMEI_API_URL}/payments-registers`, {
           method: "POST",
           body: JSON.stringify(_data),
           headers: {"Content-type": "application/json; charset=UTF-8"}
@@ -122,7 +122,7 @@ export default {
     },
     deletePaymentsRegister(id){
       this.loading = true;
-      fetch(`${BASE_URL}/payments-registers/${id}`, {
+      fetch(`${ROMEI_API_URL}/payments-registers/${id}`, {
           method: "DELETE",
           headers: {"Content-type": "application/json; charset=UTF-8"}
       })
