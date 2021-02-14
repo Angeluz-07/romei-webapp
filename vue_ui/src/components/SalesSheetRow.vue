@@ -1,14 +1,14 @@
 <template>
     <tr>
-        <td><div v-if="loading" class="spinner-border text-secondary" role="status"></div></td>
-        <td><input v-model="stockAdditionInput" v-on:input="updateSalesRegister();" type="text" class="form-control"></td>
-        <td>{{ this.formatStock(this.salesRegister.product_stock) }}</td>
-        <td>{{ this.salesRegister.product_name }}</td>
-        <td>{{ this.formatStock(initialStock) }}</td>
-        <td><input v-model="finalStockInput" v-on:input="updateCashSale();updateSalesRegister();" type="text" class="form-control"></td>
-        <td>{{ this.formatStock(stockSold) }}</td>
-        <td>{{ this.salesRegister.product_price }}</td>
-        <td>{{ this.cashSale }}</td>
+        <td style="width:5%"><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
+        <td style="width:10%"><input v-model="stockAdditionInput" v-on:input="updateSalesRegister();" type="text" class="form-control"></td>
+        <td style="width:10%">{{ this.formatStock(this.salesRegister.product_stock) }}</td>
+        <td style="width:20%">{{ this.salesRegister.product_name }}</td>
+        <td style="width:10%">{{ this.formatStock(initialStock) }}</td>
+        <td style="width:10%"><input v-model="finalStockInput" v-on:input="updateCashSale();updateSalesRegister();" type="text" class="form-control"></td>
+        <td style="width:10%">{{ this.formatStock(stockSold) }}</td>
+        <td style="width:10%">{{ this.salesRegister.product_price }}</td>
+        <td style="width:10%">{{ this.cashSale }}</td>
     </tr>
 </template>
 

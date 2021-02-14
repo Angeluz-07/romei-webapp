@@ -1,17 +1,33 @@
 <template>
-  <div id="app">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Cuadre</a>
-    <a class="navbar-brand" href="#">Previos</a>
-  </nav>
-    <input type="date" class="form-control" v-model="registerDate">
-    <select v-model="storeId">
-      <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}</option>
-    </select>
-    <!--Sheet  v-for="store in stores" :key="store.id" :products="store.allProducts.products"/-->
-
-    <SalesSheet :registerDate="this.registerDate" :storeId="this.storeId"/>
-    <PaymentsSheet :registerDate="this.registerDate" :storeId="this.storeId" />
+  <div id="app" class="container-fluid">
+    <div class="row my-3">
+      <div class="col-8">
+        <input type="date" class="form-control" v-model="registerDate">
+      </div>
+      <div class="col-4">
+        <select class="form-control" v-model="storeId">
+          <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row my-3">
+      <div class="col-12">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-sales-registers" role="tab" aria-controls="nav-home" aria-selected="true">Mercaderia</a>
+            <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-payments-registers" role="tab" aria-controls="nav-profile" aria-selected="false">Apuntes</a>
+          </div>
+        </nav>
+        <div class="tab-content my-3" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-sales-registers" role="tabpanel" aria-labelledby="nav-home-tab">
+            <SalesSheet :registerDate="this.registerDate" :storeId="this.storeId"/>
+          </div>
+          <div class="tab-pane fade" id="nav-payments-registers" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <PaymentsSheet :registerDate="this.registerDate" :storeId="this.storeId" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,8 +38,9 @@
 //import BootstrapVue  from 'bootstrap-vue'
 
 import SalesSheet  from './components/SalesSheet.vue'
-import PaymentsSheet from './components/PaymentsSheet.vue' 
-import 'bootstrap/dist/css/bootstrap.css'
+import PaymentsSheet from './components/PaymentsSheet.vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.min.js'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 //const axios = require('axios');

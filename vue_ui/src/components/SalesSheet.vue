@@ -1,22 +1,9 @@
 <template>
-    <div>
-        <p>Puesto x</p>
         <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>                
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th> 
-                <th scope="col"></th>                              
-                <th scope="col"></th>
-                </tr>
-            </thead>
             <tbody>                
                 <SalesSheetRow  v-for="salesRegister in salesRegisters" :key="salesRegister.id" :salesRegister="salesRegister" />
                 <tr>
+                <td scope="col"></td>
                 <td scope="col"></td>
                 <td scope="col"></td>
                 <td scope="col"></td>                
@@ -29,7 +16,6 @@
             </tbody>
         </table>
         <!--button type="button" class="btn btn-secondary" @click="saveData">Guardar</button-->
-    </div>
 </template>
 
 <script>
