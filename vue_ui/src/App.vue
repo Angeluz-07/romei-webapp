@@ -32,15 +32,29 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
 import SalesSheet  from './components/SalesSheet.vue'
 import PaymentsSheet from './components/PaymentsSheet.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
-const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
+const dataStore = new Vuex.Store({
+  state: {
+    apiUrl: null,
+  },
+  mutations: {
+    setApiUrl (state, url) {
+      state.apiUrl = url;
+    }
+  }
+})
 
 export default {
   name: 'App',
+  props: ['apiUrl'],
+  store: dataStore,
   data() {
     return {
       stores : [],
@@ -49,6 +63,7 @@ export default {
     }
   },
   mounted () {
+    this.$store.commit('setApiUrl', this.apiUrl);
     this.loadStores();
   },
   methods: {
@@ -61,12 +76,18 @@ export default {
       return `${yyyy}-${mm}-${dd}`
     },
     loadStores(){
-      const URL = `${ROMEI_API_URL}/stores`;
+      const URL = `${this.$store.state.apiUrl}/stores`;
       fetch(URL)
       .then(response => response.json())
       .then(stores => this.stores = stores)
       .then(() => console.log(this.stores))
     },
+  },
+  watch: {
+    apiUrl() {
+      this.$store.commit('setApiUrl', this.apiUrl);
+      this.loadStores();
+    }
   },
   components: {
     SalesSheet,

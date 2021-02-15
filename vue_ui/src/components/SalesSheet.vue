@@ -27,7 +27,6 @@
 
 import SalesSheetRow from './SalesSheetRow.vue'
 
-const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
 
 export default {
   name: 'SalesSheet',
@@ -48,13 +47,13 @@ export default {
   },
   methods: {
     loadSalesRegisters(){
-      const URL = `${ROMEI_API_URL}/sales-registers?register_date=${this.registerDate}&store_id=${this.storeId}&start=true`;
+      const URL = `${this.$store.state.apiUrl}/sales-registers?register_date=${this.registerDate}&store_id=${this.storeId}&start=true`;
       fetch(URL)
       .then(response => response.json())
       .then(salesRegisters => this.salesRegisters = salesRegisters)
     },
     loadTotal(){
-      const URL = `${ROMEI_API_URL}/sales-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
+      const URL = `${this.$store.state.apiUrl}/sales-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
       fetch(URL)
       .then(response => response.json())
       .then(responseJson => this.salesRegisterCashSalesTotal = responseJson.value)

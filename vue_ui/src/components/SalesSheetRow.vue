@@ -14,8 +14,6 @@
 
 <script>
 
-const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
-
 export default {
     name: 'SalesSheetRow',
     props: ['salesRegister'],
@@ -54,7 +52,7 @@ export default {
                 stock_addition : this.stockAddition
             }
             this.loading = true;
-            fetch(`${ROMEI_API_URL}/sales-registers/${this.salesRegister.id}`, {
+            fetch(`${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}

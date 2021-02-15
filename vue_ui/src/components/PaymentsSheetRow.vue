@@ -12,8 +12,6 @@
 
 <script>
 
-const ROMEI_API_URL = process.env.VUE_APP_ROMEI_API;
-
 export default {
     name: 'PaymentsSheetRow',
     props: ['paymentsRegister'],
@@ -45,7 +43,7 @@ export default {
                 description : this.description
             }
             this.loading = true;
-            fetch(`${ROMEI_API_URL}/payments-registers/${this.paymentsRegister.id}`, {
+            fetch(`${this.$store.state.apiUrl}/payments-registers/${this.paymentsRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}
