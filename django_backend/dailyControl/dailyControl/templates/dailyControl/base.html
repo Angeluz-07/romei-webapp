@@ -11,6 +11,10 @@
   	<!-- Bootstrap-->
 	<script src="{% static 'dailyControl/src/bootstrap.min.js' %}" ></script>
     <link rel="stylesheet" href="{% static 'dailyControl/css/bootstrap.min.css' %}" type="text/css" />
+
+	{% block head %}
+	{% endblock %}
+
   </head>
   <body>
 
@@ -19,10 +23,10 @@
 
 	<div class="container">
 		{% block content %}
-		{% endblock %} 	
+		{% endblock %}
     </div>
 
-	{% block specific_scripts %}
+	{% block foot %}
     {% endblock %}
   </body>
 </html>

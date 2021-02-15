@@ -19,9 +19,8 @@ def index(request):
     context={}  
     return render(request, 'dailyControl/index.html',context)
 
-def cuadrar(request):
-		context={}
-		return render(request, 'dailyControl/cuadrar.html',context)
+def daily_register(request):
+	return render(request, 'dailyControl/daily_register.html')
 
 class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()

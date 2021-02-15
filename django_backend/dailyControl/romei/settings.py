@@ -124,7 +124,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Login redirect view
-LOGIN_REDIRECT_URL = 'cuadrar'
+LOGIN_REDIRECT_URL = 'daily_register'
 LOGOUT_REDIRECT_URL = 'login'
 
 APPEND_SLASH = False

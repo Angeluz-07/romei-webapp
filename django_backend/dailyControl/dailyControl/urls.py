@@ -14,6 +14,6 @@ urlpatterns = [
     path('', auth_views.LoginView.as_view(), name='login'),
 	path('login',auth_views.LoginView.as_view(), name='login'),
 	path('logout',auth_views.LogoutView.as_view(), name='logout'),
-	path('cuadrar', views.cuadrar, name='cuadrar'),
+	path('daily-register', views.daily_register, name='daily_register'),
 	path('api/',include(router.urls)),
 ]
