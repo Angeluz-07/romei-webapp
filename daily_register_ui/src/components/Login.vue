@@ -23,6 +23,12 @@
             <button type="button" class="btn btn-secondary" v-on:click="login()">
             Login
             </button>
+             <button type="button" class="btn btn-secondary" v-on:click="whoami()">
+            Check user
+            </button>
+             <button type="button" class="btn btn-secondary" v-on:click="logout()">
+            Logout
+            </button>
         </div>
     </div>
 </template>
@@ -39,9 +45,64 @@ export default {
             }
         }
     },
+    mounted() {
+        this.setCSRF();
+    },
     methods: {
+        whoami() {
+            const URL = `${this.$store.state.apiUrl}/who-am-i`;
+            fetch(URL, {
+                headers : {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": this.$cookies.get("csrftoken")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(err => console.log(err))
+        },
         login() {
-            console.log("Login Clicked");
+            let _data = {
+                username : this.input.username,
+                password : this.input.password
+            }
+            const URL = `${this.$store.state.apiUrl}/login`;
+            fetch(URL, {
+                method: "POST",
+                body: JSON.stringify(_data),
+                headers : {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": this.$cookies.get("csrftoken")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(err => console.log(err))
+
+        },
+        logout() {
+            const URL = `${this.$store.state.apiUrl}/logout`;
+            fetch(URL, {
+                headers : {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": this.$cookies.get("csrftoken")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(err => console.log(err))
+
+        },
+        setCSRF() {
+            const URL = `${this.$store.state.apiUrl}/set-csrf`;
+            fetch(URL,{
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(responseJson => console.log(responseJson))
         }
     }
 }

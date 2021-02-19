@@ -123,10 +123,28 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'rest_framework.authentication.SessionAuthentication'
+    #),
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated'
+    #]
+}
+
 # Login redirect view
 LOGIN_REDIRECT_URL = 'daily_register'
 LOGOUT_REDIRECT_URL = 'login'
 
 APPEND_SLASH = False
 ALLOWED_HOSTS=['*']
-CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8081',
+    'http://localhost:8082',
+     # Here was the problem indeed and it has to be http://localhost:3000, not http://localhost:3000/
+]
