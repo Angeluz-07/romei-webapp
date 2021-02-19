@@ -1,12 +1,25 @@
 <template>
   <div id="app">
-    <nav  v-if="this.$store.state.userIsAuthenticated()" class="navbar navbar-light bg-light">
-      <a class="navbar-brand">My App</a>
-      <div>
-        <b> Logged in as {{ this.user.name }} </b>|
-        <button type="button" class="btn btn-link" v-on:click="logout()">
-          Logout
-        </button>
+    <nav v-if="this.$store.state.userIsAuthenticated()" class="navbar navbar-expand-sm navbar-light bg-light">
+      <a class="navbar-brand" href="#">My App</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link :to="{ name: 'home'}" class="nav-link">Registro</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :to="{ name: 'paymentsQuery'}" class="nav-link">Consultas</router-link>
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item navbar-text">
+              <b> Logged in as {{ this.user.name }} </b>|
+              <a  href="#" v-on:click="logout()">Logout</a>
+            </li>
+          </ul>
       </div>
     </nav>
     <router-view v-on:loggedIn="loadUser"/>
@@ -72,6 +85,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

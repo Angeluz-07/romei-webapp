@@ -3,6 +3,7 @@ import App from './App.vue'
 
 import Login from './components/Login.vue'
 import DailyRegister from './components/DailyRegister.vue'
+import PaymentsQuery from './components/PaymentsQuery.vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 
@@ -38,7 +39,7 @@ const requireAuthenticated = (to, from, next) => {
 const redirectIfAuthenticated = (to, from, next) => {
   if(store.state.userIsAuthenticated()){
     console.log("redirecting authenticated")
-    next('/app')
+    next({name:'home'})
   } else {
     next()
   }
@@ -59,9 +60,15 @@ const router = new VueRouter({
       beforeEnter: redirectIfAuthenticated,
     },
     {
-      path: "/app",
-      name: "app",
+      path: "/daily-register",
+      name: "home",
       component: DailyRegister,
+      beforeEnter: requireAuthenticated,
+    },
+    {
+      path: "/payments-query",
+      name: "paymentsQuery",
+      component: PaymentsQuery,
       beforeEnter: requireAuthenticated,
     },
     {
