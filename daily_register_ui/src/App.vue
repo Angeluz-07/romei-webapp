@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav  v-if="userIsAuthenticated()" class="navbar navbar-light bg-light">
+    <nav  v-if="this.$store.state.userIsAuthenticated()" class="navbar navbar-light bg-light">
       <a class="navbar-brand">My App</a>
       <div>
         <b> Logged in as {{ this.user.name }} </b>|
@@ -33,7 +33,7 @@ export default {
     }
   },
   mounted () {
-    if(this.userIsAuthenticated()){
+    if(this.$store.state.userIsAuthenticated()){
       this.loadUser();
     }
   },
@@ -47,9 +47,6 @@ export default {
         this.$router.replace({ name: "logout" });
       })
       .catch(err => console.log(err.response))
-    },
-    userIsAuthenticated(){
-      return Boolean(localStorage.getItem("isAuthenticated"))
     },
     loadUser() {
       const URL = `${this.$store.state.apiUrl}/who-am-i`;

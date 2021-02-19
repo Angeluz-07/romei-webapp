@@ -10,6 +10,39 @@ Vue.use(Vuex)
 Vue.use(VueRouter)
 
 Vue.config.productionTip = false
+const store = new Vuex.Store({
+  state: {
+    apiUrl: null,
+    userIsAuthenticated: () => Boolean(localStorage.getItem("isAuthenticated")),
+  },
+  mutations: {
+    setApiUrl (state, url) {
+      state.apiUrl = url;
+    }
+  },
+})
+
+const apiUrl = "http://localhost:8000/dailyControl/api";
+store.commit('setApiUrl', apiUrl);
+
+
+const requireAuthenticated = (to, from, next) => {
+  if(!store.state.userIsAuthenticated()){
+    console.log("redirecting not authenticated")
+    next('/login')
+  } else {
+    next()
+  }
+};
+
+const redirectIfAuthenticated = (to, from, next) => {
+  if(store.state.userIsAuthenticated()){
+    console.log("redirecting authenticated")
+    next('/app')
+  } else {
+    next()
+  }
+};
 
 const router = new VueRouter({
   routes: [
@@ -22,12 +55,14 @@ const router = new VueRouter({
     {
       path: "/login",
       name: "login",
-      component: Login
+      component: Login,
+      beforeEnter: redirectIfAuthenticated,
     },
     {
       path: "/app",
       name: "app",
-      component: DailyRegister
+      component: DailyRegister,
+      beforeEnter: requireAuthenticated,
     },
     {
       path: '/logout',
@@ -39,20 +74,6 @@ const router = new VueRouter({
   ]
 })
 
-
-const store = new Vuex.Store({
-  state: {
-    apiUrl: null,
-  },
-  mutations: {
-    setApiUrl (state, url) {
-      state.apiUrl = url;
-    }
-  }
-})
-
-const apiUrl = "http://localhost:8000/dailyControl/api";
-store.commit('setApiUrl', apiUrl);
 
 new Vue({
   router: router,
