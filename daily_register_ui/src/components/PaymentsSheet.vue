@@ -150,7 +150,7 @@ export default {
 
 <style scoped>
 #payments {
-  height:18em;
+  height:50vh;
   overflow-y:scroll;
 }
 </style>
