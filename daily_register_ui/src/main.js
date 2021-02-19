@@ -5,11 +5,9 @@ import Login from './components/Login.vue'
 import DailyRegister from './components/DailyRegister.vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import VueCookies from 'vue-cookies';
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
-Vue.use(VueCookies);
 
 Vue.config.productionTip = false
 
@@ -30,7 +28,14 @@ const router = new VueRouter({
       path: "/app",
       name: "app",
       component: DailyRegister
-    }
+    },
+    {
+      path: '/logout',
+      name: "logout",
+      redirect: {
+        name: "login"
+      }
+    },
   ]
 })
 
