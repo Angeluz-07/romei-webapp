@@ -60,7 +60,11 @@ export default {
       const URL = `${this.$store.state.apiUrl}/stores`;
       fetch(URL)
       .then(response => response.json())
-      .then(stores => this.stores = stores)
+      .then(stores => {
+        this.stores = stores
+        let firstOption = stores[0].id;
+        this.storeId = firstOption;
+      })
       .then(() => console.log(this.stores))
     },
   },
