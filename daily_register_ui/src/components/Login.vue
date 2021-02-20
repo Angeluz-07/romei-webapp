@@ -60,7 +60,7 @@ export default {
                 console.log(response)
                 localStorage.setItem('isAuthenticated', true)
                 this.$emit('loggedIn');
-                this.$router.push({name: 'app'})
+                this.$router.push({name: 'home'})
             })
             .catch(err => console.log(err.response))
         },
