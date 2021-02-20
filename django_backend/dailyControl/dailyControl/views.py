@@ -7,6 +7,7 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django.db import IntegrityError    # Import IntegrityError
+from django.db.models import Q
 from rest_framework.exceptions import APIException  #Import APIException
 
 
@@ -84,6 +85,22 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
             queryset = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
+
+        register_date_gte = self.request.query_params.get('register_date.gte', None)
+        register_date_lte = self.request.query_params.get('register_date.lte', None)
+        name_contains =  self.request.query_params.get('name.contains', None)
+        description_contains =  self.request.query_params.get('description.contains', None)
+        if register_date_gte \
+            and register_date_lte \
+            and name_contains \
+            and description_contains:
+            start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
+            queryset = PaymentsRegister.objects \
+            .filter(
+                Q(name__icontains=name_contains) | Q(description__icontains=description_contains),
+                register_date__range=(start_date,end_date),
+            )
+
         serializer = PaymentsRegisterSerializer(queryset, many=True)
         return Response(serializer.data)
     
