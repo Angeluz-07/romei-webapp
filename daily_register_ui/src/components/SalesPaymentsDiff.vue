@@ -19,6 +19,12 @@
 
 <script>
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
 export default {
   name: 'SalesPaymentsDiff',
   props: ['registerDate','storeId'],
@@ -59,17 +65,31 @@ export default {
   methods: {
     loadTotalSales(){
       const URL = `${this.$store.state.apiUrl}/sales-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
-      fetch(URL)
+      axios.get(URL)
+      .then(response => {
+        console.log('sales registers total diff',response)
+        this.salesRegisterCashSalesTotal = response.data.value
+      })
+      .catch(err => console.log(err.response))
+      /*fetch(URL)
       .then(response => response.json())
       .then(responseJson => this.salesRegisterCashSalesTotal = responseJson.value)
-      .then(()=> console.log(this.salesRegisterCashSalesTotal))
+      .then(()=> console.log(this.salesRegisterCashSalesTotal))*/
     },
     loadTotalPayments(){
       const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
+      axios.get(URL)
+      .then(response => {
+        console.log('payments registers total diff',response)
+        this.paymentsRegistersValuesTotal = response.data.value
+      })
+      .catch(err => console.log(err.response))
+      /*
       fetch(URL)
       .then(response => response.json())
       .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
       .then(()=> console.log(this.paymentsRegistersValuesTotal))
+      */
     },
     diffStyle(){
       if (this.loss) return "table-danger"

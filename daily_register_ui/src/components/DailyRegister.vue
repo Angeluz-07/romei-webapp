@@ -40,6 +40,13 @@ import SalesSheet  from './SalesSheet.vue'
 import PaymentsSheet from './PaymentsSheet.vue'
 import SalesPaymentsDiff from './SalesPaymentsDiff.vue'
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
+
 export default {
   name: 'App',
   data() {
@@ -63,14 +70,22 @@ export default {
     },
     loadStores(){
       const URL = `${this.$store.state.apiUrl}/stores`;
-      fetch(URL)
+      axios.get(URL)
+      .then(response => {
+        console.log('stores',response)
+        this.stores = response.data;
+        let firstOption = this.stores[0].id;
+        this.storeId = firstOption;
+      })
+      .catch(err => console.log(err.response))
+      /*fetch(URL)
       .then(response => response.json())
       .then(stores => {
         this.stores = stores
         let firstOption = stores[0].id;
         this.storeId = firstOption;
       })
-      .then(() => console.log(this.stores))
+      .then(() => console.log(this.stores))*/
     },
   },
   components: {

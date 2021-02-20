@@ -12,6 +12,11 @@
 
 <script>
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
 export default {
     name: 'PaymentsSheetRow',
     props: ['paymentsRegister'],
@@ -43,7 +48,15 @@ export default {
                 description : this.description
             }
             this.loading = true;
-            fetch(`${this.$store.state.apiUrl}/payments-registers/${this.paymentsRegister.id}`, {
+            const URL = `${this.$store.state.apiUrl}/payments-registers/${this.paymentsRegister.id}`;
+            axios.patch(URL,_data)
+            .then(response => {
+                console.log('update payment register',response)
+                this.$emit('reloadTotal')
+            })
+            .catch(err => console.log(err.response))
+            .finally(() => this.loading = false)
+            /*fetch(`${this.$store.state.apiUrl}/payments-registers/${this.paymentsRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}
@@ -52,7 +65,7 @@ export default {
             .then(json => console.log(json))
             .then(()=> this.$emit('reloadTotal'))
             .catch(err => console.log(err))
-            .finally(() => this.loading = false);
+            .finally(() => this.loading = false);*/
         },
         waitForInputWrapper(seconds){
             if (!this.waitForTyping) {

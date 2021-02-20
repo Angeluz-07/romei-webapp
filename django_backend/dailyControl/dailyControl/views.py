@@ -66,16 +66,24 @@ def logout_view(request):
     logout(request)
     return JsonResponse({'detail': 'Successfully logged out.'})
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class StoreViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 class PaymentsRegisterViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = PaymentsRegister.objects.all()
     serializer_class = PaymentsRegisterSerializer
 
@@ -133,6 +141,8 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
         return Response({'error':'query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesRegisterViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = SalesRegister.objects.all()
     serializer_class = SalesRegisterSerializer
 

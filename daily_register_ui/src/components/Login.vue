@@ -66,11 +66,16 @@ export default {
         },
         setCSRF() {
             const URL = `${this.$store.state.apiUrl}/set-csrf`;
-            fetch(URL,{
+            axios.get(URL)
+            .then( response => {
+                console.log(response)
+            })
+            .catch(err => console.log(err.response))
+            /*fetch(URL,{
                 credentials: "include"
             })
             .then(response => response.json())
-            .then(responseJson => console.log(responseJson))
+            .then(responseJson => console.log(responseJson))*/
         }
     }
 }

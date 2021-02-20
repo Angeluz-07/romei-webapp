@@ -75,6 +75,12 @@
 
 <script>
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
 export default {
   name: 'App',
   data() {
@@ -111,30 +117,51 @@ export default {
     },
     search(){
       const URL = `${this.$store.state.apiUrl}/payments-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
-      fetch(URL)
+      axios.get(URL)
+      .then(response => {
+        console.log('search payments',response)
+        this.paymentsRegisters = response.data
+      })
+      .catch(err => console.log(err.response))
+    
+      /*fetch(URL)
       .then(response => response.json())
       .then(items => {
         this.paymentsRegisters = items;
       })
-      .then(() => console.log(this.paymentsRegisters))
+      .then(() => console.log(this.paymentsRegisters))*/
     },
     loadTotal(){
       const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      axios.get(URL)
+      .then(response => {
+        console.log('payments registers total',response)
+        this.paymentsRegistersValuesTotal = response.data.value
+      })
+      .catch(err => console.log(err.response))
+      /*
       fetch(URL)
       .then(response => response.json())
       .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
-      .then(()=> console.log(this.paymentsRegistersValuesTotal))
+      .then(()=> console.log(this.paymentsRegistersValuesTotal))*/
     },
     loadStores(){
       const URL = `${this.$store.state.apiUrl}/stores`;
-      fetch(URL)
+      axios.get(URL)
+      .then(response => {
+        this.stores = response.data
+        let firstOption = this.stores[0].id;
+        this.storeId = firstOption;
+      })
+      .catch(err => console.log(err.response))
+      /*fetch(URL)
       .then(response => response.json())
       .then(stores => {
         this.stores = stores
         let firstOption = stores[0].id;
         this.storeId = firstOption;
       })
-      .then(() => console.log(this.stores))
+      .then(() => console.log(this.stores))*/
     },
   },
   components: {

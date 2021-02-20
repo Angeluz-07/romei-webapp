@@ -14,6 +14,12 @@
 
 <script>
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
 export default {
     name: 'SalesSheetRow',
     props: ['salesRegister'],
@@ -52,7 +58,19 @@ export default {
                 stock_addition : this.stockAddition
             }
             this.loading = true;
-            fetch(`${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`, {
+            const URL = `${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`;
+            axios.patch(URL,_data)
+            .then(response => {
+                console.log('update sale register',response)
+                this.$emit('reloadTotal')
+
+                this.stores = response.data;
+                let firstOption = this.stores[0].id;
+                this.storeId = firstOption;
+            })
+            .catch(err => console.log(err.response))
+            .finally(() => this.loading = false)
+            /*fetch(`${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`, {
                 method: "PATCH",
                 body: JSON.stringify(_data),
                 headers: {"Content-type": "application/json; charset=UTF-8"}
@@ -61,7 +79,7 @@ export default {
             .then(() => this.$emit('reloadTotal'))
             .then(json => console.log(json))
             .catch(err => console.log(err))
-            .finally(() => this.loading = false);
+            .finally(() => this.loading = false);*/
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
