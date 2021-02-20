@@ -52,7 +52,7 @@
                 v-for="paymentsRegister in paymentsRegisters"
                 :key="paymentsRegister.id">
               <td style="width:5%"></td>
-              <td style="width:15%"><input :value="paymentsRegister.value" type="text" class="form-control" disabled></td>
+              <td style="width:15%"><input :value="paymentsRegister.value" type="text" class="form-control text-right" disabled></td>
               <td style="width:25%" ><input :value="paymentsRegister.name" type="text" class="form-control" disabled></td>
               <td><input :value="paymentsRegister.description" type="text" class="form-control" disabled></td>
               <td>{{ paymentsRegister.register_date }}</td>
@@ -61,7 +61,7 @@
 
               <tr>
               <td></td>
-              <td scope="col">{{ this.paymentsRegistersValuesTotal }}</td>
+              <td scope="col" class="text-right pr-4">{{ this.paymentsRegistersValuesTotal }}</td>
               <td scope="col"></td>
               <td scope="col"></td>
               <td scope="col"></td>

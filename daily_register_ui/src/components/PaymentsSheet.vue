@@ -22,7 +22,7 @@
 
               <tr>
               <td style="width:5%"></td>
-              <td style="width:15%"><input v-model="value"  type="text" class="form-control"></td>
+              <td style="width:15%"><input v-model="value"  type="text" class="form-control text-right"></td>
               <td style="width:25%" ><input v-model="name" type="text" class="form-control"></td>
               <td><input v-model="description"  type="text" class="form-control"></td>
               <td><button type="button" class="btn btn-secondary"  @click="addPaymentsRegister">+</button></td>
@@ -30,7 +30,7 @@
             
               <tr>
               <td></td>
-              <td scope="col">{{ this.paymentsRegistersValuesTotal }}</td>
+              <td scope="col" class="text-right pr-4">{{ this.paymentsRegistersValuesTotal }}</td>
               <td scope="col"></td>
               <td scope="col"></td>
               <td scope="col"></td>

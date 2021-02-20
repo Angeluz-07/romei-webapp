@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
-        <td><input v-model="value" v-on:input="waitForInputWrapper(1)" type="text" class="form-control"></td>
+        <td><input v-model="value" v-on:input="waitForInputWrapper(1)" type="text" class="form-control text-right"></td>
         <td><input v-model="name" v-on:input="waitForInputWrapper(2)" type="text" class="form-control"></td>
         <td><input v-model="description"  v-on:input="waitForInputWrapper(3)" type="text" class="form-control"></td>
         <td>
