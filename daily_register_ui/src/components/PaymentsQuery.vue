@@ -134,5 +134,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+#payments {
+  height:50vh;
+  overflow-y:scroll;
+}
 </style>
