@@ -92,8 +92,8 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
         description_contains =  self.request.query_params.get('description.contains', None)
         if register_date_gte \
             and register_date_lte \
-            and name_contains \
-            and description_contains:
+            and name_contains is not None \
+            and description_contains is not None:
             start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
             queryset = PaymentsRegister.objects \
             .filter(
@@ -112,8 +112,25 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
             payments = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
             total = sum([payment.value for payment in payments])
             return Response({'value':total})
-        else:
-            return Response({'error':'register_date or store_id query params missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+        register_date_gte = self.request.query_params.get('register_date.gte', None)
+        register_date_lte = self.request.query_params.get('register_date.lte', None)
+        name_contains =  self.request.query_params.get('name.contains', None)
+        description_contains =  self.request.query_params.get('description.contains', None)
+        if register_date_gte \
+            and register_date_lte \
+            and name_contains is not None \
+            and description_contains is not None:
+            start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
+            payments = PaymentsRegister.objects \
+            .filter(
+                Q(name__icontains=name_contains) | Q(description__icontains=description_contains),
+                register_date__range=(start_date,end_date),
+            )
+            total = sum([payment.value for payment in payments])
+            return Response({'value':total})
+
+        return Response({'error':'query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
 class SalesRegisterViewSet(viewsets.ModelViewSet):
     queryset = SalesRegister.objects.all()

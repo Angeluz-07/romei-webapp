@@ -25,7 +25,7 @@
         <div class="row my-3">
           <!--label for="staticEmail" class="col-4 col-form-label">Tienda</label-->
           <div class="col-12">
-            <button type="button" class="btn btn-secondary" v-on:click="search()">
+            <button type="button" class="btn btn-secondary" v-on:click="search();loadTotal();">
             Search
             </button>
             <!--select class="form-control" v-model="storeId">
@@ -61,7 +61,7 @@
 
               <tr>
               <td></td>
-              <td scope="col"></td>
+              <td scope="col">{{ this.paymentsRegistersValuesTotal }}</td>
               <td scope="col"></td>
               <td scope="col"></td>
               <td scope="col"></td>
@@ -81,6 +81,7 @@ export default {
     return {
       stores : [],
       paymentsRegisters : [],
+      paymentsRegistersValuesTotal: null,
       startDate : this.today(),
       endDate : this.today(),
       searchText : '',
@@ -116,6 +117,13 @@ export default {
         this.paymentsRegisters = items;
       })
       .then(() => console.log(this.paymentsRegisters))
+    },
+    loadTotal(){
+      const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      fetch(URL)
+      .then(response => response.json())
+      .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
+      .then(()=> console.log(this.paymentsRegistersValuesTotal))
     },
     loadStores(){
       const URL = `${this.$store.state.apiUrl}/stores`;
