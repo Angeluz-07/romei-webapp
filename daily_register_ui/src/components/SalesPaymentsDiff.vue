@@ -49,6 +49,12 @@ export default {
       this.loadTotalSales();
       this.loadTotalPayments();
     }
+    this.$root.$on('reloadTotalSales', () => {
+      this.loadTotalSales();
+    });
+    this.$root.$on('reloadTotalPayments', () => {
+      this.loadTotalPayments();
+    });
   },
   methods: {
     loadTotalSales(){

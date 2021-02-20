@@ -56,7 +56,10 @@ export default {
       const URL = `${this.$store.state.apiUrl}/sales-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
       fetch(URL)
       .then(response => response.json())
-      .then(responseJson => this.salesRegisterCashSalesTotal = responseJson.value)
+      .then(responseJson => {
+        this.salesRegisterCashSalesTotal = responseJson.value
+        this.$root.$emit('reloadTotalSales');
+      })
       .then(()=> console.log(this.salesRegisterCashSalesTotal))
     },
     saveData(){
