@@ -12,6 +12,8 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PaymentsRegisterSerializer(serializers.ModelSerializer):
+    store_name = serializers.ReadOnlyField()
+
     class Meta:
         model=PaymentsRegister
         fields = '__all__'

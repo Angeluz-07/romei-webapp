@@ -19,6 +19,10 @@ class PaymentsRegister(models.Model):
     register_date = models.DateField()
     name = models.CharField(max_length=100,blank=True)
 
+    @property
+    def store_name(self):
+        return self.store.name
+
 class SalesRegister(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     stock_addition = models.IntegerField()
