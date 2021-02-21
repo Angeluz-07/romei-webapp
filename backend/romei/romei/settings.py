@@ -39,7 +39,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'dailyControl',
+    'daily_register_api',
     'management',
     'romei_auth',
     'django.contrib.admin',
