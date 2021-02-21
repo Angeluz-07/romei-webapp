@@ -20,10 +20,6 @@ def index(request):
     context={}  
     return render(request, 'dailyControl/index.html',context)
 
-def daily_register(request):
-	return render(request, 'dailyControl/daily_register.html')
-
-
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_POST
