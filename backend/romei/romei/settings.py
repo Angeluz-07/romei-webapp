@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'dailyControl',
+    'management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,7 +136,7 @@ REST_FRAMEWORK = {
 }
 
 # Login redirect view
-LOGIN_REDIRECT_URL = 'daily_register'
+LOGIN_REDIRECT_URL = 'who_am_i'
 LOGOUT_REDIRECT_URL = 'login'
 
 APPEND_SLASH = False

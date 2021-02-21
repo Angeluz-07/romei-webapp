@@ -15,11 +15,6 @@ def date_from_str(date:str, date_format:str="%Y-%m-%d"):
     from datetime import datetime
     return datetime.strptime(date, date_format)
 
-# Create your views here.
-def index(request):  
-    context={}  
-    return render(request, 'dailyControl/index.html',context)
-
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_POST
