@@ -6,10 +6,10 @@ WORKDIR /usr/src/app
 
 # install dependencies
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # add app
 COPY . .
 
 # start app
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "romei/manage.py", "runserver", "0.0.0.0:8000"]
