@@ -1,0 +1,34 @@
+- model: daily_register_api.store
+  pk: 1
+  fields:
+    name: Store 1
+    description: Pantalones, Chile y Huancavilca
+- model: daily_register_api.store
+  pk: 2
+  fields:
+    name: Store 2
+    description: Shorts, Chile y Huancavilda
+- model: daily_register_api.product
+  pk: 1
+  fields:
+    store: 1
+    price: 10
+    name: Pantalon mujer
+- model: daily_register_api.product
+  pk: 2
+  fields:
+    store: 1
+    price: 13
+    name: Pantalon extra
+- model: daily_register_api.product
+  pk: 3
+  fields:
+    store: 1
+    price: 10
+    name: Pantalon hombre
+- model: daily_register_api.product
+  pk: 4
+  fields:
+    store: 2
+    price: 5
+    name: Short
