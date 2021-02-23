@@ -15,6 +15,13 @@ RUN npm install
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
 
+# add env variables before build
+ARG VUE_APP_API_URL
+ENV VUE_APP_API_URL=$VUE_APP_API_URL
+
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+
 # build app for production with minification
 RUN npm run build
 
