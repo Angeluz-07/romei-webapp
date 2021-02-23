@@ -15,7 +15,7 @@ services:
   backend:
     build: ./backend
     expose:
-      - 8000
+      - 8000:8000
     environment:
       - DATABASE_ENGINE=${DATABASE_ENGINE}
       - DATABASE_NAME=${DATABASE_NAME}
@@ -26,7 +26,7 @@ services:
       - UI_SERVICE=http://front-end.com
     volumes:
       - ./backend:/usr/src/app
-    depends_on: 
+    depends_on:
       - db
   frontend:
     build:
@@ -35,7 +35,7 @@ services:
         - NODE_ENV=${NODE_ENV}
         - VUE_APP_API_URL=backend
     expose:
-      - 8081
+      - 8081:8081
     depends_on:
       - backend
   reverse_proxy:
