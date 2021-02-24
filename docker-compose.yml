@@ -23,7 +23,6 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOST=db # same as db service name
       - DATABASE_PORT=${DATABASE_PORT}
-      - UI_SERVICE=http://front-end.com
     volumes:
       - ./backend:/usr/src/app
     depends_on:

@@ -165,11 +165,8 @@ APPEND_SLASH = False
 ALLOWED_HOSTS=['*']
 
 
-check_env_variables(['UI_SERVICE'])
-UI_SERVICE = os.environ.get('UI_SERVICE')
-
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    UI_SERVICE # Here was the problem indeed and it has to be http://localhost:3000, not http://localhost:3000/
+    'http://localhost:8081' # Here was the problem indeed and it has to be http://localhost:3000, not http://localhost:3000/
 ]
