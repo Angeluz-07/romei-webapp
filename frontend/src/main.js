@@ -23,7 +23,7 @@ const store = new Vuex.Store({
   },
 })
 
-const apiUrl = `/dailyControl/api`;
+const apiUrl = `/api`;
 store.commit('setApiUrl', apiUrl);
 
 

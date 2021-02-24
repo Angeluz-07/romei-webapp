@@ -17,8 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('dailyControl/',include('daily_register_api.urls')),
     path('management/',include('management.urls')),
-    path('dailyControl/',include('romei_auth.urls')),
+    path('',include('daily_register_api.urls')),
+    path('',include('romei_auth.urls')),
     path('admin/', admin.site.urls),
 ]
