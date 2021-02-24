@@ -16,14 +16,9 @@ RUN npm install
 COPY . .
 
 # add env variables before build
-ARG VUE_APP_API_URL
-ENV VUE_APP_API_URL=$VUE_APP_API_URL
-
-ARG NODE_ENV
-ENV NODE_ENV=$NODE_ENV
+ENV NODE_ENV=production
 
 # build app for production with minification
 RUN npm run build
 
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+CMD [ "http-server", "dist" ,"--port", "8081"]
