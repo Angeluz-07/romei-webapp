@@ -7,6 +7,12 @@ import PaymentsQuery from './components/PaymentsQuery.vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 
+import axios from 'axios';
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
 Vue.use(Vuex)
 Vue.use(VueRouter)
 
@@ -15,12 +21,32 @@ const store = new Vuex.Store({
   state: {
     apiUrl: null,
     userIsAuthenticated: () => Boolean(localStorage.getItem("isAuthenticated")),
+    user: {
+      name: ''
+    },
   },
   mutations: {
     setApiUrl (state, url) {
       state.apiUrl = url;
+    },
+    updateUser (state, payload) {
+      state.user = payload;
     }
   },
+  actions: {
+    loadUser({ commit }) {
+      const URL = `${apiUrl}/who-am-i`;
+      axios.get(URL)
+      .then(response => {
+        console.log("called", response);
+        commit('updateUser', {
+            name: response.data.username
+        });
+        //this.user.name = response.data.username ;
+      })
+      .catch(err => console.log(err.response))
+    }
+  }
 })
 
 const apiUrl = process.env.VUE_APP_API_URL ? `${process.env.VUE_APP_API_URL}/api` : '/api';

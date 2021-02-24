@@ -16,7 +16,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item navbar-text">
-              <b> Logged in as {{ this.user.name }} </b>|
+              <b> Logged in as {{ userName }} </b>|
               <a  href="#" v-on:click="logout()">Logout</a>
             </li>
           </ul>
@@ -30,6 +30,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
+import { mapActions } from 'vuex'
 import axios from 'axios';
 
 axios.defaults.xsrfHeaderName = "X-CSRFToken"
@@ -40,9 +41,14 @@ export default {
   name: 'App',
   data() {
     return {
-      user : {
+      /*user : {
         name : ''
-      }
+      }*/
+    }
+  },
+  computed :{
+    userName: function() {
+      return this.$store.state.user.name;
     }
   },
   mounted () {
@@ -51,6 +57,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'loadUser', 
+    ]),
     logout() {
       const URL = `${this.$store.state.apiUrl}/logout`;
       axios.get(URL)
@@ -60,7 +69,7 @@ export default {
         this.$router.replace({ name: "logout" });
       })
       .catch(err => console.log(err.response))
-    },
+    },/*
     loadUser() {
       const URL = `${this.$store.state.apiUrl}/who-am-i`;
       axios.get(URL)
@@ -69,7 +78,7 @@ export default {
         this.user.name = response.data.username ;
       })
       .catch(err => console.log(err.response))
-  },
+    },*/
   },
   watch: {
   },
