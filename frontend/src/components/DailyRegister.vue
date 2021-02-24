@@ -39,6 +39,7 @@
 import SalesSheet  from './SalesSheet.vue'
 import PaymentsSheet from './PaymentsSheet.vue'
 import SalesPaymentsDiff from './SalesPaymentsDiff.vue'
+import { mapActions } from 'vuex'
 
 import axios from 'axios';
 
@@ -51,15 +52,23 @@ export default {
   name: 'App',
   data() {
     return {
-      stores : [],
+      //stores : [],
       registerDate : this.today(),
-      storeId: null
+      storeId: -1
+    }
+  },
+  computed: {
+    stores: function(){
+      return  this.$store.state.stores
     }
   },
   mounted () {
     this.loadStores();
   },
   methods: {
+    ...mapActions([
+      'loadStores', 
+    ]),
     today(){
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, '0');
@@ -68,6 +77,7 @@ export default {
 
       return `${yyyy}-${mm}-${dd}`
     },
+    /*
     loadStores(){
       const URL = `${this.$store.state.apiUrl}/stores`;
       axios.get(URL)
@@ -78,15 +88,7 @@ export default {
         this.storeId = firstOption;
       })
       .catch(err => console.log(err.response))
-      /*fetch(URL)
-      .then(response => response.json())
-      .then(stores => {
-        this.stores = stores
-        let firstOption = stores[0].id;
-        this.storeId = firstOption;
-      })
-      .then(() => console.log(this.stores))*/
-    },
+    },*/
   },
   components: {
     SalesSheet,

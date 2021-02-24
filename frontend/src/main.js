@@ -24,6 +24,8 @@ const store = new Vuex.Store({
     user: {
       name: ''
     },
+    stores: [],
+    firtStoreId : -1
   },
   mutations: {
     setApiUrl (state, url) {
@@ -31,6 +33,9 @@ const store = new Vuex.Store({
     },
     updateUser (state, payload) {
       state.user = payload;
+    },
+    updateStores(state, payload) {
+      state.stores = payload
     }
   },
   actions: {
@@ -43,6 +48,19 @@ const store = new Vuex.Store({
             name: response.data.username
         });
         //this.user.name = response.data.username ;
+      })
+      .catch(err => console.log(err.response))
+    },
+    loadStores( {commit }){
+      const URL = `${apiUrl}/stores`;
+      axios.get(URL)
+      .then(response => {
+        console.log('stores',response)
+        
+        commit('updateStores', response.data);
+        //this.stores = response.data;
+        //let firstOption = this.stores[0].id;
+        //this.storeId = firstOption;
       })
       .catch(err => console.log(err.response))
     }
