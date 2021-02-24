@@ -23,7 +23,7 @@ const store = new Vuex.Store({
   },
 })
 
-const apiUrl = `/api`;
+const apiUrl = process.env.VUE_APP_API_URL ? `${process.env.VUE_APP_API_URL}/api` : '/api';
 store.commit('setApiUrl', apiUrl);
 
 
