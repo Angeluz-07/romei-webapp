@@ -28,9 +28,6 @@
             <button type="button" class="btn btn-secondary" v-on:click="search();loadTotal();">
             Search
             </button>
-            <!--select class="form-control" v-model="storeId">
-              <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}</option>
-            </select-->
           </div>
         </div>
       </div>
@@ -85,7 +82,6 @@ export default {
   name: 'App',
   data() {
     return {
-      stores : [],
       paymentsRegisters : [],
       paymentsRegistersValuesTotal: null,
       startDate : this.today(),
@@ -95,7 +91,6 @@ export default {
     }
   },
   mounted () {
-    this.loadStores();
   },
   methods: {
     getDateFormatted(_date){
@@ -123,13 +118,6 @@ export default {
         this.paymentsRegisters = response.data
       })
       .catch(err => console.log(err.response))
-    
-      /*fetch(URL)
-      .then(response => response.json())
-      .then(items => {
-        this.paymentsRegisters = items;
-      })
-      .then(() => console.log(this.paymentsRegisters))*/
     },
     loadTotal(){
       const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
@@ -139,29 +127,6 @@ export default {
         this.paymentsRegistersValuesTotal = response.data.value
       })
       .catch(err => console.log(err.response))
-      /*
-      fetch(URL)
-      .then(response => response.json())
-      .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
-      .then(()=> console.log(this.paymentsRegistersValuesTotal))*/
-    },
-    loadStores(){
-      const URL = `${this.$store.state.apiUrl}/stores`;
-      axios.get(URL)
-      .then(response => {
-        this.stores = response.data
-        let firstOption = this.stores[0].id;
-        this.storeId = firstOption;
-      })
-      .catch(err => console.log(err.response))
-      /*fetch(URL)
-      .then(response => response.json())
-      .then(stores => {
-        this.stores = stores
-        let firstOption = stores[0].id;
-        this.storeId = firstOption;
-      })
-      .then(() => console.log(this.stores))*/
     },
   },
   components: {

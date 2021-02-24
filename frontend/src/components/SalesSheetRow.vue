@@ -62,24 +62,10 @@ export default {
             axios.patch(URL,_data)
             .then(response => {
                 console.log('update sale register',response)
-                this.$emit('reloadTotal')
-
-                this.stores = response.data;
-                let firstOption = this.stores[0].id;
-                this.storeId = firstOption;
+                //this.$emit('reloadTotal')
             })
             .catch(err => console.log(err.response))
             .finally(() => this.loading = false)
-            /*fetch(`${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`, {
-                method: "PATCH",
-                body: JSON.stringify(_data),
-                headers: {"Content-type": "application/json; charset=UTF-8"}
-            })
-            .then(response => response.json())
-            .then(() => this.$emit('reloadTotal'))
-            .then(json => console.log(json))
-            .catch(err => console.log(err))
-            .finally(() => this.loading = false);*/
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);

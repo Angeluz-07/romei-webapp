@@ -17,7 +17,6 @@
                 :key="paymentsRegister.id"
                 :paymentsRegister="paymentsRegister"
                 v-on:removePaymentsRegister="removePaymentsRegister"
-                v-on:reloadTotal="loadTotal"
               />
 
               <tr>
@@ -53,58 +52,25 @@ axios.defaults.withCredentials = true
 
 export default {
   name: 'PaymentsSheet',
-  props: ['registerDate','storeId'],
   data() {
     return {
       loading: false,
-      paymentsRegisters : [],
-      paymentsRegistersValuesTotal : null,
       value: 0,
       name : "",
       description : "",
     }
   },
   computed: {
-  },
-  mounted() {
-    if(this.storeId!==null){
-      this.loadPaymentsRegisters();
-      this.loadTotal();
+    paymentsRegistersValuesTotal : function(){
+      return this.$store.state.paymentsRegistersValuesTotal 
+    },
+    paymentsRegisters : function () {
+      return this.$store.state.paymentsRegisters;
     }
   },
+  mounted() {
+  },
   methods: {
-    loadPaymentsRegisters(){
-      const URL = `${this.$store.state.apiUrl}/payments-registers?register_date=${this.registerDate}&store_id=${this.storeId}`;
-      axios.get(URL)
-      .then(response => {
-        console.log('payments registers',response)
-        this.paymentsRegisters = response.data;
-      })
-      .catch(err => console.log(err.response))
-    /*
-      fetch(URL)
-      .then(response => response.json())
-      .then(paymentsRegisters => this.paymentsRegisters = paymentsRegisters)
-      .then(()=> console.log(this.paymentsRegisters))*/
-    },
-    loadTotal(){
-      const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
-      axios.get(URL)
-      .then(response => {
-        console.log('payments registers total',response)
-        this.paymentsRegistersValuesTotal = response.data.value
-        this.$root.$emit('reloadTotalPayments')
-      })
-      .catch(err => console.log(err.response))
-      /*
-      fetch(URL)
-      .then(response => response.json())
-      .then(responseJson => {
-        this.paymentsRegistersValuesTotal = responseJson.value
-        this.$root.$emit('reloadTotalPayments');
-      })
-      .then(()=> console.log(this.paymentsRegistersValuesTotal))*/
-    },
     addPaymentsRegister(){
       this.paymentsRegisters.push({
         value: this.value,
@@ -128,25 +94,13 @@ export default {
       axios.post(URL, _data)
       .then(response => {
         console.log('create payments registers',response)
-        this.loadPaymentsRegisters()
-        this.loadTotal()
+        //this.loadPaymentsRegisters()
+        //this.loadTotal()
         this.paymentsRegistersValuesTotal = response.data.value
-        this.$root.$emit('reloadTotalPayments')
+        //this.$root.$emit('reloadTotalPayments')
       })
       .catch(err => console.log(err.response))
       .finally(() => this.loading = false)
-      /*
-      fetch(`${this.$store.state.apiUrl}/payments-registers`, {
-          method: "POST",
-          body: JSON.stringify(_data),
-          headers: {"Content-type": "application/json; charset=UTF-8"}
-      })
-      .then(response => response.json())
-      .then(json => console.log(json))
-      .then(() => this.loadPaymentsRegisters())
-      .then(() => this.loadTotal())
-      .catch(err => console.log(err))
-      .finally(() => this.loading = false);*/
     },
     removePaymentsRegister(id){
       const indexOfItemToRemove = this.paymentsRegisters.findIndex(x => x.id === id)
@@ -161,33 +115,17 @@ export default {
       const URL = `${this.$store.state.apiUrl}/payments-registers/${id}`;
       axios.delete(URL)
       .then(()=>{
-        this.loadPaymentsRegisters()
-        this.loadTotal()
+        //this.loadPaymentsRegisters()
+        //this.loadTotal()
       })
       .catch(err => console.log(err.response))
       .finally(() => this.loading = false)
-      /*fetch(`${this.$store.state.apiUrl}/payments-registers/${id}`, {
-          method: "DELETE",
-          headers: {"Content-type": "application/json; charset=UTF-8"}
-      })
-      .then(() => this.loadPaymentsRegisters())
-      .then(() => this.loadTotal())
-      .catch(err => console.log(err))
-      .finally(() => this.loading = false);*/
     }
   },
   components: {
     PaymentsSheetRow
   },
   watch: {
-    registerDate() {
-      this.loadPaymentsRegisters();
-      this.loadTotal();
-    },
-    storeId() {
-      this.loadPaymentsRegisters();
-      this.loadTotal();
-    }
   }
 }
 </script>

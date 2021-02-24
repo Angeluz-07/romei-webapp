@@ -41,9 +41,6 @@ export default {
   name: 'App',
   data() {
     return {
-      /*user : {
-        name : ''
-      }*/
     }
   },
   computed :{
@@ -69,16 +66,7 @@ export default {
         this.$router.replace({ name: "logout" });
       })
       .catch(err => console.log(err.response))
-    },/*
-    loadUser() {
-      const URL = `${this.$store.state.apiUrl}/who-am-i`;
-      axios.get(URL)
-      .then(response => {
-        console.log(response);
-        this.user.name = response.data.username ;
-      })
-      .catch(err => console.log(err.response))
-    },*/
+    },
   },
   watch: {
   },

@@ -19,22 +19,15 @@
 
 <script>
 
-import axios from 'axios';
-
-axios.defaults.xsrfHeaderName = "X-CSRFToken"
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.withCredentials = true
-
 export default {
   name: 'SalesPaymentsDiff',
-  props: ['registerDate','storeId'],
-  data() {
-    return {
-      salesRegisterCashSalesTotal : null,
-      paymentsRegistersValuesTotal: null
-    }
-  },
   computed: {
+    salesRegisterCashSalesTotal : function(){
+      return this.$store.state.salesRegisterCashSalesTotal 
+    },
+    paymentsRegistersValuesTotal : function(){
+      return this.$store.state.paymentsRegistersValuesTotal 
+    },
     diff: function(){
       let sales = this.salesRegisterCashSalesTotal ? this.salesRegisterCashSalesTotal : 0;
       let payments = this.paymentsRegistersValuesTotal ? this.paymentsRegistersValuesTotal : 0;
@@ -50,47 +43,7 @@ export default {
       return this.diff === 0
     }
   },
-  mounted() {
-    if(this.storeId!==null){
-      this.loadTotalSales();
-      this.loadTotalPayments();
-    }
-    this.$root.$on('reloadTotalSales', () => {
-      this.loadTotalSales();
-    });
-    this.$root.$on('reloadTotalPayments', () => {
-      this.loadTotalPayments();
-    });
-  },
   methods: {
-    loadTotalSales(){
-      const URL = `${this.$store.state.apiUrl}/sales-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
-      axios.get(URL)
-      .then(response => {
-        console.log('sales registers total diff',response)
-        this.salesRegisterCashSalesTotal = response.data.value
-      })
-      .catch(err => console.log(err.response))
-      /*fetch(URL)
-      .then(response => response.json())
-      .then(responseJson => this.salesRegisterCashSalesTotal = responseJson.value)
-      .then(()=> console.log(this.salesRegisterCashSalesTotal))*/
-    },
-    loadTotalPayments(){
-      const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date=${this.registerDate}&store_id=${this.storeId}`;
-      axios.get(URL)
-      .then(response => {
-        console.log('payments registers total diff',response)
-        this.paymentsRegistersValuesTotal = response.data.value
-      })
-      .catch(err => console.log(err.response))
-      /*
-      fetch(URL)
-      .then(response => response.json())
-      .then(responseJson => this.paymentsRegistersValuesTotal = responseJson.value)
-      .then(()=> console.log(this.paymentsRegistersValuesTotal))
-      */
-    },
     diffStyle(){
       if (this.loss) return "table-danger"
       else if (this.excess) return "table-warning"
@@ -98,18 +51,6 @@ export default {
       else return ""
     }
   },
-  components: {
-  },
-  watch: {
-    registerDate() {
-      this.loadTotalSales();
-      this.loadTotalPayments();
-    },
-    storeId() {
-      this.loadTotalSales();
-      this.loadTotalPayments();
-    }
-  }
 }
 </script>
 

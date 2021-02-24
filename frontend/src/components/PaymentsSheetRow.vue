@@ -56,16 +56,6 @@ export default {
             })
             .catch(err => console.log(err.response))
             .finally(() => this.loading = false)
-            /*fetch(`${this.$store.state.apiUrl}/payments-registers/${this.paymentsRegister.id}`, {
-                method: "PATCH",
-                body: JSON.stringify(_data),
-                headers: {"Content-type": "application/json; charset=UTF-8"}
-            })
-            .then(response => response.json())
-            .then(json => console.log(json))
-            .then(()=> this.$emit('reloadTotal'))
-            .catch(err => console.log(err))
-            .finally(() => this.loading = false);*/
         },
         waitForInputWrapper(seconds){
             if (!this.waitForTyping) {

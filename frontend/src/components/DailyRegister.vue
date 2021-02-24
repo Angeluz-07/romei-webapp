@@ -21,13 +21,13 @@
         </nav>
         <div class="tab-content my-3" id="nav-tabContent">
           <div class="tab-pane fade show active" id="nav-sales-registers" role="tabpanel" aria-labelledby="nav-home-tab">
-            <SalesSheet :registerDate="this.registerDate" :storeId="this.storeId"/>
+            <SalesSheet />
           </div>
           <div class="tab-pane fade" id="nav-payments-registers" role="tabpanel" aria-labelledby="nav-profile-tab">
-            <PaymentsSheet :registerDate="this.registerDate" :storeId="this.storeId" />
+            <PaymentsSheet />
           </div>
           <div class="tab-pane fade" id="nav-sales-payments-diff" role="tabpanel" aria-labelledby="nav-profile-tab">
-            <SalesPaymentsDiff :registerDate="this.registerDate" :storeId="this.storeId" />
+            <SalesPaymentsDiff />
           </div>
         </div>
       </div>
@@ -41,18 +41,10 @@ import PaymentsSheet from './PaymentsSheet.vue'
 import SalesPaymentsDiff from './SalesPaymentsDiff.vue'
 import { mapActions } from 'vuex'
 
-import axios from 'axios';
-
-axios.defaults.xsrfHeaderName = "X-CSRFToken"
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.withCredentials = true
-
-
 export default {
   name: 'App',
   data() {
     return {
-      //stores : [],
       registerDate : this.today(),
       storeId: -1
     }
@@ -64,10 +56,30 @@ export default {
   },
   mounted () {
     this.loadStores();
+    this.loadTotalSales({
+      registerDate: this.registerDate,
+      storeId: this.storeId
+    });
+    this.loadSalesRegisters({
+      registerDate: this.registerDate,
+      storeId: this.storeId
+    }),
+    this.loadPaymentsRegisters({
+      registerDate: this.registerDate,
+      storeId: this.storeId
+    }),
+    this.loadTotalPayments({
+      registerDate: this.registerDate,
+      storeId: this.storeId
+    });
   },
   methods: {
     ...mapActions([
-      'loadStores', 
+      'loadStores',
+      'loadTotalSales',
+      'loadSalesRegisters',
+      'loadPaymentsRegisters',
+      'loadTotalPayments'
     ]),
     today(){
       var today = new Date();
@@ -77,18 +89,44 @@ export default {
 
       return `${yyyy}-${mm}-${dd}`
     },
-    /*
-    loadStores(){
-      const URL = `${this.$store.state.apiUrl}/stores`;
-      axios.get(URL)
-      .then(response => {
-        console.log('stores',response)
-        this.stores = response.data;
-        let firstOption = this.stores[0].id;
-        this.storeId = firstOption;
+  },
+  watch:{
+    registerDate() {
+      this.loadTotalSales({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });
+      this.loadSalesRegisters({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });
+      this.loadPaymentsRegisters({
+        registerDate: this.registerDate,
+        storeId: this.storeId
       })
-      .catch(err => console.log(err.response))
-    },*/
+      this.loadTotalPayments({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });
+    },
+    storeId(){
+      this.loadTotalSales({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });
+      this.loadSalesRegisters({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });  
+      this.loadPaymentsRegisters({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      })
+      this.loadTotalPayments({
+        registerDate: this.registerDate,
+        storeId: this.storeId
+      });
+    }
   },
   components: {
     SalesSheet,

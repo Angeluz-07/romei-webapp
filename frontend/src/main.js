@@ -25,7 +25,10 @@ const store = new Vuex.Store({
       name: ''
     },
     stores: [],
-    firtStoreId : -1
+    salesRegisters : [],
+    salesRegisterCashSalesTotal : 0,
+    paymentsRegisters : [],
+    paymentsRegistersValuesTotal : 0,
   },
   mutations: {
     setApiUrl (state, url) {
@@ -36,7 +39,19 @@ const store = new Vuex.Store({
     },
     updateStores(state, payload) {
       state.stores = payload
-    }
+    },
+    updateSalesRegisterCashSalesTotal(state, value) {
+      state.salesRegisterCashSalesTotal = value
+    },
+    updateSalesRegisters(state, payload) {
+      state.salesRegisters = payload;
+    },
+    updatePaymentsRegisters(state, payload) {
+      state.paymentsRegisters = payload;
+    },
+    updatePaymentsRegistersValuesTotal(state, value) {
+      state.paymentsRegistersValuesTotal = value
+    },
   },
   actions: {
     loadUser({ commit }) {
@@ -63,7 +78,48 @@ const store = new Vuex.Store({
         //this.storeId = firstOption;
       })
       .catch(err => console.log(err.response))
-    }
+    },
+    loadTotalSales( {commit } , payload){
+      const URL = `${apiUrl}/sales-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      axios.get(URL)
+      .then(response => {
+        console.log('sales registers total',response)
+        //this.salesRegisterCashSalesTotal = response.data.value;
+        commit("updateSalesRegisterCashSalesTotal", response.data.value)
+        //this.$root.$emit('reloadTotalSales');
+      })
+      .catch(err => console.log(err.response))
+    },
+    loadSalesRegisters({commit}, payload){
+      const URL = `${apiUrl}/sales-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}&start=true`;
+      axios.get(URL)
+      .then(response => {
+        console.log('sales registers',response)
+        //this.salesRegisters = response.data;
+        commit("updateSalesRegisters", response.data)
+      })
+      .catch(err => console.log(err.response))
+    },
+    loadPaymentsRegisters({commit}, payload){
+      const URL = `${apiUrl}/payments-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      axios.get(URL)
+      .then(response => {
+        console.log('payments registers',response)
+        //this.paymentsRegisters = response.data;
+        commit("updatePaymentsRegisters", response.data)
+      })
+      .catch(err => console.log(err.response))
+    },
+    loadTotalPayments( {commit } , payload){
+      const URL = `${apiUrl}/payments-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      axios.get(URL)
+      .then(response => {
+        console.log("Load total payments")
+        commit("updatePaymentsRegistersValuesTotal", response.data.value)
+        //this.$root.$emit('reloadTotalSales');
+      })
+      .catch(err => console.log(err.response))
+    },
   }
 })
 
