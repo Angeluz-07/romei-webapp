@@ -54,11 +54,17 @@ const store = new Vuex.Store({
       state.paymentsRegisters = payload;
     },
     updatePaymentsRegister_(state, payload) {
-      let i = state.paymentsRegisters.findIndex(item => item.id == payload.id);
+      let i = state.paymentsRegisters.findIndex(item => item.id === payload.id);
+      console.assert(i !== -1, "item not found");
       state.paymentsRegisters[i] = payload;
     },
     addPaymentsRegister_(state, payload){
       state.paymentsRegisters.push(payload);
+    },
+    deletePaymentsRegister_(state, payload) {
+      const i = state.paymentsRegisters.findIndex(item => item.id === payload.id)
+      console.assert(i !== -1, "item not found");
+      state.paymentsRegisters.splice(i, 1);
     },
     updatePaymentsRegistersValuesTotal(state, value) {
       state.paymentsRegistersValuesTotal = value
@@ -163,6 +169,16 @@ const store = new Vuex.Store({
       })
       .catch(err => console.log(err.response))
     },
+    deletePaymentsRegister( {commit}, payload) {
+      const URL = `${apiUrl}/payments-registers/${payload.id}`;
+      return axios.delete(URL)
+      .then(()=>{
+        commit('deletePaymentsRegister_', payload)
+        //this.loadPaymentsRegisters()
+        //this.loadTotal()
+      })
+      .catch(err => console.log(err.response))
+    }
   }
 })
 

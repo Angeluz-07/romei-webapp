@@ -43,12 +43,6 @@
 <script>
 
 import PaymentsSheetRow from './PaymentsSheetRow.vue'
-import axios from 'axios';
-
-axios.defaults.xsrfHeaderName = "X-CSRFToken"
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.withCredentials = true
-
 
 export default {
   name: 'PaymentsSheet',
@@ -92,30 +86,18 @@ export default {
       })
     },
     removePaymentsRegister(id){
-      const indexOfItemToRemove = this.paymentsRegisters.findIndex(x => x.id === id)
-      const foundItem = indexOfItemToRemove !== -1 ;
-      if (foundItem) {
-        this.paymentsRegisters.splice(indexOfItemToRemove, 1);
+      let payload = {
+        id: id
       }
-      this.deletePaymentsRegister(id);
+      this.loading = true
+      this.$store
+      .dispatch('deletePaymentsRegister', payload)
+      .then(()=> this.loading = false)
     },
-    deletePaymentsRegister(id){
-      this.loading = true;
-      const URL = `${this.$store.state.apiUrl}/payments-registers/${id}`;
-      axios.delete(URL)
-      .then(()=>{
-        //this.loadPaymentsRegisters()
-        //this.loadTotal()
-      })
-      .catch(err => console.log(err.response))
-      .finally(() => this.loading = false)
-    }
   },
   components: {
     PaymentsSheetRow
   },
-  watch: {
-  }
 }
 </script>
 
