@@ -87,7 +87,6 @@ export default {
       startDate : this.today(),
       endDate : this.today(),
       searchText : '',
-      storeId: null
     }
   },
   mounted () {
@@ -111,7 +110,7 @@ export default {
       return this.getDateFormatted(yesterday)
     },
     search(){
-      const URL = `${this.$store.state.apiUrl}/payments-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      const URL = `${this.$store.state.apiUrl}/payment-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
         console.log('search payments',response)
@@ -120,7 +119,7 @@ export default {
       .catch(err => console.log(err.response))
     },
     loadTotal(){
-      const URL = `${this.$store.state.apiUrl}/payments-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      const URL = `${this.$store.state.apiUrl}/payment-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
         console.log('payments registers total',response)

@@ -97,7 +97,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     loadTotalSales( {commit } , payload){
-      const URL = `${apiUrl}/sales-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      const URL = `${apiUrl}/sale-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
       axios.get(URL)
       .then(response => {
         console.log('sales registers total',response)
@@ -108,7 +108,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     loadSalesRegisters({commit}, payload){
-      const URL = `${apiUrl}/sales-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}&start=true`;
+      const URL = `${apiUrl}/sale-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}&start=true`;
       axios.get(URL)
       .then(response => {
         console.log('sales registers',response)
@@ -118,7 +118,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     loadPaymentsRegisters({commit}, payload){
-      const URL = `${apiUrl}/payments-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      const URL = `${apiUrl}/payment-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
       axios.get(URL)
       .then(response => {
         console.log('payments registers',response)
@@ -128,7 +128,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     loadTotalPayments( {commit } , payload){
-      const URL = `${apiUrl}/payments-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+      const URL = `${apiUrl}/payment-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
       axios.get(URL)
       .then(response => {
         console.log("Load total payments")
@@ -138,7 +138,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     updateSalesRegister( {commit}, payload){
-      const URL = `${apiUrl}/sales-registers/${payload.id}`;
+      const URL = `${apiUrl}/sale-registers/${payload.id}`;
       return axios
       .patch(URL, payload.data)
       .then(response => {
@@ -149,7 +149,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     createPaymentsRegister({ commit}, payload){
-      const URL = `${apiUrl}/payments-registers`;
+      const URL = `${apiUrl}/payment-registers`;
       return axios.post(URL, payload.data)
       .then(response => {
         console.log('create payments registers', response)
@@ -159,7 +159,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     updatePaymentsRegister( {commit}, payload){
-      const URL = `${apiUrl}/payments-registers/${payload.id}`;
+      const URL = `${apiUrl}/payment-registers/${payload.id}`;
       return axios
       .patch(URL, payload.data)
       .then(response => {
@@ -170,7 +170,7 @@ const store = new Vuex.Store({
       .catch(err => console.log(err.response))
     },
     deletePaymentsRegister( {commit}, payload) {
-      const URL = `${apiUrl}/payments-registers/${payload.id}`;
+      const URL = `${apiUrl}/payment-registers/${payload.id}`;
       return axios.delete(URL)
       .then(()=>{
         commit('deletePaymentsRegister_', payload)

@@ -29,18 +29,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class PaymentsRegisterViewSet(viewsets.ModelViewSet):
+class PaymentRegisterViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = PaymentsRegister.objects.all()
-    serializer_class = PaymentsRegisterSerializer
+    queryset = PaymentRegister.objects.all()
+    serializer_class = PaymentRegisterSerializer
 
     def list(self, request):
-        queryset = PaymentsRegister.objects.all()
+        queryset = PaymentRegister.objects.all()
         register_date = self.request.query_params.get('register_date', None)
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
-            queryset = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
+            queryset = PaymentRegister.objects.filter(register_date=register_date,store__id=store_id)
 
         register_date_gte = self.request.query_params.get('register_date.gte', None)
         register_date_lte = self.request.query_params.get('register_date.lte', None)
@@ -51,13 +51,13 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
             and name_contains is not None \
             and description_contains is not None:
             start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
-            queryset = PaymentsRegister.objects \
+            queryset = PaymentRegister.objects \
             .filter(
                 Q(name__icontains=name_contains) | Q(description__icontains=description_contains),
                 register_date__range=(start_date,end_date),
             )
 
-        serializer = PaymentsRegisterSerializer(queryset, many=True)
+        serializer = PaymentRegisterSerializer(queryset, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['GET'])
@@ -65,7 +65,7 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
         register_date = self.request.query_params.get('register_date', None)
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
-            payments = PaymentsRegister.objects.filter(register_date=register_date,store__id=store_id)
+            payments = PaymentRegister.objects.filter(register_date=register_date,store__id=store_id)
             total = sum([payment.value for payment in payments])
             return Response({'value':total})
 
@@ -78,7 +78,7 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
             and name_contains is not None \
             and description_contains is not None:
             start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
-            payments = PaymentsRegister.objects \
+            payments = PaymentRegister.objects \
             .filter(
                 Q(name__icontains=name_contains) | Q(description__icontains=description_contains),
                 register_date__range=(start_date,end_date),
@@ -88,11 +88,11 @@ class PaymentsRegisterViewSet(viewsets.ModelViewSet):
 
         return Response({'error':'query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
-class SalesRegisterViewSet(viewsets.ModelViewSet):
+class SaleRegisterViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = SalesRegister.objects.all()
-    serializer_class = SalesRegisterSerializer
+    queryset = SaleRegister.objects.all()
+    serializer_class = SaleRegisterSerializer
 
     def create(self, request, *args, **kwargs):
         # If integrity error, throws error as reponse.
@@ -106,14 +106,14 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
         register_date = self.request.query_params.get('register_date', None)
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
-            sales_registers = SalesRegister.objects.filter(register_date=register_date,product__store__id=store_id)
+            sales_registers = SaleRegister.objects.filter(register_date=register_date,product__store__id=store_id)
             total = sum([sales_register.cash_sale for sales_register in sales_registers])
             return Response({'value':total})
         else:
             return Response({'error':'register_date or store_id query params missing'}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
-        queryset = SalesRegister.objects.all()
+        queryset = SaleRegister.objects.all()
         register_date = self.request.query_params.get('register_date', None)
         store_id = self.request.query_params.get('store_id', None)
         start = self.request.query_params.get('start', None)
@@ -121,19 +121,19 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
             register_date = date_from_str(register_date)
             for product in Product.objects.filter(store__id=store_id):
                 try:
-                    SalesRegister.objects.get(
+                    SaleRegister.objects.get(
                         product=product,
                         register_date=register_date,
                     )
                 except ObjectDoesNotExist:
-                    last_sr = SalesRegister \
+                    last_sr = SaleRegister \
                     .objects \
                     .filter(register_date__lt=register_date, product_id=product.id) \
                     .first()
 
                     product_stock = last_sr.final_stock if last_sr else 0
 
-                    SalesRegister.objects.create(
+                    SaleRegister.objects.create(
                         product = product,
                         stock_addition = 0,
                         final_stock = product_stock,
@@ -142,7 +142,7 @@ class SalesRegisterViewSet(viewsets.ModelViewSet):
                         register_date = register_date
                     )
 
-            queryset = SalesRegister.objects.filter(register_date=register_date,product__store__id=store_id)
+            queryset = SaleRegister.objects.filter(register_date=register_date,product__store__id=store_id)
 
-        serializer = SalesRegisterSerializer(queryset, many=True)
+        serializer = SaleRegisterSerializer(queryset, many=True)
         return Response(serializer.data)

@@ -14,16 +14,16 @@
       <div class="col-12">
         <nav>
           <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-sales-registers" role="tab" aria-controls="nav-home" aria-selected="true">Ventas</a>
-            <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-payments-registers" role="tab" aria-controls="nav-profile" aria-selected="false">Apuntes</a>
+            <a class="nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-sale-registers" role="tab" aria-controls="nav-home" aria-selected="true">Ventas</a>
+            <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-payment-registers" role="tab" aria-controls="nav-profile" aria-selected="false">Apuntes</a>
             <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-sales-payments-diff" role="tab" aria-controls="nav-profile" aria-selected="false">Cuadre</a>
           </div>
         </nav>
         <div class="tab-content my-3" id="nav-tabContent">
-          <div class="tab-pane fade show active" id="nav-sales-registers" role="tabpanel" aria-labelledby="nav-home-tab">
+          <div class="tab-pane fade show active" id="nav-sale-registers" role="tabpanel" aria-labelledby="nav-home-tab">
             <SalesSheet />
           </div>
-          <div class="tab-pane fade" id="nav-payments-registers" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <div class="tab-pane fade" id="nav-payment-registers" role="tabpanel" aria-labelledby="nav-profile-tab">
             <PaymentsSheet :storeId="storeId" :registerDate="registerDate"/>
           </div>
           <div class="tab-pane fade" id="nav-sales-payments-diff" role="tabpanel" aria-labelledby="nav-profile-tab">

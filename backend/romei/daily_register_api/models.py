@@ -11,7 +11,7 @@ class Product(models.Model):
     price = models.FloatField()
     name = models.CharField(max_length=100)
 
-class PaymentsRegister(models.Model):
+class PaymentRegister(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
     description = models.TextField(blank=True)
     value = models.FloatField()
@@ -22,7 +22,7 @@ class PaymentsRegister(models.Model):
     def store_name(self):
         return self.store.name
 
-class SalesRegister(models.Model):
+class SaleRegister(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     stock_addition = models.IntegerField()
     final_stock = models.IntegerField()

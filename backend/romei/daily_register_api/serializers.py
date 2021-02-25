@@ -11,17 +11,17 @@ class ProductSerializer(serializers.ModelSerializer):
         model=Product
         fields = '__all__'
 
-class PaymentsRegisterSerializer(serializers.ModelSerializer):
+class PaymentRegisterSerializer(serializers.ModelSerializer):
     store_name = serializers.ReadOnlyField()
 
     class Meta:
-        model=PaymentsRegister
+        model=PaymentRegister
         fields = '__all__'
 
-class SalesRegisterSerializer(serializers.ModelSerializer):
+class SaleRegisterSerializer(serializers.ModelSerializer):
     cash_sale = serializers.ReadOnlyField()
     product_name = serializers.ReadOnlyField()
 
     class Meta:
-        model=SalesRegister
+        model=SaleRegister
         fields = '__all__'
