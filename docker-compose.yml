@@ -24,7 +24,6 @@ services:
       - DATABASE_HOST=db # same as db service name
       - DATABASE_PORT=${DATABASE_PORT}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DEBUG=False
     volumes:
       - ./backend:/usr/src/app
     depends_on:
