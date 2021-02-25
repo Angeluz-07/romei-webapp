@@ -46,19 +46,19 @@
           </thead-->
           <tbody>
               <tr  
-                v-for="paymentsRegister in paymentsRegisters"
-                :key="paymentsRegister.id">
+                v-for="paymentRegister in paymentRegisters"
+                :key="paymentRegister.id">
               <td style="width:5%"></td>
-              <td style="width:15%"><input :value="paymentsRegister.value" type="text" class="form-control text-right" disabled></td>
-              <td style="width:25%" ><input :value="paymentsRegister.name" type="text" class="form-control" disabled></td>
-              <td><input :value="paymentsRegister.description" type="text" class="form-control" disabled></td>
-              <td>{{ paymentsRegister.register_date }}</td>
-              <td>{{ paymentsRegister.store_name }}</td>
+              <td style="width:15%"><input :value="paymentRegister.value" type="text" class="form-control text-right" disabled></td>
+              <td style="width:25%" ><input :value="paymentRegister.name" type="text" class="form-control" disabled></td>
+              <td><input :value="paymentRegister.description" type="text" class="form-control" disabled></td>
+              <td>{{ paymentRegister.register_date }}</td>
+              <td>{{ paymentRegister.store_name }}</td>
               </tr>
 
               <tr>
               <td></td>
-              <td scope="col" class="text-right pr-4">{{ this.paymentsRegistersValuesTotal }}</td>
+              <td scope="col" class="text-right pr-4">{{ this.paymentRegistersValuesTotal }}</td>
               <td scope="col"></td>
               <td scope="col"></td>
               <td scope="col"></td>
@@ -82,8 +82,8 @@ export default {
   name: 'App',
   data() {
     return {
-      paymentsRegisters : [],
-      paymentsRegistersValuesTotal: null,
+      paymentRegisters : [],
+      paymentRegistersValuesTotal: null,
       startDate : this.today(),
       endDate : this.today(),
       searchText : '',
@@ -103,18 +103,11 @@ export default {
       var today = new Date();
       return this.getDateFormatted(today)
     },
-    yesterday(){
-      const today = new Date()
-      const yesterday = new Date(today)
-      yesterday.setDate(yesterday.getDate() - 1)
-      return this.getDateFormatted(yesterday)
-    },
     search(){
       const URL = `${this.$store.state.apiUrl}/payment-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
-        console.log('search payments',response)
-        this.paymentsRegisters = response.data
+        this.paymentRegisters = response.data
       })
       .catch(err => console.log(err.response))
     },
@@ -122,8 +115,7 @@ export default {
       const URL = `${this.$store.state.apiUrl}/payment-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
-        console.log('payments registers total',response)
-        this.paymentsRegistersValuesTotal = response.data.value
+        this.paymentRegistersValuesTotal = response.data.value
       })
       .catch(err => console.log(err.response))
     },
