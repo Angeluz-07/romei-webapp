@@ -24,7 +24,7 @@
             <SalesSheet />
           </div>
           <div class="tab-pane fade" id="nav-payments-registers" role="tabpanel" aria-labelledby="nav-profile-tab">
-            <PaymentsSheet />
+            <PaymentsSheet :storeId="storeId" :registerDate="registerDate"/>
           </div>
           <div class="tab-pane fade" id="nav-sales-payments-diff" role="tabpanel" aria-labelledby="nav-profile-tab">
             <SalesPaymentsDiff />

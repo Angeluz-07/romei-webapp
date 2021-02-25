@@ -52,6 +52,7 @@ axios.defaults.withCredentials = true
 
 export default {
   name: 'PaymentsSheet',
+  props:['storeId','registerDate'],
   data() {
     return {
       loading: false,
@@ -72,35 +73,23 @@ export default {
   },
   methods: {
     addPaymentsRegister(){
-      this.paymentsRegisters.push({
-        value: this.value,
-        name: this.name,
-        description: this.description
-      })
-      this.createPaymentsRegister();
-      this.value = 0;
-      this.name = this.description = "";
-    },
-    createPaymentsRegister(){
-      let _data = {
-        name: this.name,
-        description: this.description,
-        value : this.value,
-        store: this.storeId,
-        register_date: this.registerDate
+      let payload = {
+        data: {
+          name: this.name,
+          description: this.description,
+          value : this.value,
+          store: this.storeId,
+          register_date: this.registerDate
+        }
       }
-      this.loading = true;
-      const URL = `${this.$store.state.apiUrl}/payments-registers`;
-      axios.post(URL, _data)
-      .then(response => {
-        console.log('create payments registers',response)
-        //this.loadPaymentsRegisters()
-        //this.loadTotal()
-        this.paymentsRegistersValuesTotal = response.data.value
-        //this.$root.$emit('reloadTotalPayments')
+      this.loading = true
+      this.$store
+      .dispatch('createPaymentsRegister', payload)
+      .then(()=> this.loading = false)
+      .then(()=> {
+        this.value = 0;
+        this.name = this.description = "";
       })
-      .catch(err => console.log(err.response))
-      .finally(() => this.loading = false)
     },
     removePaymentsRegister(id){
       const indexOfItemToRemove = this.paymentsRegisters.findIndex(x => x.id === id)

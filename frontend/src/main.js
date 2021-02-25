@@ -53,6 +53,9 @@ const store = new Vuex.Store({
     updatePaymentsRegisters(state, payload) {
       state.paymentsRegisters = payload;
     },
+    addPaymentsRegister_(state, payload){
+      state.paymentsRegisters.push(payload);
+    },
     updatePaymentsRegistersValuesTotal(state, value) {
       state.paymentsRegistersValuesTotal = value
     },
@@ -134,7 +137,17 @@ const store = new Vuex.Store({
           console.log('update sale register',response)
       })
       .catch(err => console.log(err.response))
-    }
+    },
+    createPaymentsRegister({ commit}, payload){
+      const URL = `${apiUrl}/payments-registers`;
+      return axios.post(URL, payload.data)
+      .then(response => {
+        console.log('create payments registers', response)
+        commit('addPaymentsRegister_', response.data)
+        //this.$root.$emit('reloadTotalPayments')
+      })
+      .catch(err => console.log(err.response))
+    },
   }
 })
 
