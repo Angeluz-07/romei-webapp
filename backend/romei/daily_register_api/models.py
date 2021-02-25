@@ -6,10 +6,16 @@ class Store(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
 
+    def __str__(self):
+        return f'Store : {self.name}, {self.description[:40]}...'
+
 class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
     price = models.FloatField()
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'Product : {self.name}'
 
 class PaymentRegister(models.Model):
     store = models.ForeignKey(Store, on_delete=models.PROTECT)
