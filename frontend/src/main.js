@@ -45,6 +45,10 @@ const store = new Vuex.Store({
     },
     updateSalesRegisters(state, payload) {
       state.salesRegisters = payload;
+    },  
+    updateSalesRegister_(state, payload) {
+      let i = state.salesRegisters.findIndex(item => item.id == payload.id);
+      state.salesRegisters[i] = payload;
     },
     updatePaymentsRegisters(state, payload) {
       state.paymentsRegisters = payload;
@@ -120,6 +124,17 @@ const store = new Vuex.Store({
       })
       .catch(err => console.log(err.response))
     },
+    updateSalesRegister( {commit}, payload){
+      const URL = `${apiUrl}/sales-registers/${payload.id}`;
+      return axios
+      .patch(URL, payload.data)
+      .then(response => {
+           //this.$emit('reloadTotal')
+          commit('updateSalesRegister_', response.data)
+          console.log('update sale register',response)
+      })
+      .catch(err => console.log(err.response))
+    }
   }
 })
 

@@ -14,12 +14,6 @@
 
 <script>
 
-import axios from 'axios';
-
-axios.defaults.xsrfHeaderName = "X-CSRFToken"
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.withCredentials = true
-
 export default {
     name: 'SalesSheetRow',
     props: ['salesRegister'],
@@ -53,19 +47,17 @@ export default {
     },
     methods: {
         updateSalesRegister() {
-            let _data = {
-                final_stock: this.finalStock,
-                stock_addition : this.stockAddition
+            let payload = {
+                data : {
+                    final_stock: this.finalStock,
+                    stock_addition : this.stockAddition
+                },
+                id : this.salesRegister.id
             }
             this.loading = true;
-            const URL = `${this.$store.state.apiUrl}/sales-registers/${this.salesRegister.id}`;
-            axios.patch(URL,_data)
-            .then(response => {
-                console.log('update sale register',response)
-                //this.$emit('reloadTotal')
-            })
-            .catch(err => console.log(err.response))
-            .finally(() => this.loading = false)
+            this.$store
+            .dispatch('updateSalesRegister', payload)
+            .then(() => this.loading = false);
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
