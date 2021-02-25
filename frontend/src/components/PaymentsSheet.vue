@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="payments">
+    <div id="payments" class="border-top">
       <table class="table table-bordered table-hover">
           <!--thead>
               <tr>

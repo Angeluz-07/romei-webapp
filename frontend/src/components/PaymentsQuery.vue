@@ -1,39 +1,29 @@
 <template>
   <div class="container-fluid">
-    <div id="searchControlBar" class="row my-3">
-      <div class="col-sm-6">
-        <div class="row">
-          <label for="staticEmail" class="col-4 col-form-label">Fecha Inicial</label>
-          <div class="col-8">
+    <div id="searchControlBar">
+      <div class="row my-3">
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Inicial</label>
+          <div class="col-8 col-md-3 mb-3">
             <input type="date" class="form-control" v-model="startDate">
           </div>
-        </div>
-        <div class="row my-3">
-          <label for="staticEmail" class="col-4 col-form-label">Buscar</label>
-          <div class="col-8">
-            <input type="text" class="form-control" v-model="searchText">
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="row">
-          <label for="staticEmail" class="col-4 col-form-label">Fecha Final</label>
-          <div class="col-8">
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Final</label>
+          <div class="col-8 col-md-3">
             <input type="date" class="form-control" v-model="endDate">
           </div>
-        </div>
-        <div class="row my-3">
-          <!--label for="staticEmail" class="col-4 col-form-label">Tienda</label-->
-          <div class="col-12">
-            <button type="button" class="btn btn-secondary" v-on:click="search();loadTotal();">
+      </div>
+      <div class="row my-3">
+        <div class="col-4 col-md-3">
+          <button type="button" class="btn btn-secondary" v-on:click="search();loadTotal();">
             Search
-            </button>
+          </button>
           </div>
-        </div>
+          <div class="col-8 col-md-9">
+            <input type="text" class="form-control" v-model="searchText">
+          </div>
       </div>
     </div>
 
-    <div id="payments">
+    <div id="payments" class="mt-4 border-top">
       <table class="table table-bordered table-hover">
           <!--thead>
               <tr>
