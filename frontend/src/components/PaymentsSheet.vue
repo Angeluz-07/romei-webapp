@@ -57,10 +57,10 @@ export default {
   },
   computed: {
     paymentsRegistersValuesTotal : function(){
-      return this.$store.state.paymentsRegistersValuesTotal 
+      return this.$store.state.dailyRegister.payment.total
     },
     paymentsRegisters : function () {
-      return this.$store.state.paymentsRegisters;
+      return this.$store.state.dailyRegister.payment.registers;
     }
   },
   mounted() {
@@ -78,8 +78,9 @@ export default {
       }
       this.loading = true
       this.$store
-      .dispatch('createPaymentsRegister', payload)
+      .dispatch('createPaymentRegister', payload)
       .then(()=> this.loading = false)
+      .then(() => this.$store.dispatch('loadPaymentTotal'))
       .then(()=> {
         this.value = 0;
         this.name = this.description = "";
@@ -91,8 +92,9 @@ export default {
       }
       this.loading = true
       this.$store
-      .dispatch('deletePaymentsRegister', payload)
+      .dispatch('deletePaymentRegister', payload)
       .then(()=> this.loading = false)
+      .then(() => this.$store.dispatch('loadPaymentTotal'))
     },
   },
   components: {

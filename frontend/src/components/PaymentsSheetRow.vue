@@ -47,8 +47,9 @@ export default {
             }
             this.loading = true;
             this.$store
-            .dispatch('updatePaymentsRegister', payload)
-            .then(() => this.loading = false);
+            .dispatch('updatePaymentRegister', payload)
+            .then(() => this.loading = false)
+            .then(() => this.$store.dispatch('loadPaymentTotal'));
         },
         waitForInputWrapper(seconds){
             if (!this.waitForTyping) {

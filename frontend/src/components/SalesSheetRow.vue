@@ -2,12 +2,12 @@
     <tr>
         <td style="width:5%"><div v-if="loading" class="spinner-border spinner-border-sm text-secondary" role="status"></div></td>
         <td style="width:10%"><input v-model="stockAdditionInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
-        <td style="width:10%">{{ this.formatStock(this.salesRegister.product_stock) }}</td>
-        <td style="width:20%">{{ this.salesRegister.product_name }}</td>
+        <td style="width:10%">{{ this.formatStock(this.saleRegister.product_stock) }}</td>
+        <td style="width:20%">{{ this.saleRegister.product_name }}</td>
         <td style="width:10%">{{ this.formatStock(initialStock) }}</td>
         <td style="width:10%"><input v-model="finalStockInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
         <td style="width:10%">{{ this.formatStock(stockSold) }}</td>
-        <td style="width:10%">{{ this.salesRegister.product_price }}</td>
+        <td style="width:10%">{{ this.saleRegister.product_price }}</td>
         <td style="width:10%">{{ this.cashSale }}</td>
     </tr>
 </template>
@@ -16,7 +16,7 @@
 
 export default {
     name: 'SalesSheetRow',
-    props: ['salesRegister'],
+    props: ['saleRegister'],
     data() {
         return {
             stockAdditionInput: "",
@@ -30,7 +30,7 @@ export default {
             return this.PARSE_DOZEN_TO_NUMBER(this.stockAdditionInput)
         },
         initialStock : function () {
-            return this.salesRegister.product_stock + this.stockAddition;
+            return this.saleRegister.product_stock + this.stockAddition;
         },
         finalStock : function () {
             return this.PARSE_DOZEN_TO_NUMBER(this.finalStockInput)
@@ -39,37 +39,38 @@ export default {
             return Math.abs(this.finalStock - this.initialStock);
         },
         cashSale : function(){
-            return this.stockSold * this.salesRegister.product_price;
+            return this.stockSold * this.saleRegister.product_price;
         },
     },
     mounted(){
         this.setDefaultValues();
     },
     methods: {
-        updateSalesRegister() {
+        updateSaleRegister() {
             let payload = {
                 data : {
                     final_stock: this.finalStock,
                     stock_addition : this.stockAddition
                 },
-                id : this.salesRegister.id
+                id : this.saleRegister.id
             }
             this.loading = true;
             this.$store
-            .dispatch('updateSalesRegister', payload)
-            .then(() => this.loading = false);
+            .dispatch('updateSaleRegister', payload)
+            .then(() => this.loading = false)
+            .then(() => this.$store.dispatch('loadSaleTotal'));
         },
         formatStock(value) {
             return this.PARSE_NUMBER_TO_DOZEN(value);
         },
         setDefaultValues(){
-            this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.final_stock);
-            this.stockAdditionInput =this.PARSE_NUMBER_TO_DOZEN(this.salesRegister.stock_addition);
+            this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.saleRegister.final_stock);
+            this.stockAdditionInput =this.PARSE_NUMBER_TO_DOZEN(this.saleRegister.stock_addition);
         },
         waitForInputWrapper(seconds){
             if (!this.waitForTyping) {
                 setTimeout(() => {
-                    this.updateSalesRegister();
+                    this.updateSaleRegister();
                     this.waitForTyping= false;
                 }, seconds*1000);
             }

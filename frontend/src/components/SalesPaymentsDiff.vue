@@ -23,10 +23,10 @@ export default {
   name: 'SalesPaymentsDiff',
   computed: {
     salesRegisterCashSalesTotal : function(){
-      return this.$store.state.salesRegisterCashSalesTotal 
+      return this.$store.state.dailyRegister.sale.total
     },
     paymentsRegistersValuesTotal : function(){
-      return this.$store.state.paymentsRegistersValuesTotal 
+      return this.$store.state.dailyRegister.payment.total
     },
     diff: function(){
       let sales = this.salesRegisterCashSalesTotal ? this.salesRegisterCashSalesTotal : 0;

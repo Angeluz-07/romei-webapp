@@ -24,11 +24,23 @@ const store = new Vuex.Store({
     user: {
       name: ''
     },
+    paymentsQuery : {
+      registers : [],
+      total : 0
+    },
+    dailyRegister : {
+      registerDate : '',
+      storeId : -1,
+      sale : {
+        registers : [],
+        total : 0
+      },
+      payment : {
+        registers : [],
+        total : 0 
+      },
+    },
     stores: [],
-    salesRegisters : [],
-    salesRegisterCashSalesTotal : 0,
-    paymentsRegisters : [],
-    paymentsRegistersValuesTotal : 0,
   },
   mutations: {
     setApiUrl (state, url) {
@@ -37,37 +49,35 @@ const store = new Vuex.Store({
     updateUser (state, payload) {
       state.user = payload;
     },
-    updateStores(state, payload) {
+    updateStores (state, payload) {
       state.stores = payload
     },
-    updateSalesRegisterCashSalesTotal(state, value) {
-      state.salesRegisterCashSalesTotal = value
+    updateDailyRegister (state, payload) {
+      state.dailyRegister = payload;
     },
-    updateSalesRegisters(state, payload) {
-      state.salesRegisters = payload;
-    },  
-    updateSalesRegister_(state, payload) {
-      let i = state.salesRegisters.findIndex(item => item.id == payload.id);
-      state.salesRegisters[i] = payload;
+    updateSale (state, payload) {
+      state.dailyRegister.sale = payload;
     },
-    updatePaymentsRegisters(state, payload) {
-      state.paymentsRegisters = payload;
-    },
-    updatePaymentsRegister_(state, payload) {
-      let i = state.paymentsRegisters.findIndex(item => item.id === payload.id);
+    updateSaleRegister(state, payload) {
+      let i = state.dailyRegister.sale.registers.findIndex(item => item.id == payload.id);
       console.assert(i !== -1, "item not found");
-      state.paymentsRegisters[i] = payload;
+      state.dailyRegister.sale.registers[i] = payload;
     },
-    addPaymentsRegister_(state, payload){
-      state.paymentsRegisters.push(payload);
+    updatePayment (state, payload) {
+      state.dailyRegister.payment = payload;
     },
-    deletePaymentsRegister_(state, payload) {
-      const i = state.paymentsRegisters.findIndex(item => item.id === payload.id)
+    createPaymentRegister(state, payload){
+      state.dailyRegister.payment.registers.push(payload);
+    },
+    updatePaymentRegister(state, payload) {
+      let i = state.dailyRegister.payment.registers.findIndex(item => item.id === payload.id);
       console.assert(i !== -1, "item not found");
-      state.paymentsRegisters.splice(i, 1);
+      state.dailyRegister.payment.registers[i] = payload;
     },
-    updatePaymentsRegistersValuesTotal(state, value) {
-      state.paymentsRegistersValuesTotal = value
+    deletePaymentRegister(state, payload) {
+      const i = state.dailyRegister.payment.registers.findIndex(item => item.id === payload.id)
+      console.assert(i !== -1, "item not found");
+      state.dailyRegister.payment.registers.splice(i, 1);
     },
   },
   actions: {
@@ -75,109 +85,104 @@ const store = new Vuex.Store({
       const URL = `${apiUrl}/who-am-i`;
       axios.get(URL)
       .then(response => {
-        console.log("called", response);
-        commit('updateUser', {
-            name: response.data.username
-        });
-        //this.user.name = response.data.username ;
+        commit('updateUser', { name: response.data.username });
       })
       .catch(err => console.log(err.response))
     },
-    loadStores( {commit }){
+    loadStores({ commit }){
       const URL = `${apiUrl}/stores`;
-      axios.get(URL)
+      return axios.get(URL)
       .then(response => {
-        console.log('stores',response)
-        
         commit('updateStores', response.data);
-        //this.stores = response.data;
-        //let firstOption = this.stores[0].id;
-        //this.storeId = firstOption;
       })
       .catch(err => console.log(err.response))
     },
-    loadTotalSales( {commit } , payload){
-      const URL = `${apiUrl}/sale-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+    loadSaleRegisters({ commit, state }){
+      const registerDate = state.dailyRegister.registerDate;
+      const storeId = state.dailyRegister.storeId;
+      const URL = `${apiUrl}/sale-registers?register_date=${registerDate}&store_id=${storeId}&start=true`;
       axios.get(URL)
       .then(response => {
-        console.log('sales registers total',response)
-        //this.salesRegisterCashSalesTotal = response.data.value;
-        commit("updateSalesRegisterCashSalesTotal", response.data.value)
-        //this.$root.$emit('reloadTotalSales');
+        let payload = {...state.dailyRegister.sale, registers : response.data}
+        commit("updateSale", payload)
       })
       .catch(err => console.log(err.response))
     },
-    loadSalesRegisters({commit}, payload){
-      const URL = `${apiUrl}/sale-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}&start=true`;
+    loadSaleTotal({ commit, state }){
+      const registerDate = state.dailyRegister.registerDate;
+      const storeId = state.dailyRegister.storeId;
+      const URL = `${apiUrl}/sale-registers/total?register_date=${registerDate}&store_id=${storeId}`;
       axios.get(URL)
       .then(response => {
-        console.log('sales registers',response)
-        //this.salesRegisters = response.data;
-        commit("updateSalesRegisters", response.data)
+        let payload = {...state.dailyRegister.sale, total: response.data.value }
+        commit("updateSale", payload)
       })
       .catch(err => console.log(err.response))
     },
-    loadPaymentsRegisters({commit}, payload){
-      const URL = `${apiUrl}/payment-registers?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+    loadPaymentRegisters({ commit, state }){
+      const registerDate = state.dailyRegister.registerDate;
+      const storeId = state.dailyRegister.storeId;
+      const URL = `${apiUrl}/payment-registers?register_date=${registerDate}&store_id=${storeId}`;
       axios.get(URL)
       .then(response => {
-        console.log('payments registers',response)
-        //this.paymentsRegisters = response.data;
-        commit("updatePaymentsRegisters", response.data)
+        let payload = {...state.dailyRegister.payment, registers : response.data}
+        commit("updatePayment", payload)
       })
       .catch(err => console.log(err.response))
     },
-    loadTotalPayments( {commit } , payload){
-      const URL = `${apiUrl}/payment-registers/total?register_date=${payload.registerDate}&store_id=${payload.storeId}`;
+    loadPaymentTotal({ commit, state }){
+      const registerDate = state.dailyRegister.registerDate;
+      const storeId = state.dailyRegister.storeId;
+      const URL = `${apiUrl}/payment-registers/total?register_date=${registerDate}&store_id=${storeId}`;
       axios.get(URL)
       .then(response => {
-        console.log("Load total payments")
-        commit("updatePaymentsRegistersValuesTotal", response.data.value)
-        //this.$root.$emit('reloadTotalSales');
+        let payload = {...state.dailyRegister.payment, total: response.data.value }
+        commit("updatePayment", payload)
       })
       .catch(err => console.log(err.response))
     },
-    updateSalesRegister( {commit}, payload){
+    updateSaleRegister({ commit }, payload){
       const URL = `${apiUrl}/sale-registers/${payload.id}`;
       return axios
       .patch(URL, payload.data)
       .then(response => {
-           //this.$emit('reloadTotal')
-          commit('updateSalesRegister_', response.data)
-          console.log('update sale register',response)
+        commit('updateSaleRegister', response.data)
       })
       .catch(err => console.log(err.response))
     },
-    createPaymentsRegister({ commit}, payload){
+    createPaymentRegister({ commit }, payload){
       const URL = `${apiUrl}/payment-registers`;
-      return axios.post(URL, payload.data)
+      return axios
+      .post(URL, payload.data)
       .then(response => {
-        console.log('create payments registers', response)
-        commit('addPaymentsRegister_', response.data)
-        //this.$root.$emit('reloadTotalPayments')
+        commit('createPaymentRegister', response.data)
       })
       .catch(err => console.log(err.response))
     },
-    updatePaymentsRegister( {commit}, payload){
+    updatePaymentRegister({ commit }, payload){
       const URL = `${apiUrl}/payment-registers/${payload.id}`;
       return axios
       .patch(URL, payload.data)
       .then(response => {
-          //this.$emit('reloadTotal')
-          commit('updatePaymentsRegister_', response.data)
-          console.log('update pay register', response)
+        commit('updatePaymentRegister', response.data)
       })
       .catch(err => console.log(err.response))
     },
-    deletePaymentsRegister( {commit}, payload) {
+    deletePaymentRegister({ commit }, payload) {
       const URL = `${apiUrl}/payment-registers/${payload.id}`;
       return axios.delete(URL)
-      .then(()=>{
-        commit('deletePaymentsRegister_', payload)
-        //this.loadPaymentsRegisters()
-        //this.loadTotal()
+      .then(() => {
+        commit('deletePaymentRegister', payload)
       })
       .catch(err => console.log(err.response))
+    },
+    loadDailyRegister({ commit, state }, payload){
+      let _payload = {...state.dailyRegister, storeId: payload.storeId, registerDate: payload.registerDate}
+      commit('updateDailyRegister',_payload);
+      this.dispatch('loadSaleRegisters');
+      this.dispatch('loadSaleTotal');
+      this.dispatch('loadPaymentRegisters');
+      this.dispatch('loadPaymentTotal');
     }
   }
 })

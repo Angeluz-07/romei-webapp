@@ -2,9 +2,9 @@
         <table class="table table-bordered table-hover">
             <tbody>                
                 <SalesSheetRow
-                  v-for="salesRegister in salesRegisters"
-                  :key="salesRegister.id"
-                  :salesRegister="salesRegister"
+                  v-for="saleRegister in saleRegisters"
+                  :key="saleRegister.id"
+                  :saleRegister="saleRegister"
                 />
                 <tr>
                 <td scope="col"></td>
@@ -15,7 +15,7 @@
                 <td scope="col"></td>
                 <td scope="col"></td>
                 <td scope="col"></td>
-                <td scope="col">{{ this.salesRegisterCashSalesTotal }}</td>
+                <td scope="col">{{ this.saleRegistersCashSaleTotal }}</td>
                 </tr>
             </tbody>
         </table>
@@ -28,11 +28,11 @@ import SalesSheetRow from './SalesSheetRow.vue'
 export default {
   name: 'SalesSheet',
   computed: {
-    salesRegisterCashSalesTotal : function(){
-      return this.$store.state.salesRegisterCashSalesTotal 
+    saleRegistersCashSaleTotal : function(){
+      return this.$store.state.dailyRegister.sale.total; 
     },
-    salesRegisters : function () {
-      return this.$store.state.salesRegisters;
+    saleRegisters : function () {
+      return this.$store.state.dailyRegister.sale.registers;
     }
   },
   components: {

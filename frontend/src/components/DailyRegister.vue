@@ -55,31 +55,20 @@ export default {
     }
   },
   mounted () {
-    this.loadStores();
-    this.loadTotalSales({
-      registerDate: this.registerDate,
-      storeId: this.storeId
-    });
-    this.loadSalesRegisters({
-      registerDate: this.registerDate,
-      storeId: this.storeId
-    }),
-    this.loadPaymentsRegisters({
-      registerDate: this.registerDate,
-      storeId: this.storeId
-    }),
-    this.loadTotalPayments({
-      registerDate: this.registerDate,
-      storeId: this.storeId
+    this.$store
+    .dispatch('loadStores')
+    .then( () => this.storeId = this.stores[0].id)
+    .then( () => {
+      this.loadDailyRegister({
+        storeId : this.storeId,
+        registerDate : this.registerDate
+      })
     });
   },
   methods: {
     ...mapActions([
       'loadStores',
-      'loadTotalSales',
-      'loadSalesRegisters',
-      'loadPaymentsRegisters',
-      'loadTotalPayments'
+      'loadDailyRegister',
     ]),
     today(){
       var today = new Date();
@@ -92,40 +81,16 @@ export default {
   },
   watch:{
     registerDate() {
-      this.loadTotalSales({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });
-      this.loadSalesRegisters({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });
-      this.loadPaymentsRegisters({
-        registerDate: this.registerDate,
-        storeId: this.storeId
+      this.loadDailyRegister({
+        storeId : this.storeId,
+        registerDate : this.registerDate
       })
-      this.loadTotalPayments({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });
     },
     storeId(){
-      this.loadTotalSales({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });
-      this.loadSalesRegisters({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });  
-      this.loadPaymentsRegisters({
-        registerDate: this.registerDate,
-        storeId: this.storeId
+      this.loadDailyRegister({
+        storeId : this.storeId,
+        registerDate : this.registerDate
       })
-      this.loadTotalPayments({
-        registerDate: this.registerDate,
-        storeId: this.storeId
-      });
     }
   },
   components: {
