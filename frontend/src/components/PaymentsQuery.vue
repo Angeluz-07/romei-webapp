@@ -119,5 +119,10 @@ export default {
 #payments {
   height:50vh;
   overflow-y:scroll;
+  overflow-x:scroll;
+}
+
+table {
+  width:800px;
 }
 </style>

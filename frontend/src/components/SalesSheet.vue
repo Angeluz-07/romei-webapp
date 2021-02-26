@@ -1,4 +1,5 @@
 <template>
+  <div id="salesSheet">
         <table class="table table-bordered table-hover">
             <tbody>                
                 <SalesSheetRow
@@ -19,6 +20,7 @@
                 </tr>
             </tbody>
         </table>
+  </div>
 </template>
 
 <script>
@@ -42,4 +44,11 @@ export default {
 </script>
 
 <style scoped>
+table {
+  width:1000px;
+}
+
+#salesSheet {
+  overflow-x: scroll;
+}
 </style>
