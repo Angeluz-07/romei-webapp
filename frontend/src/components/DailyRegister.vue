@@ -1,10 +1,13 @@
 <template>
   <div class="container-fluid">
     <div class="row my-3">
-      <div class="col-sm-12 col-md-6 my-1">
+      <div class="col-sm-4 col-lg-2">
+        <p class="pt-2">{{ weekDay }}</p>
+      </div>
+      <div class="col-sm-8 col-lg-4 mb-1">
         <input type="date" class="form-control" v-model="registerDate">
       </div>
-      <div class="col-sm-12 col-md-6 my-1">
+      <div class="col-sm-12 col-lg-6">
         <select class="form-control" v-model="storeId">
           <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}, {{store.description.slice(0,40)}}</option>
         </select>
@@ -52,6 +55,9 @@ export default {
   computed: {
     stores: function(){
       return  this.$store.state.stores
+    },
+    weekDay: function(){
+      return this.dateToWeekDay(this.registerDate);
     }
   },
   mounted () {
@@ -78,6 +84,13 @@ export default {
 
       return `${yyyy}-${mm}-${dd}`
     },
+    dateToWeekDay(date) {
+      var dt = new Date(date);
+      dt.setMinutes(dt.getMinutes() + dt.getTimezoneOffset()); //local tz.
+      const dayOfWeek = new Date(dt).getDay();
+      return isNaN(dayOfWeek) ? null :
+        ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][dayOfWeek];
+    }
   },
   watch:{
     registerDate() {
