@@ -1,12 +1,12 @@
 <template>
   <div class="container-fluid">
     <div class="row my-3">
-      <div class="col-8">
+      <div class="col-sm-12 col-md-6 my-1">
         <input type="date" class="form-control" v-model="registerDate">
       </div>
-      <div class="col-4">
+      <div class="col-sm-12 col-md-6 my-1">
         <select class="form-control" v-model="storeId">
-          <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}</option>
+          <option v-for="store in stores" :key="store.id" :value="store.id">{{store.name}}, {{store.description.slice(0,40)}}</option>
         </select>
       </div>
     </div>
