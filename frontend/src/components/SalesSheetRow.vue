@@ -80,7 +80,7 @@ export default {
             let dozenPart,unitsPart;
             // #D# -> adb ; #D -> ad ; # -> b
             let a,b; 
-            let l=dozens.split("D");
+            let l=dozens.split("d");
             let k=1;
             switch(k){
                 //#d# -> adb
@@ -88,11 +88,11 @@ export default {
                 if (dozens===''){
                     return 0;
                 }
-                if (!dozens.includes('D')) {        
+                if (!dozens.includes('d')) {        
                     return parseInt(l[0],10);
                 }
                 a=parseInt(l[0],10);      
-                if (dozens.substr(-1) === 'D'){
+                if (dozens.substr(-1) === 'd'){
                     b = 0;
                 }else{
                     b=parseInt(l[1],10);
@@ -135,9 +135,9 @@ export default {
             let dozenPart=Math.trunc(n/12);
             let unitsPart=n%12;
             if(0==unitsPart){
-                return dozenPart+'D';
+                return dozenPart+'d';
             }else{
-                return dozenPart+'D'+unitsPart;
+                return dozenPart+'d'+unitsPart;
             }
         }
     }
