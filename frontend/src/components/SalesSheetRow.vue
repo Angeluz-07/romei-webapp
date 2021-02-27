@@ -14,6 +14,10 @@
 
 <script>
 
+const TO_SHOW_IN_DOZENS = [
+    "Pantalon mujer"
+]
+
 export default {
     name: 'SalesSheetRow',
     props: ['saleRegister'],
@@ -61,11 +65,12 @@ export default {
             .then(() => this.$store.dispatch('loadSaleTotal'));
         },
         formatStock(value) {
-            return this.PARSE_NUMBER_TO_DOZEN(value);
+            return TO_SHOW_IN_DOZENS.includes(this.saleRegister.product_name) ?
+                this.PARSE_NUMBER_TO_DOZEN(value) : value.toString() ;
         },
         setDefaultValues(){
-            this.finalStockInput = this.PARSE_NUMBER_TO_DOZEN(this.saleRegister.final_stock);
-            this.stockAdditionInput =this.PARSE_NUMBER_TO_DOZEN(this.saleRegister.stock_addition);
+            this.finalStockInput = this.formatStock(this.saleRegister.final_stock);
+            this.stockAdditionInput =this.formatStock(this.saleRegister.stock_addition);
         },
         waitForInputWrapper(seconds){
             if (!this.waitForTyping) {
