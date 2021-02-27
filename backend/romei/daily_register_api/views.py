@@ -153,7 +153,10 @@ class SaleRegisterViewSet(viewsets.ModelViewSet):
                         sr.product_stock = last_sr.final_stock
                         sr.save()
 
-            queryset = SaleRegister.objects.filter(register_date=register_date,product__store__id=store_id)
+            queryset = SaleRegister \
+            .objects \
+            .filter(register_date=register_date,product__store__id=store_id) \
+            .order_by('product__id')
 
         serializer = SaleRegisterSerializer(queryset, many=True)
         return Response(serializer.data)
