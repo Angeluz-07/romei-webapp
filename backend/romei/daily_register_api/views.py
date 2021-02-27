@@ -121,7 +121,7 @@ class SaleRegisterViewSet(viewsets.ModelViewSet):
             register_date = date_from_str(register_date)
             for product in Product.objects.filter(store__id=store_id):
                 try:
-                    SaleRegister.objects.get(
+                    sr = SaleRegister.objects.get(
                         product=product,
                         register_date=register_date,
                     )
@@ -129,6 +129,7 @@ class SaleRegisterViewSet(viewsets.ModelViewSet):
                     last_sr = SaleRegister \
                     .objects \
                     .filter(register_date__lt=register_date, product_id=product.id) \
+                    .order_by('-register_date') \
                     .first()
 
                     product_stock = last_sr.final_stock if last_sr else 0
@@ -141,6 +142,16 @@ class SaleRegisterViewSet(viewsets.ModelViewSet):
                         product_stock = product_stock,
                         register_date = register_date
                     )
+                else:
+                    last_sr = SaleRegister \
+                    .objects \
+                    .filter(register_date__lt=register_date, product_id=product.id) \
+                    .order_by('-register_date') \
+                    .first()
+
+                    if last_sr and sr.product_stock != last_sr.final_stock:
+                        sr.product_stock = last_sr.final_stock
+                        sr.save()
 
             queryset = SaleRegister.objects.filter(register_date=register_date,product__store__id=store_id)
 
