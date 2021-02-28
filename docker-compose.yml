@@ -24,8 +24,10 @@ services:
       - DATABASE_HOST=db # same as db service name
       - DATABASE_PORT=${DATABASE_PORT}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=0
     volumes:
       - ./backend:/usr/src/app
+      - django_static:/usr/src/app/static
     depends_on:
       - db
   frontend:
@@ -38,10 +40,12 @@ services:
   reverse_proxy:
     build: ./reverse_proxy
     ports:
-      - "81:80"
+      - "80:80"
     depends_on:
       - backend
       - frontend
+    volumes:
+      - django_static:/static
   pgadmin:
     image: dpage/pgadmin4
     ports:
@@ -59,3 +63,4 @@ services:
 volumes:
   db_data:
   pgadmin_data:
+  django_static:
