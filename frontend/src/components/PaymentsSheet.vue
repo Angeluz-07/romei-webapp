@@ -86,15 +86,17 @@ export default {
         this.name = this.description = "";
       })
     },
-    removePaymentsRegister(id){
-      let payload = {
-        id: id
+    removePaymentsRegister(id, value, name){
+      if(confirm(`Esta seguro de querer eliminar el registro [$${value} ; ${name}]?`)) {
+        let payload = {
+          id: id
+        }
+        this.loading = true
+        this.$store
+        .dispatch('deletePaymentRegister', payload)
+        .then(()=> this.loading = false)
+        .then(() => this.$store.dispatch('loadPaymentTotal'))
       }
-      this.loading = true
-      this.$store
-      .dispatch('deletePaymentRegister', payload)
-      .then(()=> this.loading = false)
-      .then(() => this.$store.dispatch('loadPaymentTotal'))
     },
   },
   components: {

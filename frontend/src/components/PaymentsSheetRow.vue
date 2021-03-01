@@ -5,7 +5,13 @@
         <td><input v-model="name" v-on:input="waitForInputWrapper(2)" type="text" class="form-control"></td>
         <td><input v-model="description"  v-on:input="waitForInputWrapper(3)" type="text" class="form-control"></td>
         <td>
-        <button type="button" class="btn btn-danger" @click="$emit('removePaymentsRegister', paymentsRegister.id)">x</button>
+        <button 
+            type="button" 
+            class="btn btn-danger" 
+            @click="$emit('removePaymentsRegister', paymentsRegister.id, paymentsRegister.value, paymentsRegister.name)"
+        >
+            X
+        </button>
         </td>
     </tr>
 </template>
