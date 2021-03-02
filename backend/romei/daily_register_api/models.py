@@ -22,7 +22,6 @@ class PaymentRegister(models.Model):
     description = models.TextField(blank=True)
     value = models.FloatField()
     register_date = models.DateField()
-    name = models.CharField(max_length=100,blank=True)
 
     @property
     def store_name(self):
