@@ -40,7 +40,6 @@
                 :key="paymentRegister.id">
               <td style="width:5%"></td>
               <td style="width:15%"><input :value="paymentRegister.value" type="text" class="form-control text-right" disabled></td>
-              <td style="width:25%" ><input :value="paymentRegister.name" type="text" class="form-control" disabled></td>
               <td><input :value="paymentRegister.description" type="text" class="form-control" disabled></td>
               <td>{{ paymentRegister.register_date }}</td>
               <td>{{ paymentRegister.store_name }}</td>
@@ -94,7 +93,7 @@ export default {
       return this.getDateFormatted(today)
     },
     search(){
-      const URL = `${this.$store.state.apiUrl}/payment-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      const URL = `${this.$store.state.apiUrl}/payment-registers?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
         this.paymentRegisters = response.data
@@ -102,7 +101,7 @@ export default {
       .catch(err => console.log(err.response))
     },
     loadTotal(){
-      const URL = `${this.$store.state.apiUrl}/payment-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&name.contains=${this.searchText}&description.contains=${this.searchText}`;
+      const URL = `${this.$store.state.apiUrl}/payment-registers/total?register_date.gte=${this.startDate}&register_date.lte=${this.endDate}&description.contains=${this.searchText}`;
       axios.get(URL)
       .then(response => {
         this.paymentRegistersValuesTotal = response.data.value

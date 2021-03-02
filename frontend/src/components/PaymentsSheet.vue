@@ -21,16 +21,21 @@
 
               <tr>
               <td style="width:5%"></td>
-              <td style="width:20%"><input v-model="value"  type="text" class="form-control text-right"></td>
-              <td style="width:25%" ><input v-model="name" type="text" class="form-control"></td>
-              <td style="width:25%"><input v-model="description"  type="text" class="form-control"></td>
-              <td><button type="button" class="btn btn-secondary"  @click="addPaymentsRegister">+</button></td>
+              <td style="width:8%" class="px-2"><input v-model="value"  type="text" class="form-control text-right px-1"></td>
+              <td style="">
+                <textarea 
+                  v-model="description"
+                  class="form-control"
+                  oninput='this.style.height = "";this.style.height = this.scrollHeight + 3 + "px"'
+                  >
+                </textarea>
+              </td>
+              <td style="width:2%"><button type="button" class="btn btn-secondary"  @click="addPaymentsRegister">+</button></td>
               </tr>
             
               <tr>
               <td></td>
               <td scope="col" class="text-right pr-4">{{ this.paymentsRegistersValuesTotal }}</td>
-              <td scope="col"></td>
               <td scope="col"></td>
               <td scope="col"></td>
               </tr>
@@ -50,8 +55,7 @@ export default {
   data() {
     return {
       loading: false,
-      value: 0,
-      name : "",
+      value: '',
       description : "",
     }
   },
@@ -67,11 +71,11 @@ export default {
   },
   methods: {
     addPaymentsRegister(){
+      let _value = this.value==='' ? 0 : this.value;
       let payload = {
         data: {
-          name: this.name,
           description: this.description,
-          value : this.value,
+          value : _value,
           store: this.storeId,
           register_date: this.registerDate
         }
@@ -82,12 +86,12 @@ export default {
       .then(()=> this.loading = false)
       .then(() => this.$store.dispatch('loadPaymentTotal'))
       .then(()=> {
-        this.value = 0;
-        this.name = this.description = "";
+        this.value = '';
+        this.description = "";
       })
     },
-    removePaymentsRegister(id, value, name){
-      if(confirm(`Esta seguro de querer eliminar el registro [$${value} ; ${name}]?`)) {
+    removePaymentsRegister(id, value, description){
+      if(confirm(`Esta seguro de querer eliminar el registro [$${value} ; ${description}]?`)) {
         let payload = {
           id: id
         }
@@ -109,11 +113,5 @@ export default {
 #payments {
   height:50vh;
   overflow-y:scroll;
-  overflow-x: scroll;
 }
-
-table {
-  width:600px;
-}
-
 </style>
