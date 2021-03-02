@@ -43,16 +43,14 @@ class PaymentRegisterViewSet(viewsets.ModelViewSet):
 
         register_date_gte = self.request.query_params.get('register_date.gte', None)
         register_date_lte = self.request.query_params.get('register_date.lte', None)
-        name_contains =  self.request.query_params.get('name.contains', None)
         description_contains =  self.request.query_params.get('description.contains', None)
         if register_date_gte \
             and register_date_lte \
-            and name_contains is not None \
             and description_contains is not None:
             start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
             queryset = PaymentRegister.objects \
             .filter(
-                Q(name__icontains=name_contains) | Q(description__icontains=description_contains),
+                description__icontains=description_contains,
                 register_date__range=(start_date,end_date),
             )
 
