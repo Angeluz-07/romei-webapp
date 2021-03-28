@@ -1,3 +1,9 @@
+const pages = {
+    index: "src/main.js",
+};
+
 module.exports = {
-    filenameHashing: false
-}
+    outputDir: "./build/static/vue/",
+    pages: pages,
+    filenameHashing: false,
+};

@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'daily_register_api',
+    'daily_register',
     'management',
     'romei_auth',
     'django.contrib.admin',
@@ -66,10 +67,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'romei.urls'
 
+TEMPLATE_DIRS = [
+    BASE_DIR / 'templates'    
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': TEMPLATE_DIRS,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -148,6 +153,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.parent / 'static'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'  
+]
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -170,5 +178,5 @@ ALLOWED_HOSTS=['*']
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8081' # Here was the problem indeed and it has to be http://localhost:3000, not http://localhost:3000/
+    'http://localhost:8080' # Here was the problem indeed and it has to be http://localhost:3000, not http://localhost:3000/
 ]
