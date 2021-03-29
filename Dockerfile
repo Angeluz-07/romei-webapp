@@ -1,10 +1,10 @@
 # daily-register vue app build stage
 FROM node:lts-alpine as daily-register-vue-build-stage
-ENV NODE_ENV="production"
 WORKDIR /app
-COPY daily_register/package*.json .
+COPY daily_register/package*.json ./
 RUN npm install
 COPY daily_register/ .
+ENV NODE_ENV=production
 RUN npm run build
 
 # django app build stage

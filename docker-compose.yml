@@ -12,8 +12,8 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
-  backend:
-    build: ./backend
+  web_app:
+    build: .
     ports:
       - "8000:8000"
     environment:
@@ -25,24 +25,15 @@ services:
       - DATABASE_PORT=${DATABASE_PORT}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
     volumes:
-      - ./backend:/usr/src/app
       - django_static:/usr/src/app/static
     depends_on:
       - db
-  frontend:
-    build:
-      context: ./frontend
-    ports:
-      - "8081:8081"
-    depends_on:
-      - backend
   reverse_proxy:
     build: ./reverse_proxy
     ports:
       - "80:80"
     depends_on:
-      - backend
-      - frontend
+      - web_app
     volumes:
       - django_static:/static
   pgadmin:
