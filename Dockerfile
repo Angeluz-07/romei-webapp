@@ -13,6 +13,6 @@ WORKDIR /usr/src/app
 COPY rms/requirements.txt .
 RUN pip3 install -r requirements.txt
 COPY rms/ .
-COPY --from=daily-register-vue-build-stage /app/build /rms/romei/static/daily_register_vue
+COPY --from=daily-register-vue-build-stage /app/build ./romei/static/daily_register_vue/build
 CMD python romei/manage.py collectstatic --noinput; python romei/manage.py runserver 0.0.0.0:8000
 
