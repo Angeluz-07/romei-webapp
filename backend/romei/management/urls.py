@@ -1,9 +1,9 @@
 from django.urls import include, path
-from django.contrib.auth import views as auth_views
+from django.views.generic.base import RedirectView
 from .views import *
 
 urlpatterns = [
-    path('payment-query', payment_query, name='payment_query'),
-	#path('login',auth_views.LoginView.as_view(), name='login'),
-	#path('logout',auth_views.LogoutView.as_view(), name='logout'),
+	path('', RedirectView.as_view(url='daily-register')),
+	path('daily-register', daily_register, name='daily_register'),
+    path('management/payment-query', payment_query, name='payment_query'),
 ]

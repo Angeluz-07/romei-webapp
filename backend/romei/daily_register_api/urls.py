@@ -9,5 +9,5 @@ router.register(r'stores', StoreViewSet)
 router.register(r'payment-registers', PaymentRegisterViewSet)
 
 urlpatterns = [
-	path('api/',include(router.urls)),
+	path('',include(router.urls)),
 ]

@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required
 from daily_register_api.models import PaymentRegister
 # Create your views here.
 
-
 def date_from_str(date:str, date_format:str="%Y-%m-%d"):
     from datetime import datetime
     return datetime.strptime(date, date_format)
 
+@login_required(login_url='login')
+def daily_register(request):
+    return render(request, 'management/daily_register.html')
 
 @login_required(login_url='login')
 def payment_query(request):
