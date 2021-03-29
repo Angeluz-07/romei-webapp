@@ -41,19 +41,6 @@ class PaymentRegisterViewSet(viewsets.ModelViewSet):
         if register_date and store_id:
             queryset = PaymentRegister.objects.filter(register_date=register_date,store__id=store_id)
 
-        register_date_gte = self.request.query_params.get('register_date.gte', None)
-        register_date_lte = self.request.query_params.get('register_date.lte', None)
-        description_contains =  self.request.query_params.get('description.contains', None)
-        if register_date_gte \
-            and register_date_lte \
-            and description_contains is not None:
-            start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
-            queryset = PaymentRegister.objects \
-            .filter(
-                description__icontains=description_contains,
-                register_date__range=(start_date,end_date),
-            )
-
         serializer = PaymentRegisterSerializer(queryset, many=True)
         return Response(serializer.data)
     
@@ -63,21 +50,6 @@ class PaymentRegisterViewSet(viewsets.ModelViewSet):
         store_id = self.request.query_params.get('store_id', None)
         if register_date and store_id:
             payments = PaymentRegister.objects.filter(register_date=register_date,store__id=store_id)
-            total = sum([payment.value for payment in payments])
-            return Response({'value':total})
-
-        register_date_gte = self.request.query_params.get('register_date.gte', None)
-        register_date_lte = self.request.query_params.get('register_date.lte', None)
-        description_contains =  self.request.query_params.get('description.contains', None)
-        if register_date_gte \
-            and register_date_lte \
-            and description_contains is not None:
-            start_date, end_date = date_from_str(register_date_gte), date_from_str(register_date_lte)
-            payments = PaymentRegister.objects \
-            .filter(
-                description__icontains=description_contains,
-                register_date__range=(start_date,end_date),
-            )
             total = sum([payment.value for payment in payments])
             return Response({'value':total})
 

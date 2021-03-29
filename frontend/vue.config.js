@@ -1,9 +1,9 @@
-const pages = {
-    index: "src/main.js",
-};
+const TARGET_DJANGO_STATIC_FOLDER="../backend/romei/daily_register/static/daily_register";
 
 module.exports = {
-    outputDir: "./build/static/vue/",
-    pages: pages,
+    outputDir: `${TARGET_DJANGO_STATIC_FOLDER}/build`,
     filenameHashing: false,
+    devServer: {
+        writeToDisk: true, // Write files to disk in dev mode, so Django can serve the assets
+    },
 };

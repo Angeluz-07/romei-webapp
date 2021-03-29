@@ -168,7 +168,7 @@ REST_FRAMEWORK = {
 }
 
 # Login redirect view
-LOGIN_REDIRECT_URL = 'who_am_i'
+LOGIN_REDIRECT_URL = 'daily_register'
 LOGOUT_REDIRECT_URL = 'login'
 
 APPEND_SLASH = False

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
+from .views import *
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='daily_register/vue_test.html'), name='vue_test'),
+    path('', daily_register, name='daily_register'),
 ]
