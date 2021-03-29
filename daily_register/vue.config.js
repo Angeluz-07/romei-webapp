@@ -1,4 +1,4 @@
-const TARGET_DJANGO_STATIC_FOLDER="../backend/romei/static/daily_register_vue";
+const TARGET_DJANGO_STATIC_FOLDER="../rms/romei/static/daily_register_vue";
 
 module.exports = {
     outputDir: `${TARGET_DJANGO_STATIC_FOLDER}/build`,
