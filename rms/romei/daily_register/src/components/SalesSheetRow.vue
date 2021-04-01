@@ -4,11 +4,25 @@
         <td style="width:10%"><input v-model="stockAdditionInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
         <td style="width:10%">{{ this.formatStock(this.saleRegister.product_stock) }}</td>
         <td style="width:20%">{{ this.saleRegister.product_name }}</td>
-        <td style="width:10%">{{ this.formatStock(initialStock) }}</td>
-        <td style="width:10%"><input v-model="finalStockInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control"></td>
+        <td
+            style="width:10%"
+            v-bind:class="finalStockGreaterThanInitialStockStyle"
+            >
+        {{ this.formatStock(initialStock) }}
+        </td>
+        <td style="width:10%"
+            v-bind:class="finalStockGreaterThanInitialStockStyle"
+            >
+            <input v-model="finalStockInput" v-on:input="waitForInputWrapper(2);" type="text" class="form-control">
+        </td>
         <td style="width:10%">{{ this.formatStock(stockSold) }}</td>
         <td style="width:10%">{{ this.saleRegister.product_price }}</td>
-        <td style="width:10%">{{ this.cashSale }}</td>
+        <td
+            style="width:10%"            
+            v-bind:class="finalStockGreaterThanInitialStockStyle"
+        >
+        {{ this.cashSale }}
+        </td>
     </tr>
 </template>
 
@@ -40,11 +54,16 @@ export default {
             return this.PARSE_DOZEN_TO_NUMBER(this.finalStockInput)
         },
         stockSold : function () {
-            return Math.abs(this.finalStock - this.initialStock);
+            const sold = this.initialStock - this.finalStock;
+            return sold < 0 ? 0 : sold ;
         },
         cashSale : function(){
             return this.stockSold * this.saleRegister.product_price;
         },
+        finalStockGreaterThanInitialStockStyle: function(){
+            const sold = this.initialStock - this.finalStock;
+            return sold < 0 ? "table-warning" : "" ;
+        }
     },
     mounted(){
         this.setDefaultValues();

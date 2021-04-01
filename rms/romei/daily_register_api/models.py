@@ -45,7 +45,10 @@ class SaleRegister(models.Model):
 
     @property
     def stock_sold(self):
-        return self.initial_stock - self.final_stock
+        sold = self.initial_stock - self.final_stock
+        if sold < 0 :
+            return 0
+        return sold
 
     @property
     def cash_sale(self):
