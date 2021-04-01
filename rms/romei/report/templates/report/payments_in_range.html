@@ -1,6 +1,8 @@
 {%  extends "base_nav.html" %}
 
 {% block top_assets %}
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 <style>
 #payments {
   height:50vh;
@@ -36,47 +38,19 @@ table {
             Search
           </button>
           </div>
-          <div class="col-8 col-md-9">
-            <input type="text" class="form-control" name="search_text" value="{{ search_text }}" required>
-          </div>
+          <!--div class="col-8 col-md-9">
+            <input type="text" class="form-control" name="search_text" value="" required>
+          </div-->
       </div>
      </form>
     </div>
 
-    <div id="payments" class="mt-4 border-top">
-      <table class="table table-bordered table-hover">
-          <!--thead>
-              <tr>
-              <th scope="col"></th>
-              <th scope="col">Valor</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Descripcion</th>
-              <th scope="col"></th>
-              </tr>
-          </thead-->
-          <tbody>
-
-            {% for item in payment_query_data %}
-              <tr>
-              <td style="width:5%"></td>
-              <td style="width:15%"><input value="{{ item.value }}" type="text" class="form-control text-right" disabled></td>
-              <td><input value="{{ item.description }}" type="text" class="form-control" disabled></td>
-              <td>{{ item.register_date }}</td>
-              <td>{{ item.store_name }}</td>
-              </tr>
-            {% endfor %}
-              
-
-              <tr>
-              <td></td>
-              <td scope="col" class="text-right pr-4">{{ total }}</td>
-              <td scope="col"></td>
-              <td scope="col"></td>
-              <td scope="col"></td>
-              <td scope="col"></td>
-              </tr>
-          </tbody>
-      </table>
+    <div id="plt_chart" class="mt-4 border-top">
+      {% autoescape off %}
+      {% if plot_div %}
+        {{ plot_div }}
+      {% endif %}
+      {% endautoescape %}
     </div>
   </div>
 {% endblock %}

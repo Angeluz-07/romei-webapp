@@ -1,7 +1,37 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from daily_register_api.models import PaymentRegister
+from daily_register_api.models import PaymentRegister, Store
+from management.views import date_from_str
 # Create your views here.
+
+def build_df_payments_in_range(queryset):
+    import pandas as pd
+    df = pd.DataFrame(queryset.values(), columns=['register_date','store_id','id','value'])
+    df = df.groupby(['register_date', 'store_id']).agg({'value': 'sum'}).reset_index()
+    df = df.pivot(index='register_date', columns='store_id', values='value').reset_index()
+    df = df.rename_axis("Stores", axis = 1)
+    column_names = { s.id : s.__str__() for s in Store.objects.all() }
+    df = df.rename(columns=column_names)
+    df = df.rename(columns={'register_date':'date'}, index={'store_id':''})
+    return df
+
+def build_plot_payments_in_range(df, date_range):
+    start_date, end_date = date_range
+    y_data = [df[column] for column in df.columns.tolist()]
+    import plotly.express as px
+    fig = px.line(
+        df,
+        x="date",
+        y=df.columns,
+        hover_data={"date": "|%B %d, %Y"},
+        title='$ x por dia',
+        range_x=[start_date,end_date],
+    )
+    fig.update_xaxes( tickformat="%A\n%b\n%d")
+
+    from plotly.offline import plot
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
 
 @login_required(login_url='login')
 def payments_in_range(request):
@@ -11,19 +41,19 @@ def payments_in_range(request):
     if request.method == 'POST':
         _start_date = request.POST.get('start_date')
         _end_date = request.POST.get('end_date')
-        _search_text = request.POST.get('search_text')
         context['start_date'] = _start_date
         context['end_date'] = _end_date
-        context['search_text'] = _search_text
-        if _start_date and _end_date and _search_text:
-            search_text = ' ' if _search_text.isspace() else _search_text
+        if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
             queryset = PaymentRegister \
             .objects \
             .filter(
-                description__icontains=search_text,
-                register_date__range=(start_date,end_date),
+                register_date__range=(start_date,end_date)
             )
+            
+            df = build_df_payments_in_range(queryset)
+            plot_div = build_plot_payments_in_range(df,(start_date,end_date))
+            context['plot_div'] = plot_div
         
     context['payment_query_data'] = queryset
     context['total'] = total
