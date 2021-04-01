@@ -1,4 +1,4 @@
-const TARGET_DJANGO_STATIC_FOLDER="../rms/romei/static/daily_register_vue";
+const TARGET_DJANGO_STATIC_FOLDER="../static/daily_register";
 
 module.exports = {
     outputDir: process.env.NODE_ENV === 'production' 
