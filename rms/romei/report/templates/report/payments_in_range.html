@@ -1,0 +1,82 @@
+{%  extends "base_nav.html" %}
+
+{% block top_assets %}
+<style>
+#payments {
+  height:50vh;
+  overflow-y:scroll;
+  overflow-x:scroll;
+}
+
+table {
+  width:800px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div id="searchControlBar">
+     <form action="{% url 'payments_in_range' %}" method="post">
+     {% csrf_token %}
+      <div class="row my-3">
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Inicial</label>
+          <div class="col-8 col-md-3 mb-3">
+            <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
+          </div>
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Final</label>
+          <div class="col-8 col-md-3">
+            <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
+          </div>
+      </div>
+      <div class="row my-3">
+        <div class="col-4 col-md-3">
+          <button type="submit" class="btn btn-secondary">
+            Search
+          </button>
+          </div>
+          <div class="col-8 col-md-9">
+            <input type="text" class="form-control" name="search_text" value="{{ search_text }}" required>
+          </div>
+      </div>
+     </form>
+    </div>
+
+    <div id="payments" class="mt-4 border-top">
+      <table class="table table-bordered table-hover">
+          <!--thead>
+              <tr>
+              <th scope="col"></th>
+              <th scope="col">Valor</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col"></th>
+              </tr>
+          </thead-->
+          <tbody>
+
+            {% for item in payment_query_data %}
+              <tr>
+              <td style="width:5%"></td>
+              <td style="width:15%"><input value="{{ item.value }}" type="text" class="form-control text-right" disabled></td>
+              <td><input value="{{ item.description }}" type="text" class="form-control" disabled></td>
+              <td>{{ item.register_date }}</td>
+              <td>{{ item.store_name }}</td>
+              </tr>
+            {% endfor %}
+              
+
+              <tr>
+              <td></td>
+              <td scope="col" class="text-right pr-4">{{ total }}</td>
+              <td scope="col"></td>
+              <td scope="col"></td>
+              <td scope="col"></td>
+              <td scope="col"></td>
+              </tr>
+          </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

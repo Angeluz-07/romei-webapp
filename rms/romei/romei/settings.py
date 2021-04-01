@@ -42,6 +42,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'daily_register_api',
     'management',
+    'report',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

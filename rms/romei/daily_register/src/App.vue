@@ -5,8 +5,13 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.min.js'
+/*
+  Use boostrap assets placed in django. As when
+  put bootstrap twice causes some boostraps function
+  to break, specifically nav-bar. https://stackoverflow.com/a/24674182/6819659
+*/
+//import 'bootstrap/dist/css/bootstrap.min.css'
+//import 'bootstrap/dist/js/bootstrap.min.js'
 
 import DailyRegister from './components/DailyRegister.vue'
 
