@@ -10,7 +10,7 @@ RUN npm run build
 # django app build stage
 FROM python:3.9
 WORKDIR /usr/src/app
-COPY rms/requirements.txt .
+COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 COPY . .
 COPY --from=daily-register-vue-build-stage /app/build ./romei/static/daily_register/build
