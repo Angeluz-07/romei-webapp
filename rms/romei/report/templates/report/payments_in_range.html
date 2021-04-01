@@ -4,12 +4,6 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <style>
-#payments {
-  height:50vh;
-  overflow-y:scroll;
-  overflow-x:scroll;
-}
-
 table {
   width:800px;
 }
@@ -44,6 +38,34 @@ table {
       </div>
      </form>
     </div>
+
+    {% if stats %}
+    <div id="" class="mt-4 border-top">
+      <table class="table table-bordered table-hover">
+          <thead>
+              <tr>
+              <th scope="col"></th>
+              <th scope="col">Store</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">$ Total</th>
+              <th scope="col">$ Promedio de venta diario</th>
+              </tr>
+          </thead>
+          <tbody>
+
+            {% for item in stats %}
+              <tr>
+              <td></td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.sum }}</td>
+              <td>{{ item.avg }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    {% endif %}
 
     <div id="plt_chart" class="mt-4 border-top">
       {% autoescape off %}

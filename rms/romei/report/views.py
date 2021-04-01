@@ -4,6 +4,33 @@ from daily_register_api.models import PaymentRegister, Store
 from management.views import date_from_str
 # Create your views here.
 
+def build_stats_payments_in_range(queryset):
+    import pandas as pd
+    stores_with_stats = Store.objects.all()
+
+    df = pd.DataFrame(queryset.values(), columns=['register_date','store_id','id','value'])
+    sum_of_payments_by_store = df.groupby(['store_id']) \
+    .agg({'value': 'sum'}) \
+    .to_dict()
+
+    def set_sum(obj):
+        setattr(obj,'sum',sum_of_payments_by_store['value'][obj.id])
+        return obj
+
+    stores_with_stats = [ set_sum(obj) for obj in stores_with_stats ]
+
+    avg_of_payments_by_date = df.groupby(['register_date', 'store_id']) \
+    .agg({'value': 'sum'}).reset_index() \
+    .groupby('store_id').agg({'value':'mean'}) \
+    .to_dict()
+
+    def set_avg(obj):
+        setattr(obj,'avg',avg_of_payments_by_date['value'][obj.id])
+        return obj
+
+    stores_with_stats = [ set_avg(obj) for obj in stores_with_stats ]
+    return stores_with_stats
+
 def build_df_payments_in_range(queryset):
     import pandas as pd
     df = pd.DataFrame(queryset.values(), columns=['register_date','store_id','id','value'])
@@ -50,7 +77,8 @@ def payments_in_range(request):
             .filter(
                 register_date__range=(start_date,end_date)
             )
-            
+            stats = build_stats_payments_in_range(queryset)
+            context['stats'] = stats
             df = build_df_payments_in_range(queryset)
             plot_div = build_plot_payments_in_range(df,(start_date,end_date))
             context['plot_div'] = plot_div
