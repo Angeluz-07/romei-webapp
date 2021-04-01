@@ -1,0 +1,32 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+	<!-- Jquery -->
+	<script src="{% static 'src/jquery-3.3.1.min.js' %}"></script>
+  	<!-- Bootstrap-->
+	<script src="{% static 'src/bootstrap.min.js' %}" ></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css" />
+
+	{% block top_assets %}
+	{% endblock %}
+
+  </head>
+  <body>
+
+	{% block nav %}
+	{% endblock %}
+
+	<div class="container">
+		{% block content %}
+		{% endblock %}
+    </div>
+
+	{% block bottom_assets %}
+    {% endblock %}
+  </body>
+</html>

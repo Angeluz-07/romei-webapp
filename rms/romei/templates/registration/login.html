@@ -1,0 +1,47 @@
+{%  extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">  
+  <form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+        <div class="row my-3 mx-auto w-25">
+            <h1>Login</h1>
+        </div>
+        <div class="row my-3 mx-auto w-25">
+            <input
+                class="form-control"
+                type="text"
+                name="username"
+                placeholder="Username" />
+        </div>
+        <div class="row my-3 mx-auto w-25">
+            <input
+                class="form-control"
+                type="password"
+                name="password"
+                placeholder="Password" />
+        </div>
+        {% if next %}
+          <div class="row my-3 mx-auto w-25">
+            <input type="hidden" name="next" value="{{ next }}" />
+          </div>
+        {% endif %}
+
+        <div class="row my-3 mx-auto w-25">
+            <button type="submit" class="btn btn-secondary">
+            Login
+            </button>
+        </div>
+        
+        {% if form.errors %}
+          <div class="row my-3 mx-auto w-25">
+            <p class=" label label-danger">
+                Your username and password didn't match. 
+                Please try again.
+            </p>
+          </div>
+        {% endif %}
+  </form>
+</div>
+{% endblock %}
+

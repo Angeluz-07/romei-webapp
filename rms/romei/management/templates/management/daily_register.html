@@ -1,0 +1,12 @@
+{%  extends "base_nav.html" %}
+
+{% load static %}
+
+{% block content %}
+    <div id="app"></div>    
+{% endblock %}
+
+{% block bottom_assets %}
+    <script type="text/javascript" src="{% static 'daily_register/build/js/chunk-vendors.js' %}"></script>
+    <script type="text/javascript" src="{% static 'daily_register/build/js/app.js' %}"></script>
+{% endblock %}
