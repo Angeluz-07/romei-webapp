@@ -28,7 +28,7 @@ def build_stats_payments_in_range(queryset):
     .to_dict()
 
     def set_sum(obj):
-        setattr(obj,'sum',sum_of_payments_by_store['value'][obj.id])
+        setattr(obj,'sum',sum_of_payments_by_store['value'].get(obj.id,'-no-values'))
         return obj
 
     stores_with_stats = [ set_sum(obj) for obj in stores_with_stats ]
@@ -39,7 +39,7 @@ def build_stats_payments_in_range(queryset):
     .to_dict()
 
     def set_avg(obj):
-        setattr(obj,'avg',avg_of_payments_by_date['value'][obj.id])
+        setattr(obj,'avg',avg_of_payments_by_date['value'].get(obj.id,"-no-values"))
         return obj
 
     stores_with_stats = [ set_avg(obj) for obj in stores_with_stats ]
@@ -88,9 +88,9 @@ def build_stats_losts_in_range(date_range):
     sum_of_losts_by_store = df.groupby(['store_id']) \
     .agg({'value': 'sum'}) \
     .to_dict()
-    print(sum_of_losts_by_store)
+
     def set_sum(obj):
-        setattr(obj,'sum',sum_of_losts_by_store['value'][obj.id])
+        setattr(obj,'sum',sum_of_losts_by_store['value'].get(obj.id,'-no-values')])
         return obj
 
     stores_with_stats = [ set_sum(obj) for obj in stores_with_stats ]
