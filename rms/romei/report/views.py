@@ -90,7 +90,7 @@ def build_stats_losts_in_range(date_range):
     .to_dict()
 
     def set_sum(obj):
-        setattr(obj,'sum',sum_of_losts_by_store['value'].get(obj.id,'-no-values')])
+        setattr(obj,'sum',sum_of_losts_by_store['value'].get(obj.id,'-no-values'))
         return obj
 
     stores_with_stats = [ set_sum(obj) for obj in stores_with_stats ]
