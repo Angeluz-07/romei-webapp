@@ -1,0 +1,78 @@
+{%  extends "base_nav.html" %}
+
+{% block top_assets %}
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+table {
+  width:800px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div id="searchControlBar">
+     <form action="{% url 'losts_in_range' %}" method="post">
+     {% csrf_token %}
+      <div class="row my-3">
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Inicial</label>
+          <div class="col-8 col-md-3 mb-3">
+            <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
+          </div>
+          <label for="staticEmail" class="col-4 col-md-3 col-form-label">Fecha Final</label>
+          <div class="col-8 col-md-3">
+            <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
+          </div>
+      </div>
+      <div class="row my-3">
+        <div class="col-4 col-md-3">
+          <button type="submit" class="btn btn-secondary">
+            Search
+          </button>
+          </div>
+          <!--div class="col-8 col-md-9">
+            <input type="text" class="form-control" name="search_text" value="" required>
+          </div-->
+      </div>
+     </form>
+    </div>
+
+    {% if stats %}
+    <div id="" class="mt-4 border-top">
+      <table class="table table-bordered table-hover">
+          <thead>
+              <tr>
+              <th scope="col"></th>
+              <th scope="col">Store</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">$ Total</th>
+              <th scope="col">$ Promedio de venta diario</th>
+              </tr>
+          </thead>
+          <tbody>
+
+            {% for item in stats %}
+              <tr>
+              <td></td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.sum }}</td>
+              <td>{{ item.avg }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div id="plt_chart" class="mt-4 border-top">
+      {% autoescape off %}
+      {% if plot_div %}
+        {{ plot_div }}
+      {% endif %}
+      {% endautoescape %}
+    </div>
+  </div>
+{% endblock %}
