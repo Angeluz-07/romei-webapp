@@ -2,10 +2,24 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from daily_register_api.models import PaymentRegister, Store, SaleRegister
 from management.views import date_from_str
+import pandas as pd
 # Create your views here.
 
+def get_payment_registers_in_range(date_range):
+    start_date, end_date = date_range
+    result = PaymentRegister.objects.filter(
+        register_date__range=(start_date,end_date)
+    )
+    return result
+
+def get_sale_registers_in_range(date_range):
+    start_date, end_date = date_range
+    result = SaleRegister.objects.filter(
+        register_date__range=(start_date,end_date)
+    )
+    return result
+
 def build_stats_payments_in_range(queryset):
-    import pandas as pd
     stores_with_stats = Store.objects.all()
 
     df = pd.DataFrame(queryset.values(), columns=['register_date','store_id','id','value'])
@@ -32,7 +46,6 @@ def build_stats_payments_in_range(queryset):
     return stores_with_stats
 
 def build_df_payments_in_range(queryset):
-    import pandas as pd
     df = pd.DataFrame(queryset.values(), columns=['register_date','store_id','id','value'])
     df = df.groupby(['register_date', 'store_id']).agg({'value': 'sum'}).reset_index()
     df = df.pivot(index='register_date', columns='store_id', values='value').reset_index()
@@ -42,23 +55,13 @@ def build_df_payments_in_range(queryset):
     df = df.rename(columns={'register_date':'date'}, index={'store_id':''})
     return df
 
-def build_df_losts_in_range(date_range):
-    start_date, end_date = date_range
-    payments_queryset = PaymentRegister \
-    .objects \
-    .filter(
-        register_date__range=(start_date,end_date)
-    )
+def build_df_losts_in_range(date_range: tuple):
+    payments_queryset = get_payment_registers_in_range(date_range)
 
-    import pandas as pd
     payments_df = pd.DataFrame(payments_queryset.values(), columns=['register_date','store_id','id','value'])
     payments_df = payments_df.groupby(['register_date', 'store_id']).agg({'value': 'sum'}).reset_index()
 
-    sales_queryset = SaleRegister \
-    .objects \
-    .filter(
-        register_date__range=(start_date,end_date)
-    )
+    sales_queryset = get_sale_registers_in_range(date_range)
     sales_queryset = [
         {
             'id' : obj.id,
@@ -103,44 +106,37 @@ def build_plot_values_in_range(df, date_range):
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
 
+def set_date_range_in_context(context, date_range):
+    start_date, end_date = date_range
+    context['start_date'] = start_date
+    context['end_date'] = end_date
+
 @login_required(login_url='login')
 def payments_in_range(request):
     context = {}
-    queryset = []
-    total = 0
     if request.method == 'POST':
         _start_date = request.POST.get('start_date')
         _end_date = request.POST.get('end_date')
-        context['start_date'] = _start_date
-        context['end_date'] = _end_date
+        set_date_range_in_context(context, (_start_date,_end_date))
         if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
-            queryset = PaymentRegister \
-            .objects \
-            .filter(
-                register_date__range=(start_date,end_date)
-            )
+            queryset = get_payment_registers_in_range((start_date,end_date))
             stats = build_stats_payments_in_range(queryset)
             context['stats'] = stats
             df = build_df_payments_in_range(queryset)
             plot_div = build_plot_values_in_range(df,(start_date,end_date))
             context['plot_div'] = plot_div
-        
-    context['payment_query_data'] = queryset
-    context['total'] = total
+
     return render(request, 'report/payments_in_range.html', context)
 
 
 @login_required(login_url='login')
 def losts_in_range(request):
     context = {}
-    queryset = []
-    total = 0
     if request.method == 'POST':
         _start_date = request.POST.get('start_date')
         _end_date = request.POST.get('end_date')
-        context['start_date'] = _start_date
-        context['end_date'] = _end_date
+        set_date_range_in_context(context,(_start_date,_end_date))
         if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
             df = build_df_losts_in_range((start_date,end_date))
@@ -149,7 +145,5 @@ def losts_in_range(request):
             #context['stats'] = stats
             plot_div = build_plot_values_in_range(df,(start_date,end_date))
             context['plot_div'] = plot_div
-        
-    context['payment_query_data'] = queryset
-    context['total'] = total
+
     return render(request, 'report/losts_in_range.html', context)
