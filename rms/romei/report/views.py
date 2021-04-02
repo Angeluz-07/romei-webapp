@@ -55,7 +55,7 @@ def build_df_payments_in_range(queryset):
     df = df.rename(columns={'register_date':'date'}, index={'store_id':''})
     return df
 
-def build_df_losts_in_range(date_range: tuple):
+def _build_df_losts(date_range: tuple):
     payments_queryset = get_payment_registers_in_range(date_range)
 
     payments_df = pd.DataFrame(payments_queryset.values(), columns=['register_date','store_id','id','value'])
@@ -79,7 +79,26 @@ def build_df_losts_in_range(date_range: tuple):
 
     df = payments_df.sub(sales_df, fill_value=0)
     df = df.reset_index()
+    return df
 
+def build_stats_losts_in_range(date_range):
+    df = _build_df_losts(date_range)
+    stores_with_stats = Store.objects.all()
+
+    sum_of_losts_by_store = df.groupby(['store_id']) \
+    .agg({'value': 'sum'}) \
+    .to_dict()
+    print(sum_of_losts_by_store)
+    def set_sum(obj):
+        setattr(obj,'sum',sum_of_losts_by_store['value'][obj.id])
+        return obj
+
+    stores_with_stats = [ set_sum(obj) for obj in stores_with_stats ]
+    return stores_with_stats
+
+
+def build_df_losts_in_range(date_range: tuple):
+    df = _build_df_losts(date_range)
     df = df.pivot(index='register_date', columns='store_id', values='value').reset_index()
     df = df.rename_axis("Stores", axis = 1)
     column_names = { s.id : s.__str__() for s in Store.objects.all() }
@@ -140,9 +159,8 @@ def losts_in_range(request):
         if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
             df = build_df_losts_in_range((start_date,end_date))
-
-            #stats = build_stats_payments_in_range(queryset)
-            #context['stats'] = stats
+            stats = build_stats_losts_in_range((start_date,end_date))
+            context['stats'] = stats
             plot_div = build_plot_values_in_range(df,(start_date,end_date))
             context['plot_div'] = plot_div
 
