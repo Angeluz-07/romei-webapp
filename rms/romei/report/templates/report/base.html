@@ -1,0 +1,20 @@
+{%  extends "base_nav.html" %}
+
+{% block top_assets %}
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    {% block control_bar %}
+    {% endblock %}
+
+    {% block stats_info %}
+    {% endblock %}
+
+    {% block plotly %}
+    {% endblock %}
+    
+  </div>
+{% endblock %}
