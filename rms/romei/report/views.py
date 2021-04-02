@@ -132,6 +132,9 @@ def set_date_range_in_context(context, date_range):
 
 @login_required(login_url='login')
 def payments_in_range(request):
+    def there_is_data(date_range) -> bool:
+        return len(get_payment_registers_in_range(date_range)) > 0
+
     context = {}
     if request.method == 'POST':
         _start_date = request.POST.get('start_date')
@@ -139,18 +142,25 @@ def payments_in_range(request):
         set_date_range_in_context(context, (_start_date,_end_date))
         if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
-            queryset = get_payment_registers_in_range((start_date,end_date))
-            stats = build_stats_payments_in_range(queryset)
-            context['stats'] = stats
-            df = build_df_payments_in_range(queryset)
-            plot_div = build_plot_values_in_range(df,(start_date,end_date))
-            context['plot_div'] = plot_div
+            if there_is_data((start_date, end_date)):
+                queryset = get_payment_registers_in_range((start_date,end_date))
+                stats = build_stats_payments_in_range(queryset)
+                context['stats'] = stats
+                df = build_df_payments_in_range(queryset)
+                plot_div = build_plot_values_in_range(df,(start_date,end_date))
+                context['plot_div'] = plot_div
 
     return render(request, 'report/payments_in_range.html', context)
 
 
 @login_required(login_url='login')
 def losts_in_range(request):
+    def there_is_data(date_range) -> bool:
+        return (
+            len(get_payment_registers_in_range(date_range)) > 0 and            
+            len(get_sale_registers_in_range(date_range)) > 0
+        )
+
     context = {}
     if request.method == 'POST':
         _start_date = request.POST.get('start_date')
@@ -158,10 +168,11 @@ def losts_in_range(request):
         set_date_range_in_context(context,(_start_date,_end_date))
         if _start_date and _end_date:
             start_date, end_date = date_from_str(_start_date), date_from_str(_end_date)
-            df = build_df_losts_in_range((start_date,end_date))
-            stats = build_stats_losts_in_range((start_date,end_date))
-            context['stats'] = stats
-            plot_div = build_plot_values_in_range(df,(start_date,end_date))
-            context['plot_div'] = plot_div
+            if there_is_data((start_date, end_date)):
+                df = build_df_losts_in_range((start_date,end_date))
+                stats = build_stats_losts_in_range((start_date,end_date))
+                context['stats'] = stats
+                plot_div = build_plot_values_in_range(df,(start_date,end_date))
+                context['plot_div'] = plot_div
 
     return render(request, 'report/losts_in_range.html', context)
